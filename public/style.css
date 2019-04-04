@@ -1,0 +1,29 @@
+.modal {
+    display: block !important;
+    color: #000000;
+}
+
+
+.row-hover:hover {
+    background-color: #e2e2e2;
+}
+
+body {
+    background-color: #116275;
+}
+
+.table {
+}
+
+.container > .row > div {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+button {
+    color: #fff !important;
+    background-color: #fe9d1d !important;
+    border-radius: 0 !important;
+    border: none !important;
+}
