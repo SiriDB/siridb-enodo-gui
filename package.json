@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.1",
     "react": "^16.7.0",
+    "react-contexify": "^4.0.2",
     "react-dom": "^16.7.0",
     "react-google-charts": "^3.0.10",
     "react-pubsub-store": "git+https://git@github.com/timoj/react-pubsub-store.git#dev",
@@ -18,7 +19,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-register": "^6.26.0",
     "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.3"
+    "webpack-cli": "^3.3.0"
   },
   "scripts": {
     "dev": "./node_modules/.bin/webpack --watch --config=webpack.dev.js "

@@ -16,9 +16,9 @@ body {
 }
 
 .container > .row > div {
-    background: white;
+    background: #e9ecef;
     padding: 20px;
-    border-radius: 5px;
+    border-radius: .3rem;
 }
 
 button {
@@ -26,4 +26,22 @@ button {
     background-color: #fe9d1d !important;
     border-radius: 0 !important;
     border: none !important;
+}
+
+.menu-item {
+    cursor: pointer
+}
+
+a {
+    color: #000000 !important;
+    font-style: normal !important;
+}
+
+.inline-list-group {
+    margin: 0;
+}
+
+.inline-list-group li{
+    display: inline-block;
+    margin: 0 20px 0 0;
 }

@@ -26,9 +26,9 @@ class Menu extends Component {
         return (
             <div className="container">
                 <div className="jumbotron" style={menuStyle}>
-                    <ul style={{listStyle: "none", textAlign: "center", padding: 0}}>
-                        <li><Link to="/series">Time series</Link></li>
-                        <li><Link to="/settings">Settings</Link></li>
+                    <ul className="list-group" style={{listStyle: "none", textAlign: "center", padding: 0}}>
+                        <Link to="/series"><li className="list-group-item menu-item">Time series</li></Link>
+                        <Link to="/settings"><li className="list-group-item menu-item">Settings</li></Link>
                     </ul>
                 </div>
             </div>
