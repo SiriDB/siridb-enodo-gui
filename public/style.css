@@ -41,7 +41,27 @@ a {
     margin: 0;
 }
 
-.inline-list-group li{
+.inline-list-group > a{
     display: inline-block;
+}
+
+.inline-list-group li{
     margin: 0 20px 0 0;
+}
+
+.react-contextmenu {
+    z-index: 9000;
+    width: 200px;
+    background: #FFFFFF;
+    border-radius: 0.3rem;
+    padding: 10px 0;
+}
+
+.react-contextmenu-item {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.react-contextmenu-item:hover {
+    background-color: #e2e2e2;
 }

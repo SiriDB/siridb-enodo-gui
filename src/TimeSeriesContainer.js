@@ -4,6 +4,9 @@ import {RPSComponent} from 'react-pubsub-store';
 import TimeSeriesStore from './RPSStores/TimeSeriesStore'
 import ReactPubSubStore from 'react-pubsub-store';
 import {Chart} from "react-google-charts";
+import {Link} from "react-router-dom";
+
+import {ContextMenu, MenuItem, ContextMenuTrigger} from "react-contextmenu";
 
 
 class TimeSeriesContainer extends RPSComponent {
@@ -17,19 +20,48 @@ class TimeSeriesContainer extends RPSComponent {
             m: 12,
             serieName: "",
             unit: "ms",
-            plotPoints: []
+            plotPoints: [],
+            rightClickSelectedSerie: ""
         }
     }
 
+    removeTimeserieFromAnalyser(serieName) {
+        console.log(this.state.rightClickSelectedSerie);
+        ReactPubSubStore.publish('/series/' + serieName, {}, "DELETE", (data) => {
+            console.log(data);
+            ReactPubSubStore.update('/series');
+        });
+    }
+
     render() {
-        console.log(this.state);
         let chartData = [["x", "data", "forecast"]];
         chartData = chartData.concat(this.state.plotPoints);
         return (
             <div className="container">
+                <ContextMenu id="SIMPLE">
+                    <MenuItem data={{}} onClick={() => {
+                        this.removeTimeserieFromAnalyser(this.state.rightClickSelectedSerie);
+                    }}>
+                        Delete
+                    </MenuItem>
+                </ContextMenu>
                 <div className="row">
-                    <div className="col-12 col-md-4">
-                        <div>
+                    <div className="col-12">
+                        <ul className="inline-list-group">
+                            <Link to="/series">
+                                <li className="list-group-item menu-item">Time series</li>
+                            </Link>
+                            <Link to="/settings">
+                                <li className="list-group-item menu-item">Settings</li>
+                            </Link>
+                        </ul>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <div className="row">
+                    <div className="col-12 col-md-3">
+                        <div style={{textAlign: "right"}}>
                             <button type="button" className="btn btn-primary" onClick={() => {
                                 this.setState({addSerieModalState: true})
                             }}>Add
@@ -52,23 +84,32 @@ class TimeSeriesContainer extends RPSComponent {
                                            style={{cursor: "pointer"}}
                                            className="row-hover"
                                            onClick={() => {
-                                               ReactPubSubStore.publish('/series/' + serie.name, {}, "GET", (data) => {
-                                                   console.log(data);
-                                                   // let points = data.points.concat(data.forecast_points);
-                                                   let points = [];
-                                                   for (let i = 0; i < (data.points.length + data.forecast_points.length); i++) {
-                                                       if (i < data.points.length) {
-                                                           points.push([data.points[i][0], data.points[i][1], null]);
-                                                       } else {
-                                                           points.push([data.forecast_points[i - data.points.length][0], null, data.forecast_points[i - data.points.length][1]]);
+                                               if (serie.analysed) {
+                                                   ReactPubSubStore.publish('/series/' + serie.name, {}, "GET", (data) => {
+                                                       console.log(data);
+                                                       // let points = data.points.concat(data.forecast_points);
+                                                       let points = [];
+                                                       for (let i = 0; i < (data.points.length + data.forecast_points.length); i++) {
+                                                           if (i < data.points.length) {
+                                                               points.push([data.points[i][0], data.points[i][1], null]);
+                                                           } else {
+                                                               points.push([data.forecast_points[i - data.points.length][0], null, data.forecast_points[i - data.points.length][1]]);
+                                                           }
                                                        }
-                                                   }
-                                                   this.setState({
-                                                       plotPoints: points
+                                                       this.setState({
+                                                           plotPoints: points
+                                                       });
                                                    });
-                                               });
+                                               }
                                            }}>
-                                    <td>{serie.name}</td>
+                                    <td><ContextMenuTrigger
+                                        id="SIMPLE"><span onContextMenu={() => {
+                                        console.log("hiu");
+                                        this.setState({
+                                            rightClickSelectedSerie: serie.name
+                                        });
+                                    }
+                                    }>{serie.name}</span></ContextMenuTrigger></td>
                                     <td>{serie.analysed ? "yes" : "no"}</td>
                                     {/*<td>{serie.type}</td>*/}
                                     {/*<td>{serie.parameters.m}</td>*/}
@@ -79,14 +120,14 @@ class TimeSeriesContainer extends RPSComponent {
                             </tbody>
                         </table>
                     </div>
-                    <div className="col-12 col-md-8">
-                        <Chart
+                    <div className="col-12 col-md-8 offset-md-1">
+                        {this.state.plotPoints.length ? <Chart
                             chartType="LineChart"
                             data={chartData}
                             width="100%"
                             height="400px"
                             legendToggle
-                        />
+                        /> : "Select a time serie"}
                     </div>
                     {this.state.addSerieModalState &&
                     <div className="modal" tabIndex="-1" role="dialog">
