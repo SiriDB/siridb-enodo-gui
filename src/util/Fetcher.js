@@ -1,9 +1,12 @@
 var Fetcher = (function () {
-    const baseUrl = "http://0.0.0.0:8080";
+    const baseUrl = "http://localhost";
     return {
         fetchResource: function (path, cb) {
-            fetch(baseUrl + path, {
+            fetch(baseUrl + "/api" + path, {
                 method: 'GET',
+                headers: {
+                    'Authorization': "Basic " + btoa('enodo:enodo')
+                }
             }).then(response => response.json())
                 .then(response => cb(response.data));
         },

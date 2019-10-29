@@ -1,67 +1,9 @@
-.modal {
-    display: block !important;
-    color: #000000;
-}
+/*body {*/
+    /*background-image: radial-gradient(circle, rgb(49, 144, 228) 0%, rgb(29, 84, 166) 100%);*/
+/*}*/
 
-
-.row-hover:hover {
-    background-color: #e2e2e2;
-}
-
-body {
-    background-color: #116275;
-}
-
-.table {
-}
-
-.container > .row > div {
-    background: #e9ecef;
-    padding: 20px;
-    border-radius: .3rem;
-}
-
-button {
-    color: #fff !important;
-    background-color: #fe9d1d !important;
-    border-radius: 0 !important;
-    border: none !important;
-}
-
-.menu-item {
-    cursor: pointer
-}
-
-a {
-    color: #000000 !important;
-    font-style: normal !important;
-}
-
-.inline-list-group {
-    margin: 0;
-}
-
-.inline-list-group > a{
-    display: inline-block;
-}
-
-.inline-list-group li{
-    margin: 0 20px 0 0;
-}
-
-.react-contextmenu {
-    z-index: 9000;
-    width: 200px;
-    background: #FFFFFF;
-    border-radius: 0.3rem;
-    padding: 10px 0;
-}
-
-.react-contextmenu-item {
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-.react-contextmenu-item:hover {
-    background-color: #e2e2e2;
+button:active, button:focus, a:active, a:focus {
+    outline: 0;
+    border: none;
+    -moz-outline-style: none;
 }
