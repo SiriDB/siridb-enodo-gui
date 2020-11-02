@@ -1,9 +1,0 @@
-/*body {*/
-    /*background-image: radial-gradient(circle, rgb(49, 144, 228) 0%, rgb(29, 84, 166) 100%);*/
-/*}*/
-
-button:active, button:focus, a:active, a:focus {
-    outline: 0;
-    border: none;
-    -moz-outline-style: none;
-}

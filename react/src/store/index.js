@@ -5,12 +5,14 @@ import io from 'socket.io-client';
 import Fetcher from '../util/Fetcher';
 
 const initialState = {
-    enodo_clients: [],
+    enodo_clients: {},
     enodo_log: [],
     enodo_status: {},
+    enodo_models: [],
     settings: null,
     siridb_status: null,
     series: [],
+    queue: []
 };
 
 const useGlobal = useGlobalHook(React, initialState, actions);
@@ -34,8 +36,11 @@ socket.on('*', (data) => {
 });
 
 socket.on('series_updates', (data) => {
-    data = JSON.parse(data);
-    socketGlobalActions.__updateStoreValue('series', data.data);
+    socketGlobalActions.__updateStoreValue('series', data.series_data);
+});
+
+socket.on('job_updates', (data) => {
+    socketGlobalActions.__updateStoreValue('queue', data.job_data);
 });
 
 const fetchValueFromREST = (path, cb, resourceName) => {
@@ -44,16 +49,26 @@ const fetchValueFromREST = (path, cb, resourceName) => {
     })
 };
 
-
 const setup_subscriptions = (globalActions) => {
     socketGlobalActions = globalActions;
-    socket.emit('/subscribe/series', {}, (status, data, message) => {
-
+    socket.emit('/subscribe/series', {}, (data) => {
+        data = JSON.parse(data);
+        socketGlobalActions.__updateStoreValue('series', data.data);
+    });
+    socket.emit('/subscribe/enodo/models', {}, (data) => {
+        console.log("EAADSDSA", data);
+        // data = JSON.parse(data);
+        socketGlobalActions.__updateStoreValue('enodo_models', data.data);
+    });
+    socket.emit('/subscribe/queue', {}, (data) => {
+        data = JSON.parse(data);
+        console.log("QUEUE DATA", data);
+        socketGlobalActions.__updateStoreValue('queue', data.data);
     });
     setInterval(() => {
-        fetchValueFromREST('/siridb/status', socketGlobalActions.__updateStoreValue, 'siridb_status');
+        // fetchValueFromREST('/siridb/status', socketGlobalActions.__updateStoreValue, 'siridb_status');
         fetchValueFromREST('/enodo/status', socketGlobalActions.__updateStoreValue, 'enodo_status');
-        fetchValueFromREST('/enodo/log', socketGlobalActions.__updateStoreValue, 'enodo_log');
+        // fetchValueFromREST('/enodo/log', socketGlobalActions.__updateStoreValue, 'enodo_log');
         fetchValueFromREST('/enodo/clients', socketGlobalActions.__updateStoreValue, 'enodo_clients');
     }, 3000);
 };

@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
+    "file-loader": "^5.0.2",
     "moment": "^2.24.0",
     "react": "^16.11.0",
     "react-contextmenu": "^2.12.0",

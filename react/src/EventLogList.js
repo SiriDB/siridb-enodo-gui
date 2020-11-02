@@ -15,14 +15,14 @@ const EventLogList = () => {
 
     return (
         <List>
-            {enodo_log.map((line, i) => {
-                let date = moment(line.datetime).format('YYYY-MM-DD H:mm:ss');
-                return <ListItem key={i}>
-                    <ListItemIcon><TimelineIcon/></ListItemIcon>
-                    <ListItemText
-                        primary={`${moment.duration(moment().diff(date)).humanize()} ago - ${line.serie_name} - ${line.message}`}/>
-                </ListItem>
-            })}
+            {/*{enodo_log.map((line, i) => {*/}
+                {/*let date = moment(line.datetime).format('YYYY-MM-DD H:mm:ss');*/}
+                {/*return <ListItem key={i}>*/}
+                    {/*<ListItemIcon><TimelineIcon/></ListItemIcon>*/}
+                    {/*<ListItemText*/}
+                        {/*primary={`${moment.duration(moment().diff(date)).humanize()} ago - ${line.serie_name} - ${line.message}`}/>*/}
+                {/*</ListItem>*/}
+            {/*})}*/}
         </List>
     );
 }

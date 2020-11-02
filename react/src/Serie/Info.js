@@ -70,7 +70,25 @@ const Info = (props) => {
                     <TableCell component="th" scope="row">
                         Datapoints
                     </TableCell>
-                    <TableCell align="right">{serie.data_points}</TableCell>
+                    <TableCell align="right">{serie.datapoint_count}</TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell component="th" scope="row">
+                        Model
+                    </TableCell>
+                    <TableCell align="right">{serie.model}</TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell component="th" scope="row">
+                        Ignore
+                    </TableCell>
+                    <TableCell align="right">{serie.ignore ? 'Yes' : 'No'}</TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell component="th" scope="row">
+                        Trend
+                    </TableCell>
+                    <TableCell align="right">{serie.series_characteristics ? (serie.series_characteristics.trend ? serie.series_characteristics.trend : '') : ''}</TableCell>
                 </TableRow>
             </TableBody>
         </Table>

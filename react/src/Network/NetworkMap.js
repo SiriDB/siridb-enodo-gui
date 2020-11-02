@@ -8,6 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 
 import Paper from "@material-ui/core/Paper/Paper";
 import Moment from 'moment';
+import {useGlobal, socket} from '../store';
 
 const styles = theme => ({
     root: {
@@ -27,14 +28,17 @@ const styles = theme => ({
 
 const NetworkMap = () => {
 
-    const [enodo_clients, set_enodo_clients] = useGlobal();
+    const [enodo_clients, set_enodo_clients] = useGlobal(
+        state => state.enodo_clients,
+        actions => null
+    );
 
     console.log(enodo_clients);
     let listeners = [];
     let workers = [];
     if (enodo_clients) {
-        listeners = enodo_clients.listeners;
-        workers = enodo_clients.workers;
+        listeners = enodo_clients.listeners || [];
+        workers = enodo_clients.workers || [];
     }
 
     return <div>

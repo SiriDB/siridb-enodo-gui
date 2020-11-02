@@ -10,15 +10,17 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import MessageIcon from '@material-ui/icons/Message';
 import AssessmentIcon from '@material-ui/icons/Assessment';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import Badge from '@material-ui/core/Badge';
+import WorkOutlineIcon from '@material-ui/icons/WorkOutline';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import SettingsIcon from '@material-ui/icons/Settings';
+import DnsIcon from '@material-ui/icons/Dns';
 import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import {withStyles} from '@material-ui/core/styles';
-import {HashRouter, Link, Route, Switch} from "react-router-dom";
+import {HashRouter, NavLink, Route, Switch} from "react-router-dom";
 import Menu from "./Menu";
 import TimeSeriesContainer from "./TimeSeriesContainer";
 import Settings from "./Settings/Settings";
@@ -26,11 +28,14 @@ import NetworkMap from "./Network/NetworkMap";
 
 import StatusBar from './util/StatusBar';
 import EventLogList from './EventLogList';
+import Logo from '../public/assets/icon.png';
 
 import {useGlobal, setup_subscriptions} from './store';
 
+import '../public/style.css'; 
 
-const drawerWidth = 240;
+
+const drawerWidth = 90;
 
 const styles = theme => ({
     root: {
@@ -54,9 +59,13 @@ const styles = theme => ({
             display: 'none',
         },
     },
+    leftmenubtn: {
+        marginLeft: 16,
+    },
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
         width: drawerWidth,
+        overflow: "hidden"
     },
     content: {
         flexGrow: 1,
@@ -66,11 +75,26 @@ const styles = theme => ({
         maxWidth: '100%',
         padding: '10px 20px',
         maxHeight: '64px'
+    },
+    sidebar: {
+        width: '500px',
+        maxWidht: '20vw',
+        height: '100vh',
+        borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
+        backgroundColor: "white",
+        padding: "20px"
     }
 });
 
 const App = (props) => {
-    const [globalState, globalActions] = useGlobal();
+    const [globalState, globalActions] = useGlobal(
+        state => null,
+        actions => actions
+    );
+    let [queue, _] = useGlobal(
+        state => state.queue,
+        actions => null
+    );
     useEffect(() => {
         setup_subscriptions(globalActions);
     }, []);
@@ -83,45 +107,33 @@ const App = (props) => {
 
     const {classes, theme} = props;
 
+    if (queue === undefined) {
+        queue = [];
+    }
+
+    queue.sort((a, b) => {return a.job_id - b.job_id});
+
+    console.log("QUEUE", queue);
+
     const drawer = (
         <div>
             <div className={classes.toolbar}>
-                <img src='assets/logo_full.png' className={classes.logo}/>
+                <img src={Logo} className={classes.logo}/>
             </div>
             <Divider/>
             <List>
-                <Link to="/series">
-                    <ListItem button>
+                <NavLink to="/" exact activeClassName="menu-link-selected">
+                    <ListItem button className={classes.leftmenubtn}>
                         <ListItemIcon><AssessmentIcon/></ListItemIcon>
-                        <ListItemText primary="Series"/>
+                        <ListItemText primary=""/>
                     </ListItem>
-                </Link>
-                <ListItem button>
-                    <ListItemIcon><TimelineIcon/></ListItemIcon>
-                    <ListItemText primary="Anomalies"/>
-                </ListItem>
-                <ListItem button>
-                    <ListItemIcon><TimelineIcon/></ListItemIcon>
-                    <ListItemText primary="Outlier"/>
-                </ListItem>
-            </List>
-            <Divider/>
-            <List>
-                <Link to="/network">
-                    <ListItem button>
-                        <ListItemIcon><TimelineIcon/></ListItemIcon>
-                        <ListItemText primary="Network"/>
+                </NavLink>
+                <NavLink to="/network" exact activeClassName="menu-link-selected">
+                    <ListItem button className={classes.leftmenubtn}>
+                        <ListItemIcon><DnsIcon/></ListItemIcon>
+                        <ListItemText primary=""/>
                     </ListItem>
-                </Link>
-            </List>
-            <Divider/>
-            <List>
-                <Link to="/settings">
-                    <ListItem button>
-                        <ListItemIcon><SettingsIcon/></ListItemIcon>
-                        <ListItemText primary="Settings"/>
-                    </ListItem>
-                </Link>
+                </NavLink>
             </List>
         </div>
     );
@@ -129,22 +141,6 @@ const App = (props) => {
     return (
         <HashRouter>
             <div className={classes.root}>
-                <CssBaseline/>
-                <AppBar position="fixed" implementation="css" color="inherit" className={classes.appBar}>
-                    <Toolbar>
-                        <IconButton
-                            aria-label="Open drawer"
-                            implementation="css"
-                            onClick={handleDrawerToggle}
-                            className={classes.menuButton}
-                        >
-                            <MenuIcon/>
-                        </IconButton>
-                        <Typography variant="h6" implementation="css" noWrap>
-
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
                 <nav className={classes.drawer}>
                     {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
                     <Hidden smUp implementation="css">
@@ -177,29 +173,31 @@ const App = (props) => {
                     <div className={classes.toolbar}/>
 
                     <Switch>
-                        <Route exact path='/' component={Menu}/>
-                        <Route path='/series' component={TimeSeriesContainer}/>
+                        <Route exact path='/' component={TimeSeriesContainer}/>
                         <Route path='/settings/:catid' component={Settings}/>
                         <Route path='/settings' component={Settings}/>
                         <Route path='/network' component={NetworkMap}/>
                     </Switch>
 
                 </main>
-                <StatusBar/>
-                <div style={{
-                    width: '400px',
-                    flexShrink: 0,
-                }}>
-                    <Drawer variant="persistent"
-                            anchor="right" open={true} onClose={() => {
-                    }}>
-                        <div style={{width: '400px', flexShrink: 0,}}>
-                            <div style={{color: 'white', padding: '10px', marginTop: '10px'}}>
-                                <MessageIcon/> Event log
-                            </div>
-                            <EventLogList/>
-                        </div>
-                    </Drawer>
+                <div className={classes.sidebar}>
+                    <div className={classes.toolbar}/>
+                    <h2>
+                        Open Jobs 
+                        <Badge badgeContent={queue.length} color="primary" style={{marginLeft: "15px"}}>
+                            <WorkOutlineIcon />
+                        </Badge>
+                    </h2>
+                    <div>
+                    <List style={{maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden'}}>
+                        {queue.map((job) => {
+                            return <ListItem button className={classes.leftmenubtn} key={job.job_id}>
+                                <ListItemIcon><FormatListBulletedIcon/></ListItemIcon>
+                                <ListItemText class="job-item" primary={job.series_name} secondary={job.job_type}/>
+                            </ListItem>
+                        })}
+                    </List>
+                    </div>
                 </div>
             </div>
         </HashRouter>

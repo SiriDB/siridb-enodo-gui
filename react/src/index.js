@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
+import lightGreen from '@material-ui/core/colors/lightGreen';
 
 const theme = createMuiTheme({
     palette: {
-        type: 'dark',
+        type: 'light',
+        contrastThreshold: 3,
+        primary: lightGreen,
     },
 });
 

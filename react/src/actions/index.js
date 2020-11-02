@@ -30,3 +30,7 @@ export const __updateStoreValue = (store, key, value, append) => {
 export const updateUserProfile = (store) => {
     // fetch new profile obj
 };
+
+export const defaultAction = (store) => {
+    // fetch new profile obj
+};
