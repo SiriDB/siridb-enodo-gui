@@ -18,7 +18,7 @@ const initialState = {
 const useGlobal = useGlobalHook(React, initialState, actions);
 
 // const socket = io.connect(`${window.location.protocol}//${window.location.host}`, {
-const socket = io.connect(`0.0.0.0`, {
+const socket = io.connect(process.env.ENODO_HUB_URI, {
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,

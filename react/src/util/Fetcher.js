@@ -1,5 +1,5 @@
 var Fetcher = (function () {
-    const baseUrl = "http://localhost";
+    const baseUrl = process.env.ENODO_HUB_URI;
     return {
         fetchResource: function (path, cb) {
             fetch(baseUrl + "/api" + path, {

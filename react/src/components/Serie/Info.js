@@ -7,7 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-import {useGlobal} from '../store';
+import {useGlobal} from '../../store';
 
 const menuStyle = {
     maxWidth: "300px",

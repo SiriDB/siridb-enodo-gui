@@ -1,8 +1,8 @@
+import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
 
-import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import lightGreen from '@material-ui/core/colors/lightGreen';
 
 const theme = createMuiTheme({
@@ -15,9 +15,9 @@ const theme = createMuiTheme({
 
 const Index = () => {
     return <MuiThemeProvider theme={theme}>
-        <App/>
+        <App />
     </MuiThemeProvider>;
 };
 
 
-ReactDOM.render(<Index/>, document.getElementById('app'));
+ReactDOM.render(<Index />, document.getElementById('app'));

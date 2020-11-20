@@ -1,5 +1,6 @@
-var path = require('path');
+const Dotenv = require('dotenv-webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var path = require('path');
 
 module.exports = {
     entry: './src/index.js',
@@ -9,8 +10,8 @@ module.exports = {
     },
     module: {
         rules: [
-            {test: /\.(js)$/, use: 'babel-loader'},
-            {test: /\.css$/, use: ['style-loader', 'css-loader']},
+            { test: /\.(js)$/, use: 'babel-loader' },
+            { test: /\.css$/, use: ['style-loader', 'css-loader'] },
             {
                 test: /\.(png|jpe?g|gif)$/i,
                 use: [
@@ -25,7 +26,10 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: 'src/index.html'
-        })
-    ]
-
+        }),
+        new Dotenv()
+    ],
+    node: {
+        fs: 'empty' // Required for dotenv-webpack
+    }
 }
