@@ -20,7 +20,6 @@ import { useGlobal, socket } from '../../store';
 
 const styles = theme => ({
     paper: {
-        padding: theme.spacing.unit * 2,
         textAlign: 'center',
         color: theme.palette.text.secondary,
     }
@@ -28,7 +27,6 @@ const styles = theme => ({
 
 const TimeSeriesPage = () => {
     const [addSerieModalState, setAddSerieModalState] = useState(false);
-    const [serieName, setSerieName] = useState("");
     const [plotPoints, setPlotPoints] = useState([]);
     const [selectedSerie, setSelectedSerie] = useState("");
     const [viewType, setViewType] = useState("");
@@ -110,46 +108,51 @@ const TimeSeriesPage = () => {
             buttonAction={() => setAddSerieModalState(true)}
             buttonText='Add'
         >
-            <Grid container spacing={24}>
+            <Grid container>
                 <Grid item xs={12}>
-                    <List style={{ maxHeight: 'calc(100vh - 200px)', overflow: 'auto' }}>
+                    <List style={{ maxHeight: 'calc(100vh - 200px)' }}>
                         {series.length < 1 ? <div className="centered-message">No series found</div> : ""}
-                        {series && series.map((serie) => {
-                            return (
-                                <Paper className={styles.paper} key={serie.name}>
-                                    <div style={{ margin: "20px", padding: "10px 0" }}>
-                                        <ListItem>
-                                            <ListItemText
-                                                primary={serie.name}
-                                                secondary={`Analysed: ${(isAnalysed(serie) === true ? "yes" : "no")}`}
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <IconButton aria-label="Show info"
-                                                    onClick={() => {
-                                                        setViewType('info');
-                                                        setSelectedSerie(serie.name);
-                                                    }}>
-                                                    <InfoIcon />
-                                                </IconButton>
-                                                <IconButton onClick={() => {
-                                                    showChart(serie);
-                                                }} aria-label="Show graph">
-                                                    <ShowChartIcon />
-                                                </IconButton>
-                                                <IconButton aria-label="Delete" onClick={() => {
-                                                    var data = { name: serie.name };
-                                                    socket.emit(`/api/series/delete`, data, (status, data, message) => {
-                                                        console.log(status, data, message);
+                        {series &&
+                            <Grid container direction='column' spacing={2}>
+                                {series.map((serie) => {
+                                    return (
+                                        <Grid item key={serie.name}>
+                                            <Paper className={styles.paper}>
+                                                <div style={{ padding: "10px 0" }}>
+                                                    <ListItem>
+                                                        <ListItemText
+                                                            primary={serie.name}
+                                                            secondary={`Analysed: ${(isAnalysed(serie) === true ? "yes" : "no")}`}
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            <IconButton aria-label="Show info"
+                                                                onClick={() => {
+                                                                    setViewType('info');
+                                                                    setSelectedSerie(serie.name);
+                                                                }}>
+                                                                <InfoIcon />
+                                                            </IconButton>
+                                                            <IconButton onClick={() => {
+                                                                showChart(serie);
+                                                            }} aria-label="Show graph">
+                                                                <ShowChartIcon />
+                                                            </IconButton>
+                                                            <IconButton aria-label="Delete" onClick={() => {
+                                                                var data = { name: serie.name };
+                                                                socket.emit(`/api/series/delete`, data, (status, data, message) => {
+                                                                    console.log(status, data, message);
 
-                                                    });
-                                                }}>
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    </div>
-                                </Paper>);
-                        })}
+                                                                });
+                                                            }}>
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItem>
+                                                </div>
+                                            </Paper>
+                                        </Grid>);
+                                })}
+                            </Grid>}
                     </List>
                 </Grid>
                 <Grid item xs={12} hidden>

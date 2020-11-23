@@ -1,6 +1,6 @@
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
-
+import Typography from '@material-ui/core/Typography';
 
 const BasicPageLayout = ({ title, buttonAction, buttonText, children }) => {
 
@@ -9,7 +9,7 @@ const BasicPageLayout = ({ title, buttonAction, buttonText, children }) => {
             <Grid item>
                 <div>
                     <div style={{ float: "left" }}>
-                        <h2>{title}</h2>
+                        <Typography variant='h4' gutterBottom>{title}</Typography>
                     </div>
                     <div style={{ float: "right" }}>
                         {buttonAction && buttonText &&
