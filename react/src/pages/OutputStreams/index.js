@@ -56,6 +56,16 @@ const OutputStreamsPage = () => {
         retrieveOutputStreams();
     }
 
+    const deleteOutput = (outputId) => {
+        var data = { output_id: outputId };
+        socket.emit(`/api/event/output/delete`, data, () => {
+            const array = outputStreams.filter((obj) => {
+                return obj.output_id !== outputId;
+            });
+            setOutputStreams(array);
+        });
+    }
+
     return (
         <BasicPageLayout title='Output Streams' buttonText='Add' buttonAction={() => handleClickOpen()}>
             <List style={{ maxHeight: 'calc(100vh - 200px)' }}>
@@ -81,12 +91,7 @@ const OutputStreamsPage = () => {
                                                     >
                                                         <InfoIcon />
                                                     </IconButton>
-                                                    <IconButton aria-label="Delete" onClick={() => {
-                                                        var data = { name: output.output_id };
-                                                        socket.emit(`/api/output/delete`, data, (status, data, message) => {
-                                                            console.log(status, data, message);
-                                                        });
-                                                    }}>
+                                                    <IconButton aria-label="Delete" onClick={() => deleteOutput(output.output_id)}>
                                                         <DeleteIcon />
                                                     </IconButton>
                                                 </ListItemSecondaryAction>
