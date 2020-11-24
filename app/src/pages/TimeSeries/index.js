@@ -43,7 +43,7 @@ const TimeSeriesPage = () => {
     );
 
     const removeTimeserieFromAnalyser = (serieName) => {
-        console.log(rightClickSelectedSerie);
+        // console.log(rightClickSelectedSerie);
         // ReactPubSubStore.publish('/series/' + serieName, {}, "DELETE", (data) => {
         //     console.log(data);
         //     ReactPubSubStore.update('/series');
@@ -198,7 +198,7 @@ const TimeSeriesPage = () => {
             </Grid>
             <ContextMenu id="SIMPLE">
                 <MenuItem data={{}} onClick={() => {
-                    removeTimeserieFromAnalyser(rightClickSelectedSerie);
+                    // removeTimeserieFromAnalyser(rightClickSelectedSerie);
                 }}>
                     Delete
                 </MenuItem>

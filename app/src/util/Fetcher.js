@@ -1,5 +1,5 @@
 var Fetcher = (function () {
-    const baseUrl = process.env.ENODO_HUB_URI;
+    const baseUrl = process.env.REACT_APP_ENODO_HUB_URI;
     return {
         fetchResource: function (path, cb) {
             fetch(baseUrl + "/api" + path, {

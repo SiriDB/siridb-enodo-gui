@@ -11,6 +11,7 @@ import Paper from '@material-ui/core/Paper';
 
 import BasicPageLayout from '../../components/BasicPageLayout';
 import OutputDialog from '../../components/Output/Dialog';
+import InfoOutputDialog from '../../components/Output/Info';
 import { socket } from '../../store';
 
 const styles = theme => ({
@@ -22,7 +23,9 @@ const styles = theme => ({
 
 const OutputStreamsPage = () => {
     const [outputStreams, setOutputStreams] = useState([]);
-    const [openDialog, setOpenDialog] = useState(false);
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openInfoDialog, setOpenInfoDialog] = useState(false);
+    const [currentOutput, setCurrentOutput] = useState(null);
 
     const retrieveOutputStreams = () => {
         socket.emit('/api/event/output', {}, (data) => {
@@ -44,13 +47,24 @@ const OutputStreamsPage = () => {
         };
     }, []);
 
-    const handleClickOpen = () => {
-        setOpenDialog(true);
+    const handleClickOpenAddDialog = () => {
+        setOpenAddDialog(true);
     };
 
-    const handleClose = () => {
-        setOpenDialog(false);
+    const handleCloseAddDialog = () => {
+        setOpenAddDialog(false);
     };
+
+    const handleClickOpenInfoDialog = (output) => {
+        setOpenInfoDialog(true);
+        setCurrentOutput(output);
+    };
+
+    const handleCloseInfoDialog = () => {
+        setOpenInfoDialog(false);
+        setCurrentOutput(null);
+    };
+
 
     const handleSubmit = () => {
         retrieveOutputStreams();
@@ -67,7 +81,7 @@ const OutputStreamsPage = () => {
     }
 
     return (
-        <BasicPageLayout title='Output Streams' buttonText='Add' buttonAction={() => handleClickOpen()}>
+        <BasicPageLayout title='Output Streams' buttonText='Add' buttonAction={() => handleClickOpenAddDialog()}>
             <List style={{ maxHeight: 'calc(100vh - 200px)' }}>
                 {outputStreams.length < 1 ? <div className="centered-message">No output streams found</div> : ""}
                 {outputStreams &&
@@ -84,10 +98,7 @@ const OutputStreamsPage = () => {
                                                 />
                                                 <ListItemSecondaryAction>
                                                     <IconButton aria-label="Show info"
-                                                    // onClick={() => {
-                                                    //     setViewType('info');
-                                                    //     setSelectedSerie(output.output_id);
-                                                    // }}
+                                                        onClick={() => handleClickOpenInfoDialog(output)}
                                                     >
                                                         <InfoIcon />
                                                     </IconButton>
@@ -102,7 +113,8 @@ const OutputStreamsPage = () => {
                         })}
                     </Grid>}
             </List>
-            <OutputDialog open={openDialog} handleClose={handleClose} onSubmit={handleSubmit} />
+            <OutputDialog open={openAddDialog} handleClose={handleCloseAddDialog} onSubmit={handleSubmit} />
+            <InfoOutputDialog open={openInfoDialog} handleClose={handleCloseInfoDialog} output={currentOutput} />
         </BasicPageLayout>
     );
 }

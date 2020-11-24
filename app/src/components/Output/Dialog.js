@@ -15,45 +15,40 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Configurator from './Configurator';
-import DCLogo from '../../../public/assets/dc-icon-red.png';
-import MSTeamsLogo from '../../../public/assets/ms_teams_logo.png';
-import SentryLogo from '../../../public/assets/sentry-glyph-dark.png';
-import SlackLogo from '../../../public/assets/slack_logo.png';
-import WebhookLogo from '../../../public/assets/webhooks.png';
 import { EventOutputTypes } from '../../constants/enums';
 
 const outputTypeProperties = {
     1: {
         name: "Generic Webhook",
-        image: WebhookLogo,
+        image: 'assets/webhooks.png',
         noSteps: 4,
         description: 'Output events to a desired webhook URL.',
         link: null
     },
     2: {
         name: "Slack",
-        image: SlackLogo,
+        image: 'assets/slack_logo.png',
         noSteps: 3,
         description: 'Output events to a desired Slack channel. A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://api.slack.com/messaging/webhooks'
     },
     3: {
         name: "Microsoft Teams",
-        image: MSTeamsLogo,
+        image: 'assets/ms_teams_logo.png',
         noSteps: 3,
         description: 'Output events to a desired Microsoft Teams channel. A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook'
     },
     4: {
         name: "DutyCalls",
-        image: DCLogo,
+        image: 'assets/dc-icon-red.png',
         noSteps: 4,
         description: 'Output events to a desired DutyCalls channel. A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://docs.dutycalls.me/getting-started/'
     },
     5: {
         name: "Sentry",
-        image: WebhookLogo,
+        image: 'assets/sentry-glyph-dark.png',
         noSteps: 5,
         description: 'Output events to a desired Sentry "something". A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://some-tutorial.com'
@@ -126,19 +121,19 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
                     </DialogContentText>
                     <Grid container spacing={4} justify='flex-start'>
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.SLACK].name} image={SlackLogo} onClick={() => setOutputType(EventOutputTypes.SLACK)} />
+                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.SLACK].name} image={outputTypeProperties[EventOutputTypes.SLACK].image} onClick={() => setOutputType(EventOutputTypes.SLACK)} />
                         </Grid>
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.MS_TEAMS].name} image={MSTeamsLogo} onClick={() => setOutputType(EventOutputTypes.MS_TEAMS)} />
+                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.MS_TEAMS].name} image={outputTypeProperties[EventOutputTypes.MS_TEAMS].image} onClick={() => setOutputType(EventOutputTypes.MS_TEAMS)} />
                         </Grid>
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.DUTYCALLS].name} image={DCLogo} onClick={() => setOutputType(EventOutputTypes.DUTYCALLS)} />
+                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.DUTYCALLS].name} image={outputTypeProperties[EventOutputTypes.DUTYCALLS].image} onClick={() => setOutputType(EventOutputTypes.DUTYCALLS)} />
                         </Grid>
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.SENTRY].name} image={SentryLogo} onClick={() => setOutputType(EventOutputTypes.SENTRY)} />
+                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.SENTRY].name} image={outputTypeProperties[EventOutputTypes.SENTRY].image} onClick={() => setOutputType(EventOutputTypes.SENTRY)} />
                         </Grid>
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.WEBHOOK].name} image={WebhookLogo} onClick={() => setOutputType(EventOutputTypes.WEBHOOK)} />
+                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.WEBHOOK].name} image={outputTypeProperties[EventOutputTypes.WEBHOOK].image} onClick={() => setOutputType(EventOutputTypes.WEBHOOK)} />
                         </Grid>
                     </Grid>
                 </React.Fragment> :

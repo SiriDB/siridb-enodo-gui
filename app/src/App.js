@@ -16,14 +16,12 @@ import WorkOutlineIcon from '@material-ui/icons/WorkOutline';
 import { HashRouter, NavLink, Route, Switch } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 
-import '../public/style.css';
-import Logo from '../public/assets/icon.png';
 import NetworkPage from "./pages/Network";
 import OutputStreamsPage from "./pages/OutputStreams";
 import Settings from "./components/Settings";
 import TimeSeriesPage from "./pages/TimeSeries";
 import { useGlobal, setup_subscriptions } from './store';
-
+import './App.css';
 
 const drawerWidth = 90;
 
@@ -61,10 +59,16 @@ const styles = theme => ({
         flexGrow: 1,
         padding: theme.spacing.unit * 3,
     },
+    logoContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     logo: {
-        maxWidth: '100%',
-        padding: '10px 20px',
-        maxHeight: '64px'
+        width: 64,
+        height: '100%',
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2)
     },
     sidebar: {
         width: '500px',
@@ -105,8 +109,8 @@ const App = (props) => {
 
     const drawer = (
         <div>
-            <div className={classes.toolbar}>
-                <img src={Logo} className={classes.logo} />
+            <div className={`${classes.toolbar} ${classes.logoContainer}`}>
+                <img src='assets/icon.png' className={classes.logo} />
             </div>
             <Divider />
             <List>

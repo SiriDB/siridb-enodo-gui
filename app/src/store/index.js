@@ -1,5 +1,5 @@
 import React from "react";
-import useGlobalHook from "use-global-hook";
+import globalHook from "use-global-hook";
 import * as actions from "../actions";
 import io from 'socket.io-client';
 import Fetcher from '../util/Fetcher';
@@ -15,10 +15,10 @@ const initialState = {
     queue: []
 };
 
-const useGlobal = useGlobalHook(React, initialState, actions);
+const useGlobal = globalHook(React, initialState, actions);
 
 // const socket = io.connect(`${window.location.protocol}//${window.location.host}`, {
-const socket = io.connect(process.env.ENODO_HUB_URI, {
+const socket = io.connect(process.env.REACT_APP_ENODO_HUB_URI, {
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
