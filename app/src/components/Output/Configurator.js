@@ -8,14 +8,17 @@ import Link from '@material-ui/core/Link';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Paper from '@material-ui/core/Paper';
 import React, { useState } from 'react';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
+import EnterDutyCallsChannels from './EnterDutyCallsChannels';
+import EnterDutyCallsCredentials from './EnterDutyCallsCredentials';
 import EnterHeaders from './EnterHeaders';
 import EnterPayload from './EnterPayload';
+import EnterUrl from './EnterUrl';
 import SelectSeverities from './SelectSeverities';
 import { EventOutputTypes } from '../../constants/enums';
+import { socket } from '../../store';
 
 const useStyles = makeStyles(theme => ({
     media: {
@@ -23,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     },
     paperContent: {
         padding: theme.spacing(4),
-        minHeight: 300
+        height: 300
     },
     textField: {
         width: 500
@@ -33,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function Configurator({ outputType, outputTypeProperties, onGoBack }) {
+export default function Configurator({ outputType, outputTypeProperties, onGoBack, onSubmit }) {
     const classes = useStyles();
     const theme = useTheme();
 
@@ -41,6 +44,7 @@ export default function Configurator({ outputType, outputTypeProperties, onGoBac
     const [forSeverities, setForSeverities] = useState([]);
     const [url, setUrl] = useState('');
     const [headers, setHeaders] = useState({});
+    // eslint-disable-next-line
     const [payload, setPayload] = useState('{\n  \"title\": \"{{event.title}}\",\n  \"body\": \"{{event.message}}\",\n  \"dateTime\": {{event.ts}},\n  \"severity\": \"{{event.severity}}\"\n}');
 
     const handleNext = () => {
@@ -51,68 +55,21 @@ export default function Configurator({ outputType, outputTypeProperties, onGoBac
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const EnterUrl = () => {
-        // const error = url === '';
-        return (
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <Typography variant='subtitle2'>
-                        {'Please enter the webhook URL to which event updates should be posted:'}
-                    </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        // error={error}
-                        // helperText={error ? "You have not entered any URL" : ''}
-                        // value={url}
-                        placeholder='https://some-webhook-url.com'
-                        onChange={(e) => setUrl(e.target.value)}
-                        variant="outlined"
-                        className={classes.textField}
-                    />
-                </Grid>
-            </Grid >
-        );
+    const handleAddOutputStream = () => {
+        const data = {
+            "output_type": 1,
+            "data": {
+                "for_severities": forSeverities,
+                "url": url,
+                "headers": JSON.stringify(headers),
+                "payload": payload
+            }
+        };
+        socket.emit(`/api/event/output/create`, data, () => {
+            onSubmit();
+            onGoBack();
+        });
     };
-
-    const Content = () => {
-        if (outputType === EventOutputTypes.WEBHOOK) {
-            return (
-                activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                    activeStep === 1 ? <EnterUrl  /> :
-                        activeStep === 2 ? <EnterHeaders headers={headers} setHeaders={setHeaders} /> :
-                            <EnterPayload payload={payload} setPayload={setPayload} />
-            );
-        }
-        else if (outputType === EventOutputTypes.SLACK) {
-            return (
-                activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                    // activeStep === 1 ? <EnterUrl  setUrl={setUrl} /> :
-                    <EnterPayload payload={payload} setPayload={setPayload} />
-            );
-        }
-        else if (outputType === EventOutputTypes.MS_TEAMS) {
-            return (
-                activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                    // activeStep === 1 ? <EnterUrl  setUrl={setUrl} /> :
-                    <EnterPayload payload={payload} setPayload={setPayload} />
-            );
-        }
-        else if (outputType === EventOutputTypes.DUTYCALLS) {
-            return (
-                activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                    // activeStep === 1 ? <EnterUrl  setUrl={setUrl} /> :
-                    <EnterPayload payload={payload} setPayload={setPayload} />
-            );
-        }
-        else if (outputType === EventOutputTypes.SENTRY) {
-            return (
-                activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                    // activeStep === 1 ? <EnterUrl  setUrl={setUrl} /> :
-                    <EnterPayload payload={payload} setPayload={setPayload} />
-            );
-        }
-    }
 
     return (
         <Grid container spacing={4} className={classes.root}>
@@ -128,7 +85,7 @@ export default function Configurator({ outputType, outputTypeProperties, onGoBac
                         <img
                             className={classes.media}
                             src={outputTypeProperties.image}
-                            alt="Output type image"
+                            alt="Output type"
                         />
                     </Grid>
                     <Grid item xs={8}>
@@ -148,7 +105,43 @@ export default function Configurator({ outputType, outputTypeProperties, onGoBac
             <Grid item xs={12}>
                 <Paper>
                     <div className={classes.paperContent}>
-                        <Content />
+                        {outputType === EventOutputTypes.WEBHOOK &&
+                            <React.Fragment>
+                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
+                                    activeStep === 1 ? <EnterUrl url={url} setUrl={setUrl} /> :
+                                        activeStep === 2 ? <EnterHeaders headers={headers} setHeaders={setHeaders} /> :
+                                            <EnterPayload payload={payload} setPayload={setPayload} />}
+                            </React.Fragment>
+                        }
+                        {outputType === EventOutputTypes.SLACK &&
+                            <React.Fragment>
+                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
+                                    activeStep === 1 ? <EnterUrl url={url} setUrl={setUrl} /> :
+                                        <EnterPayload payload={payload} setPayload={setPayload} />}
+                            </React.Fragment>
+                        }
+                        {outputType === EventOutputTypes.MS_TEAMS &&
+                            <React.Fragment>
+                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
+                                    activeStep === 1 ? <EnterUrl url={url} setUrl={setUrl} /> :
+                                        <EnterPayload payload={payload} setPayload={setPayload} />}
+                            </React.Fragment>
+                        }
+                        {outputType === EventOutputTypes.DUTYCALLS &&
+                            <React.Fragment>
+                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
+                                    activeStep === 1 ? <EnterDutyCallsCredentials setHeaders={setHeaders} /> :
+                                        activeStep === 2 ? <EnterDutyCallsChannels setUrl={setUrl} /> :
+                                            <EnterPayload payload={payload} setPayload={setPayload} />}
+                            </React.Fragment>
+                        }
+                        {outputType === EventOutputTypes.SENTRY &&
+                            <React.Fragment>
+                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
+                                    activeStep === 1 ? <EnterUrl url={url} setUrl={setUrl} /> :
+                                        <EnterPayload payload={payload} setPayload={setPayload} />}
+                            </React.Fragment>
+                        }
                     </div>
                     <MobileStepper
                         steps={outputTypeProperties.noSteps}
@@ -157,10 +150,14 @@ export default function Configurator({ outputType, outputTypeProperties, onGoBac
                         activeStep={activeStep}
                         className={classes.stepper}
                         nextButton={
-                            <Button size="small" onClick={handleNext} disabled={activeStep === outputTypeProperties.noSteps - 1}>
-                                {'Next'}
-                                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                            </Button>
+                            activeStep !== outputTypeProperties.noSteps - 1 ?
+                                <Button size="small" onClick={handleNext} disabled={activeStep === outputTypeProperties.noSteps - 1}>
+                                    {'Next'}
+                                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                                </Button> :
+                                <Button color='primary' onClick={handleAddOutputStream} disabled={activeStep !== outputTypeProperties.noSteps - 1}>
+                                    {'Add'}
+                                </Button>
                         }
                         backButton={
                             <Button size="small" onClick={handleBack} disabled={activeStep === 0}>

@@ -10,7 +10,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ViewStreamIcon from '@material-ui/icons/ViewStream';
 import WorkOutlineIcon from '@material-ui/icons/WorkOutline';
 import { HashRouter, NavLink, Route, Switch } from "react-router-dom";
@@ -30,22 +30,8 @@ const styles = theme => ({
         display: 'flex',
     },
     drawer: {
-        [theme.breakpoints.up('sm')]: {
-            width: drawerWidth,
-            flexShrink: 0,
-        },
-    },
-    appBar: {
-        marginLeft: drawerWidth,
-        [theme.breakpoints.up('sm')]: {
-            width: `calc(100% - ${drawerWidth}px)`,
-        },
-    },
-    menuButton: {
-        marginRight: 20,
-        [theme.breakpoints.up('sm')]: {
-            display: 'none',
-        },
+        width: drawerWidth,
+        flexShrink: 0,
     },
     leftmenubtn: {
         marginLeft: 16,
@@ -57,7 +43,7 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing.unit * 3,
+        padding: theme.spacing(3),
     },
     logoContainer: {
         display: 'flex',
@@ -91,15 +77,9 @@ const App = (props) => {
     );
     useEffect(() => {
         setup_subscriptions(globalActions);
-    }, []);
+    }, [globalActions]);
 
-    const [mobileOpen, setMobileOpen] = useState(false);
-
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen)
-    };
-
-    const { classes, theme } = props;
+    const { classes } = props;
 
     if (queue === undefined) {
         queue = [];
@@ -110,7 +90,7 @@ const App = (props) => {
     const drawer = (
         <div>
             <div className={`${classes.toolbar} ${classes.logoContainer}`}>
-                <img src='assets/icon.png' className={classes.logo} />
+                <img src='assets/icon.png' alt='logo' className={classes.logo} />
             </div>
             <Divider />
             <List>
@@ -141,31 +121,15 @@ const App = (props) => {
             <div className={classes.root}>
                 <nav className={classes.drawer}>
                     {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-                    <Hidden smUp implementation="css">
-                        <Drawer
-                            container={props.container}
-                            variant="temporary"
-                            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-                            open={mobileOpen}
-                            onClose={handleDrawerToggle}
-                            classes={{
-                                paper: classes.drawerPaper,
-                            }}
-                        >
-                            {drawer}
-                        </Drawer>
-                    </Hidden>
-                    <Hidden xsDown implementation="css">
-                        <Drawer
-                            classes={{
-                                paper: classes.drawerPaper,
-                            }}
-                            variant="permanent"
-                            open
-                        >
-                            {drawer}
-                        </Drawer>
-                    </Hidden>
+                    <Drawer
+                        classes={{
+                            paper: classes.drawerPaper,
+                        }}
+                        variant="permanent"
+                        open
+                    >
+                        {drawer}
+                    </Drawer>
                 </nav>
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
@@ -179,25 +143,27 @@ const App = (props) => {
                     </Switch>
 
                 </main>
-                <div className={classes.sidebar}>
-                    <div className={classes.toolbar} />
-                    <h2>
-                        Open Jobs
-                        <Badge badgeContent={queue.length} color="primary" style={{ marginLeft: "15px" }}>
-                            <WorkOutlineIcon />
-                        </Badge>
-                    </h2>
-                    <div>
-                        <List style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden' }}>
-                            {queue.map((job) => {
-                                return <ListItem button className={classes.leftmenubtn} key={job.job_id}>
-                                    <ListItemIcon><FormatListBulletedIcon /></ListItemIcon>
-                                    <ListItemText class="job-item" primary={job.series_name} secondary={job.job_type} />
-                                </ListItem>
-                            })}
-                        </List>
+                <Hidden smDown>
+                    <div className={classes.sidebar}>
+                        <div className={classes.toolbar} />
+                        <h2>
+                            {'Open Jobs'}
+                            <Badge badgeContent={queue.length} color="primary" style={{ marginLeft: "15px" }}>
+                                <WorkOutlineIcon />
+                            </Badge>
+                        </h2>
+                        <div>
+                            <List style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden' }}>
+                                {queue.map((job) => {
+                                    return <ListItem button className={classes.leftmenubtn} key={job.job_id}>
+                                        <ListItemIcon><FormatListBulletedIcon /></ListItemIcon>
+                                        <ListItemText class="job-item" primary={job.series_name} secondary={job.job_type} />
+                                    </ListItem>
+                                })}
+                            </List>
+                        </div>
                     </div>
-                </div>
+                </Hidden>
             </div>
         </HashRouter>
     )

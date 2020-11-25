@@ -32,12 +32,16 @@ export default function SelectSeverities({ severities, setSeverities }) {
                 <FormControl component="fieldset" error={error} >
                     <FormGroup>
                         <FormControlLabel
+                            control={<Checkbox checked={severities.includes('info')} onChange={handleChange} name="info" />}
+                            label="Info"
+                        />
+                        <FormControlLabel
                             control={<Checkbox checked={severities.includes('warning')} onChange={handleChange} name="warning" />}
-                            label="warning"
+                            label="Warning"
                         />
                         <FormControlLabel
                             control={<Checkbox checked={severities.includes('error')} onChange={handleChange} name="error" />}
-                            label="error"
+                            label="Error"
                         />
                     </FormGroup>
                     {error && <FormHelperText>{'You have not selected any severity'}</FormHelperText>}

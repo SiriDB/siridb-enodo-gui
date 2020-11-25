@@ -21,6 +21,14 @@ const styles = theme => ({
     }
 });
 
+const outputNames = {
+    1: 'Generic Webhook',
+    2: 'Slack',
+    3: 'Microsoft Teams',
+    4: 'DutyCalls',
+    5: 'Sentry'
+};
+
 const OutputStreamsPage = () => {
     const [outputStreams, setOutputStreams] = useState([]);
     const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -65,9 +73,9 @@ const OutputStreamsPage = () => {
         setCurrentOutput(null);
     };
 
-
     const handleSubmit = () => {
         retrieveOutputStreams();
+        handleCloseAddDialog();
     }
 
     const deleteOutput = (outputId) => {
@@ -94,7 +102,7 @@ const OutputStreamsPage = () => {
                                             <ListItem>
                                                 <ListItemText
                                                     primary={'ID: ' + output.output_id}
-                                                    secondary={'Type: ' + output.output_type}
+                                                    secondary={'Type: ' + outputNames[output.output_type]}
                                                 />
                                                 <ListItemSecondaryAction>
                                                     <IconButton aria-label="Show info"

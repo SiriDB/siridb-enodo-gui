@@ -1,29 +1,66 @@
 # Enodo GUI
 
-## Installation
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-In the project folder: `react`, you can run:
+## Available Scripts
 
-```bash
-npm install
-```
+In the folder `app`, you can run:
+
+### `npm install`
 
 Installs all the required node modules.
 
-> *Note:* This requires: Node.js & npm
+> **Note:** This requires Node.js & npm to be installed.
 
----
+### `npm start`
 
-## Running
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-Before running Enodo GUI, the correct environment variables have to be
-configured. This can be done by changing the values in `react/.env`.
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-Then in the project folder: `react`, you can run:
+### `npm test`
 
-```bash
-npm start
-```
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-This will run the app in the development mode.
-Open [http://localhost:8081](http://localhost:8081) to view it in the browser.
+### `npm run build`
+
+Builds the app for production to the `app/build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

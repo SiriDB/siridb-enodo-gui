@@ -12,8 +12,18 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(() => ({
+    root: {
+        height: 300,
+        overflow: 'auto'
+    }
+}));
 
 export default function EnterHeaders({ headers, setHeaders }) {
+    const classes = useStyles();
+
     const [key, setKey] = useState('');
     const [value, setValue] = useState('');
 
@@ -29,7 +39,6 @@ export default function EnterHeaders({ headers, setHeaders }) {
         let object = { ...headers };
         object[key] = value;
         setHeaders(object);
-        console.log(object)
     }
 
     const handleDeleteHeader = (key) => {
@@ -39,7 +48,7 @@ export default function EnterHeaders({ headers, setHeaders }) {
     }
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} className={classes.root}>
             <Grid item xs={12}>
                 <Typography variant='subtitle2'>
                     {'Please enter the headers which should be included in the event update:'}
@@ -53,6 +62,7 @@ export default function EnterHeaders({ headers, setHeaders }) {
                             onChange={handleChangeKey}
                             label='Key'
                             variant="outlined"
+                            type="text"
                         />
                     </Grid>
                     <Grid item>
@@ -61,6 +71,7 @@ export default function EnterHeaders({ headers, setHeaders }) {
                             onChange={handleChangeValue}
                             label='Value'
                             variant="outlined"
+                            type="text"
                         />
                     </Grid>
                     <Grid item>

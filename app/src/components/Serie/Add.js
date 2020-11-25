@@ -1,13 +1,5 @@
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import React, { useState } from "react";
 import Modal from '@material-ui/core/Modal';
@@ -20,7 +12,7 @@ const styles = theme => ({
         display: 'flex',
     },
     paper: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
@@ -180,7 +172,7 @@ const AddSerie = (props) => {
                     </FormControl>
                     <br /><br />
                     <FormControl className={styles.formControl}>
-                        <Button variant="contained"
+                        <Button variant="contained" color='primary'
                             onClick={() => {
                                 var data = {
                                     name: name,
@@ -196,7 +188,7 @@ const AddSerie = (props) => {
                                             job_anomaly_detect: anomalyDetectionJobSchedule
                                         },
                                         min_data_points: minDataPoints,
-                                        model_params: modelParams == "" ? {} : JSON.parse(modelParams)
+                                        model_params: modelParams === "" ? {} : JSON.parse(modelParams)
                                     }
                                 };
 

@@ -6,22 +6,6 @@ body {
     background-color: #f0f0f0;
 }
 
-button:active, button:focus, a:active, a:focus {
-    outline: 0;
-    border: none;
-    -moz-outline-style: none;
-}
-
-button.btn.btn-primary {
-    background-color: #09bbad;
-    border-color: #40d2b9;
-}
-
-button.btn.btn-primary:hover {
-    background-color: #0cd3c2;
-    border-color: #48ecd1;
-}
-
 h2 {
     margin-bottom: 20px;
 }

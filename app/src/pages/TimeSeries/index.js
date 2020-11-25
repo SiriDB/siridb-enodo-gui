@@ -97,7 +97,7 @@ const TimeSeriesPage = () => {
     };
 
     const isAnalysed = (serie) => {
-        return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis == 3)
+        return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3)
     };
 
     let chartData = [charFormat];

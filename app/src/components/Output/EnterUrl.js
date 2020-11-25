@@ -10,13 +10,33 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-export default function EnterUrl({ setUrl }) {
+export default function EnterUrl({ url, setUrl }) {
     const classes = useStyles();
 
     const handleChange = (e) => {
         setUrl(e.target.value);
     };
 
+    const error = url === '';
 
+    return (
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <Typography variant='subtitle2'>
+                    {'Please enter the webhook URL to which event updates should be posted:'}
+                </Typography>
+            </Grid>
+            <Grid item xs={12}>
+                <TextField
+                    error={error}
+                    helperText={error ? "You have not entered any URL" : ''}
+                    placeholder='https://some-webhook-url.com'
+                    onChange={handleChange}
+                    variant="outlined"
+                    className={classes.textField}
+                    type="text"
+                />
+            </Grid>
+        </Grid >
     );
 }

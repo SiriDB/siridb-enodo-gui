@@ -16,6 +16,14 @@ const styles = () => ({
     }
 });
 
+const outputNames = {
+    1: 'Generic Webhook',
+    2: 'Slack',
+    3: 'Microsoft Teams',
+    4: 'DutyCalls',
+    5: 'Sentry'
+};
+
 const Info = ({ output, open, handleClose }) => {
 
     return (
@@ -27,8 +35,8 @@ const Info = ({ output, open, handleClose }) => {
             fullWidth
             maxWidth='md'
         >
-            <DialogTitle id="alert-dialog-title">{"Add Output Stream"}</DialogTitle>
-            <DialogContent dividers>
+            <DialogTitle id="alert-dialog-title">{"Output Stream Info"}</DialogTitle>
+            <DialogContent>
                 {output &&
                 <Table className={styles.table}>
                     <TableHead>
@@ -46,7 +54,7 @@ const Info = ({ output, open, handleClose }) => {
                             <TableCell component="th" scope="row">
                                 Type
                             </TableCell>
-                            <TableCell align="right">{output.output_type}</TableCell>
+                            <TableCell align="right">{outputNames[output.output_type]}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
@@ -70,19 +78,19 @@ const Info = ({ output, open, handleClose }) => {
                             <TableCell component="th" scope="row">
                                 Severities
                             </TableCell>
-                            <TableCell align="right">{String(output.data.for_severities)}</TableCell>
+                            <TableCell align="right">{String(output.for_severities)}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 Event types
                             </TableCell>
-                            <TableCell align="right">{String(output.data.for_event_types)}</TableCell>
+                            <TableCell align="right">{String(output.for_event_types)}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} >
+                <Button onClick={handleClose} color='primary'>
                     {'Close'}
                 </Button>
             </DialogActions>

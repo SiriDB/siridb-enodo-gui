@@ -49,7 +49,7 @@ const outputTypeProperties = {
     5: {
         name: "Sentry",
         image: 'assets/sentry-glyph-dark.png',
-        noSteps: 5,
+        noSteps: 3,
         description: 'Output events to a desired Sentry "something". A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://some-tutorial.com'
     }
@@ -129,9 +129,9 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
                         <Grid item xs={4}>
                             <OutputTypeCard name={outputTypeProperties[EventOutputTypes.DUTYCALLS].name} image={outputTypeProperties[EventOutputTypes.DUTYCALLS].image} onClick={() => setOutputType(EventOutputTypes.DUTYCALLS)} />
                         </Grid>
-                        <Grid item xs={4}>
+                        {/* <Grid item xs={4}>
                             <OutputTypeCard name={outputTypeProperties[EventOutputTypes.SENTRY].name} image={outputTypeProperties[EventOutputTypes.SENTRY].image} onClick={() => setOutputType(EventOutputTypes.SENTRY)} />
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={4}>
                             <OutputTypeCard name={outputTypeProperties[EventOutputTypes.WEBHOOK].name} image={outputTypeProperties[EventOutputTypes.WEBHOOK].image} onClick={() => setOutputType(EventOutputTypes.WEBHOOK)} />
                         </Grid>
@@ -141,6 +141,7 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
                         outputType={outputType}
                         outputTypeProperties={outputTypeProperties[outputType]}
                         onGoBack={resetOutputType}
+                        onSubmit={onSubmit}
                     />}
             </DialogContent>
             <DialogActions>

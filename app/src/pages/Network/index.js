@@ -14,7 +14,7 @@ import { useGlobal } from '../../store';
 const styles = theme => ({
     paper: {
         marginTop: '20px',
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
     }
