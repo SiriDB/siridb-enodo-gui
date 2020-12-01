@@ -1,23 +1,24 @@
 import React from "react";
 import globalHook from "use-global-hook";
-import * as actions from "../actions";
 import io from 'socket.io-client';
+
+import * as actions from "../actions";
 import Fetcher from '../util/Fetcher';
 
 const initialState = {
     enodo_clients: {},
     enodo_log: [],
     enodo_status: {},
-    enodo_models: [],
+    enodo_model: [],
     settings: null,
     siridb_status: null,
     series: [],
-    queue: []
+    job: [],
+    event_output: []
 };
 
 const useGlobal = globalHook(React, initialState, actions);
 
-// const socket = io.connect(`${window.location.protocol}//${window.location.host}`, {
 const socket = io.connect(process.env.REACT_APP_ENODO_HUB_URI, {
     reconnection: true,
     reconnectionDelay: 1000,
@@ -26,21 +27,30 @@ const socket = io.connect(process.env.REACT_APP_ENODO_HUB_URI, {
     transports: ['websocket'],
 });
 
-socket.emit('authorize', {username: 'enodo', password: 'enodo'}, (status, data, message) => {
-
-});
+socket.emit('authorize', { username: 'enodo', password: 'enodo' });
 
 let socketGlobalActions = {};
 
-socket.on('*', (data) => {
-});
-
-socket.on('series_updates', (data) => {
-    socketGlobalActions.__updateStoreValue('series', data.series_data);
-});
-
-socket.on('job_updates', (data) => {
-    socketGlobalActions.__updateStoreValue('queue', data.job_data);
+socket.on('update', (data) => {
+    console.log("Update data: ", data);
+    const resource = data.resource;
+    const resourceData = data.resourceData;
+    switch (data.updateType) {
+        case 'initial':
+            socketGlobalActions.__updateStoreValue(resource, resourceData);
+            break;
+        case 'add':
+            socketGlobalActions.__updateStoreValue(resource, resourceData, true);
+            break;
+        case 'update':
+            socketGlobalActions.__updateStoreResourceItem(resource, resourceData.id, resourceData);
+            break;
+        case 'delete':
+            socketGlobalActions.__deleteStoreResourceItem(resource, resourceData);
+            break;
+        default:
+            break;
+    }
 });
 
 const fetchValueFromREST = (path, cb, resourceName) => {
@@ -55,40 +65,20 @@ const setup_subscriptions = (globalActions) => {
         data = JSON.parse(data);
         socketGlobalActions.__updateStoreValue('series', data.data);
     });
-    socket.emit('/subscribe/enodo/models', {}, (data) => {
-        console.log("EAADSDSA", data);
-        // data = JSON.parse(data);
-        socketGlobalActions.__updateStoreValue('enodo_models', data.data);
+    socket.emit('/subscribe/enodo/model', {}, (data) => {
+        socketGlobalActions.__updateStoreValue('enodo_model', data.data);
     });
     socket.emit('/subscribe/queue', {}, (data) => {
         data = JSON.parse(data);
-        console.log("QUEUE DATA", data);
-        socketGlobalActions.__updateStoreValue('queue', data.data);
+        socketGlobalActions.__updateStoreValue('job', data.data);
+    });
+    socket.emit('/subscribe/event/output', {}, (data) => {
+        socketGlobalActions.__updateStoreValue('event_outputs', data.data);
     });
     setInterval(() => {
-        // fetchValueFromREST('/siridb/status', socketGlobalActions.__updateStoreValue, 'siridb_status');
         fetchValueFromREST('/enodo/status', socketGlobalActions.__updateStoreValue, 'enodo_status');
-        // fetchValueFromREST('/enodo/log', socketGlobalActions.__updateStoreValue, 'enodo_log');
         fetchValueFromREST('/enodo/clients', socketGlobalActions.__updateStoreValue, 'enodo_clients');
     }, 3000);
 };
 
-const publishCreate = (resource, data) => {
-    console.log('/publish/' + resource);
-    socket.emit('/publish/' + resource, {publish_type: 'create', resource_data: data}, (status, data, message) => {
-        console.log(status, data, message);
-    });
-};
-
-const publishUpdate = (resource, id, data) => {
-    console.log('/publish/' + resource);
-    socket.emit('/publish/' + resource, {
-        publish_type: 'update',
-        entity_id: id,
-        resource_data: data
-    }, (status, data, message) => {
-        console.log(status, data, message);
-    });
-};
-
-export {useGlobal, socket, setup_subscriptions, publishCreate};
+export { useGlobal, socket, setup_subscriptions };

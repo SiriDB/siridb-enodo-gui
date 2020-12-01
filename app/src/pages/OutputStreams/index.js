@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import Avatar from '@material-ui/core/Avatar';
 import DeleteIcon from "@material-ui/icons/Delete"
 import Grid from '@material-ui/core/Grid';
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import InfoIcon from "@material-ui/icons/Info"
 import List from "@material-ui/core/List/List";
 import ListItem from "@material-ui/core/ListItem/ListItem";
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import Paper from '@material-ui/core/Paper';
+import React, { useState, useEffect } from 'react';
 
 import BasicPageLayout from '../../components/BasicPageLayout';
 import OutputDialog from '../../components/Output/Dialog';
 import InfoOutputDialog from '../../components/Output/Info';
 import { socket } from '../../store';
+import { VendorNames } from '../../constants/enums';
 
 const styles = theme => ({
     paper: {
@@ -20,14 +23,6 @@ const styles = theme => ({
         color: theme.palette.text.secondary
     }
 });
-
-const outputNames = {
-    1: 'Generic Webhook',
-    2: 'Slack',
-    3: 'Microsoft Teams',
-    4: 'DutyCalls',
-    5: 'Sentry'
-};
 
 const OutputStreamsPage = () => {
     const [outputStreams, setOutputStreams] = useState([]);
@@ -89,7 +84,7 @@ const OutputStreamsPage = () => {
     }
 
     return (
-        <BasicPageLayout title='Output Streams' buttonText='Add' buttonAction={() => handleClickOpenAddDialog()}>
+        <BasicPageLayout title='Output streams' buttonText='Add' buttonAction={() => handleClickOpenAddDialog()}>
             <List style={{ maxHeight: 'calc(100vh - 200px)' }}>
                 {outputStreams.length < 1 ? <div className="centered-message">No output streams found</div> : ""}
                 {outputStreams &&
@@ -100,9 +95,20 @@ const OutputStreamsPage = () => {
                                     <Paper className={styles.paper} >
                                         <div style={{ padding: "10px 0" }}>
                                             <ListItem>
+                                                <ListItemAvatar>
+                                                    <img
+                                                        alt={`Avatar ${output.vendor_name}`}
+                                                        src={`assets/${output.vendor_name === VendorNames.SLACK ? 'slack_logo' :
+                                                            output.vendor_name === VendorNames.MS_TEAMS ? 'ms_teams_logo' :
+                                                                output.vendor_name === VendorNames.DUTYCALLS ? 'dc-icon-red' :
+                                                                    'webhooks'
+                                                            }.png`}
+                                                        style={{ width: 32 }}
+                                                    />
+                                                </ListItemAvatar>
                                                 <ListItemText
-                                                    primary={'ID: ' + output.output_id}
-                                                    secondary={'Type: ' + outputNames[output.output_type]}
+                                                    primary={output.custom_name}
+                                                    secondary={'Vendor: ' + (output.vendor_name === VendorNames.SLACK ? 'Slack' : output.vendor_name === VendorNames.MS_TEAMS ? 'Microsoft Teams' : output.vendor_name === VendorNames.DUTYCALLS ? 'DutyCalls' : 'Webhook')}
                                                 />
                                                 <ListItemSecondaryAction>
                                                     <IconButton aria-label="Show info"

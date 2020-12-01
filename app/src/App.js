@@ -71,8 +71,8 @@ const App = (props) => {
         state => null,
         actions => actions
     );
-    let [queue, _] = useGlobal(
-        state => state.queue,
+    let [job, _] = useGlobal(
+        state => state.job,
         actions => null
     );
     useEffect(() => {
@@ -81,11 +81,11 @@ const App = (props) => {
 
     const { classes } = props;
 
-    if (queue === undefined) {
-        queue = [];
+    if (job === undefined) {
+        job = [];
     }
 
-    queue.sort((a, b) => { return a.job_id - b.job_id });
+    job.sort((a, b) => { return a.job_id - b.job_id });
 
     const drawer = (
         <div>
@@ -148,13 +148,13 @@ const App = (props) => {
                         <div className={classes.toolbar} />
                         <h2>
                             {'Open Jobs'}
-                            <Badge badgeContent={queue.length} color="primary" style={{ marginLeft: "15px" }}>
+                            <Badge badgeContent={job.length} color="primary" style={{ marginLeft: "15px" }}>
                                 <WorkOutlineIcon />
                             </Badge>
                         </h2>
                         <div>
                             <List style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden' }}>
-                                {queue.map((job) => {
+                                {job.map((job) => {
                                     return <ListItem button className={classes.leftmenubtn} key={job.job_id}>
                                         <ListItemIcon><FormatListBulletedIcon /></ListItemIcon>
                                         <ListItemText class="job-item" primary={job.series_name} secondary={job.job_type} />

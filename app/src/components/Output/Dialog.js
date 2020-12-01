@@ -15,43 +15,36 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Configurator from './Configurator';
-import { EventOutputTypes } from '../../constants/enums';
+import { VendorNames } from '../../constants/enums';
 
 const outputTypeProperties = {
-    1: {
+    "webhook": {
         name: "Generic Webhook",
         image: 'assets/webhooks.png',
-        noSteps: 4,
+        noSteps: 6,
         description: 'Output events to a desired webhook URL.',
         link: null
     },
-    2: {
+    "slack": {
         name: "Slack",
         image: 'assets/slack_logo.png',
-        noSteps: 3,
+        noSteps: 5,
         description: 'Output events to a desired Slack channel. A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://api.slack.com/messaging/webhooks'
     },
-    3: {
+    "ms_teams": {
         name: "Microsoft Teams",
         image: 'assets/ms_teams_logo.png',
-        noSteps: 3,
+        noSteps: 5,
         description: 'Output events to a desired Microsoft Teams channel. A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook'
     },
-    4: {
+    "dutycalls": {
         name: "DutyCalls",
         image: 'assets/dc-icon-red.png',
-        noSteps: 4,
+        noSteps: 6,
         description: 'Output events to a desired DutyCalls channel. A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://docs.dutycalls.me/getting-started/'
-    },
-    5: {
-        name: "Sentry",
-        image: 'assets/sentry-glyph-dark.png',
-        noSteps: 3,
-        description: 'Output events to a desired Sentry "something". A prerequisite for this configuration is that you have completed the following tutorial:',
-        link: 'https://some-tutorial.com'
     }
 };
 
@@ -62,7 +55,8 @@ const useStyles1 = makeStyles({
     media: {
         height: 125,
         backgroundSize: 70,
-        backgroundPosition: 'center'
+        backgroundPosition: 'center',
+        backgroundColor: '#e8f7f6'
     }
 });
 
@@ -78,7 +72,7 @@ function OutputTypeCard({ name, image, onClick }) {
                 />
                 <Divider />
                 <CardContent>
-                    <Typography gutterBottom variant="h6">
+                    <Typography gutterBottom align='center' variant='h6'>
                         {name}
                     </Typography>
                 </CardContent>
@@ -97,55 +91,56 @@ const useStyles2 = makeStyles(theme => ({
 export default function OutputDialog({ open, handleClose, onSubmit }) {
     const classes = useStyles2();
 
-    const [outputType, setOutputType] = useState(null);
+    const [vendorName, setVendorName] = useState(null);
 
-    const resetOutputType = () => {
-        setOutputType(null);
+    const resetVendorName = () => {
+        setVendorName(null);
     };
+
+    const closeDialog = () => {
+        handleClose();
+        resetVendorName();
+    }
 
     return (
         <Dialog
             open={open}
-            onClose={handleClose}
+            onClose={closeDialog}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             fullWidth
             maxWidth='md'
-
         >
-            <DialogTitle id="alert-dialog-title">{"Add Output Stream"}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">{"Add output stream"}</DialogTitle>
             <DialogContent dividers className={classes.dialogContent}>
-                {outputType === null ? <React.Fragment>
+                {vendorName === null ? <React.Fragment>
                     <DialogContentText id="alert-dialog-description">
                         {'Select the output type you want to add.'}
                     </DialogContentText>
                     <Grid container spacing={4} justify='flex-start'>
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.SLACK].name} image={outputTypeProperties[EventOutputTypes.SLACK].image} onClick={() => setOutputType(EventOutputTypes.SLACK)} />
+                            <OutputTypeCard name={outputTypeProperties[VendorNames.SLACK].name} image={outputTypeProperties[VendorNames.SLACK].image} onClick={() => setVendorName(VendorNames.SLACK)} />
                         </Grid>
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.MS_TEAMS].name} image={outputTypeProperties[EventOutputTypes.MS_TEAMS].image} onClick={() => setOutputType(EventOutputTypes.MS_TEAMS)} />
+                            <OutputTypeCard name={outputTypeProperties[VendorNames.MS_TEAMS].name} image={outputTypeProperties[VendorNames.MS_TEAMS].image} onClick={() => setVendorName(VendorNames.MS_TEAMS)} />
                         </Grid>
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.DUTYCALLS].name} image={outputTypeProperties[EventOutputTypes.DUTYCALLS].image} onClick={() => setOutputType(EventOutputTypes.DUTYCALLS)} />
+                            <OutputTypeCard name={outputTypeProperties[VendorNames.DUTYCALLS].name} image={outputTypeProperties[VendorNames.DUTYCALLS].image} onClick={() => setVendorName(VendorNames.DUTYCALLS)} />
                         </Grid>
-                        {/* <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.SENTRY].name} image={outputTypeProperties[EventOutputTypes.SENTRY].image} onClick={() => setOutputType(EventOutputTypes.SENTRY)} />
-                        </Grid> */}
                         <Grid item xs={4}>
-                            <OutputTypeCard name={outputTypeProperties[EventOutputTypes.WEBHOOK].name} image={outputTypeProperties[EventOutputTypes.WEBHOOK].image} onClick={() => setOutputType(EventOutputTypes.WEBHOOK)} />
+                            <OutputTypeCard name={outputTypeProperties[VendorNames.WEBHOOK].name} image={outputTypeProperties[VendorNames.WEBHOOK].image} onClick={() => setVendorName(VendorNames.WEBHOOK)} />
                         </Grid>
                     </Grid>
                 </React.Fragment> :
                     <Configurator
-                        outputType={outputType}
-                        outputTypeProperties={outputTypeProperties[outputType]}
-                        onGoBack={resetOutputType}
+                        vendorName={vendorName}
+                        outputTypeProperties={outputTypeProperties[vendorName]}
+                        onGoBack={resetVendorName}
                         onSubmit={onSubmit}
                     />}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="primary">
+                <Button onClick={closeDialog} color="primary">
                     {'Cancel'}
                 </Button>
             </DialogActions>

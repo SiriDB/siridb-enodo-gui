@@ -10,7 +10,6 @@ import Paper from '@material-ui/core/Paper';
 import React, { useState } from 'react';
 import ShowChartIcon from "@material-ui/icons/ShowChart"
 import { Chart } from "react-google-charts";
-import { ContextMenu, MenuItem } from "react-contextmenu";
 
 import AddSerie from "../../components/Serie/Add";
 import BasicPageLayout from '../../components/BasicPageLayout';
@@ -32,23 +31,9 @@ const TimeSeriesPage = () => {
     const [viewType, setViewType] = useState("");
     const [charFormat, setCharFormat] = useState(["x", "data", "forecast"]);
 
-    const [series, defaultAction] = useGlobal(
-        state => state.series,
-        actions => actions.defaultAction
+    const [series] = useGlobal(
+        state => state.series
     );
-
-    const [enodo_models, _] = useGlobal(
-        state => state.enodo_models,
-        actions => null
-    );
-
-    const removeTimeserieFromAnalyser = (serieName) => {
-        // console.log(rightClickSelectedSerie);
-        // ReactPubSubStore.publish('/series/' + serieName, {}, "DELETE", (data) => {
-        //     console.log(data);
-        //     ReactPubSubStore.update('/series');
-        // });
-    };
 
     const _pointWithConditionalAnomaly = (point, anomalies) => {
         if (anomalies !== undefined && anomalies.length) {
@@ -100,6 +85,8 @@ const TimeSeriesPage = () => {
         return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3)
     };
 
+    console.log('Series: ', series);
+
     let chartData = [charFormat];
     chartData = chartData.concat(plotPoints);
     return (
@@ -139,10 +126,7 @@ const TimeSeriesPage = () => {
                                                             </IconButton>
                                                             <IconButton aria-label="Delete" onClick={() => {
                                                                 var data = { name: serie.name };
-                                                                socket.emit(`/api/series/delete`, data, (status, data, message) => {
-                                                                    console.log(status, data, message);
-
-                                                                });
+                                                                socket.emit(`/api/series/delete`, data);
                                                             }}>
                                                                 <DeleteIcon />
                                                             </IconButton>
@@ -196,13 +180,6 @@ const TimeSeriesPage = () => {
                     </Paper>
                 </Grid>
             </Grid>
-            <ContextMenu id="SIMPLE">
-                <MenuItem data={{}} onClick={() => {
-                    // removeTimeserieFromAnalyser(rightClickSelectedSerie);
-                }}>
-                    Delete
-                </MenuItem>
-            </ContextMenu>
             <div className="row">
                 {addSerieModalState &&
                     <AddSerie close={() => { setAddSerieModalState(false) }} />

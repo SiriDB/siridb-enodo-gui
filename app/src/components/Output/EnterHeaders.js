@@ -48,7 +48,7 @@ export default function EnterHeaders({ headers, setHeaders }) {
     }
 
     return (
-        <Grid container spacing={2} className={classes.root}>
+        <Grid container alignContent='flex-start' spacing={2} className={classes.root}>
             <Grid item xs={12}>
                 <Typography variant='subtitle2'>
                     {'Please enter the headers which should be included in the event update:'}

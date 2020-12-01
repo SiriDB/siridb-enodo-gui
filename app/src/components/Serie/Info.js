@@ -1,39 +1,21 @@
-import React, {Component} from 'react';
-
-import {Link} from 'react-router-dom'
+import React from 'react';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-import {useGlobal} from '../../store';
+import { useGlobal } from '../../store';
 
-const menuStyle = {
-    maxWidth: "300px",
-    maxHeight: "500px",
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    margin: "auto"
-};
-
-const styles = theme => ({
-    root: {
-        width: '100%',
-        marginTop: theme.spacing(3),
-        overflowX: 'auto',
-    },
+const styles = () => ({
     table: {
-        minWidth: 650,
-    },
+        minWidth: 650
+    }
 });
 
 const Info = (props) => {
 
-    const [globalState, globalActions] = useGlobal();
+    const [globalState] = useGlobal();
 
     const series = globalState.series;
 
@@ -44,7 +26,7 @@ const Info = (props) => {
         }
     }
     if (serie === null) {
-        return <span/>;
+        return <span />;
     }
 
     return (
@@ -71,12 +53,6 @@ const Info = (props) => {
                         Datapoints
                     </TableCell>
                     <TableCell align="right">{serie.datapoint_count}</TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell component="th" scope="row">
-                        Model
-                    </TableCell>
-                    <TableCell align="right">{serie.model}</TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell component="th" scope="row">

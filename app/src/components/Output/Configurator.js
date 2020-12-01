@@ -11,13 +11,15 @@ import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
+import EnterCustomName from './EnterCustomName';
 import EnterDutyCallsChannels from './EnterDutyCallsChannels';
 import EnterDutyCallsCredentials from './EnterDutyCallsCredentials';
 import EnterHeaders from './EnterHeaders';
 import EnterPayload from './EnterPayload';
 import EnterUrl from './EnterUrl';
-import SelectSeverities from './SelectSeverities';
-import { EventOutputTypes } from '../../constants/enums';
+import SelectEventTypes from './SelectEventTypes';
+import SelectSeverity from './SelectSeverity';
+import { VendorNames, EventOutputTypes } from '../../constants/enums';
 import { socket } from '../../store';
 
 const useStyles = makeStyles(theme => ({
@@ -36,16 +38,18 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function Configurator({ outputType, outputTypeProperties, onGoBack, onSubmit }) {
+export default function Configurator({ vendorName, outputTypeProperties, onGoBack, onSubmit }) {
     const classes = useStyles();
     const theme = useTheme();
 
     const [activeStep, setActiveStep] = useState(0);
-    const [forSeverities, setForSeverities] = useState([]);
+    const [forSeverity, setForSeverity] = useState(null);
     const [url, setUrl] = useState('');
     const [headers, setHeaders] = useState({});
     // eslint-disable-next-line
-    const [payload, setPayload] = useState('{\n  \"title\": \"{{event.title}}\",\n  \"body\": \"{{event.message}}\",\n  \"dateTime\": {{event.ts}},\n  \"severity\": \"{{event.severity}}\"\n}');
+    const [payload, setPayload] = useState('{\n  \"title\": \"{{title}}\",\n  \"body\": \"{{message}}\",\n  \"dateTime\": {{ts}},\n  \"severity\": \"{{severity}}\"\n}');
+    const [eventTypes, setEventTypes] = useState([]);
+    const [customName, setCustomName] = useState('');
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -57,12 +61,15 @@ export default function Configurator({ outputType, outputTypeProperties, onGoBac
 
     const handleAddOutputStream = () => {
         const data = {
-            "output_type": 1,
+            "output_type": EventOutputTypes.ENODO_EVENT_OUTPUT_WEBHOOK,
             "data": {
-                "for_severities": forSeverities,
+                "severity": forSeverity,
                 "url": url,
                 "headers": JSON.stringify(headers),
-                "payload": payload
+                "payload": payload,
+                "custom_name": customName,
+                "vendor_name": vendorName,
+                "for_event_types": eventTypes
             }
         };
         socket.emit(`/api/event/output/create`, data, () => {
@@ -105,41 +112,42 @@ export default function Configurator({ outputType, outputTypeProperties, onGoBac
             <Grid item xs={12}>
                 <Paper>
                     <div className={classes.paperContent}>
-                        {outputType === EventOutputTypes.WEBHOOK &&
+                        {vendorName === VendorNames.WEBHOOK &&
                             <React.Fragment>
-                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                                    activeStep === 1 ? <EnterUrl url={url} setUrl={setUrl} /> :
-                                        activeStep === 2 ? <EnterHeaders headers={headers} setHeaders={setHeaders} /> :
-                                            <EnterPayload payload={payload} setPayload={setPayload} />}
+                                {activeStep === 0 ? <EnterCustomName name={customName} setName={setCustomName} /> :
+                                    activeStep === 1 ? <SelectEventTypes eventTypes={eventTypes} setEventTypes={setEventTypes} /> :
+                                        activeStep === 2 ? <SelectSeverity severity={forSeverity} setSeverity={setForSeverity} /> :
+                                            activeStep === 3 ? <EnterUrl url={url} setUrl={setUrl} /> :
+                                                activeStep === 4 ? <EnterHeaders headers={headers} setHeaders={setHeaders} /> :
+                                                    <EnterPayload payload={payload} setPayload={setPayload} />}
                             </React.Fragment>
                         }
-                        {outputType === EventOutputTypes.SLACK &&
+                        {vendorName === VendorNames.SLACK &&
                             <React.Fragment>
-                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                                    activeStep === 1 ? <EnterUrl url={url} setUrl={setUrl} /> :
-                                        <EnterPayload payload={payload} setPayload={setPayload} />}
+                                {activeStep === 0 ? <EnterCustomName name={customName} setName={setCustomName} /> :
+                                    activeStep === 1 ? <SelectEventTypes eventTypes={eventTypes} setEventTypes={setEventTypes} /> :
+                                        activeStep === 2 ? <SelectSeverity severity={forSeverity} setSeverity={setForSeverity} /> :
+                                            activeStep === 3 ? <EnterUrl url={url} setUrl={setUrl} /> :
+                                                <EnterPayload payload={payload} setPayload={setPayload} />}
                             </React.Fragment>
                         }
-                        {outputType === EventOutputTypes.MS_TEAMS &&
+                        {vendorName === VendorNames.MS_TEAMS &&
                             <React.Fragment>
-                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                                    activeStep === 1 ? <EnterUrl url={url} setUrl={setUrl} /> :
-                                        <EnterPayload payload={payload} setPayload={setPayload} />}
+                                {activeStep === 0 ? <EnterCustomName name={customName} setName={setCustomName} /> :
+                                    activeStep === 1 ? <SelectEventTypes eventTypes={eventTypes} setEventTypes={setEventTypes} /> :
+                                        activeStep === 2 ? <SelectSeverity severity={forSeverity} setSeverity={setForSeverity} /> :
+                                            activeStep === 3 ? <EnterUrl url={url} setUrl={setUrl} /> :
+                                                <EnterPayload payload={payload} setPayload={setPayload} />}
                             </React.Fragment>
                         }
-                        {outputType === EventOutputTypes.DUTYCALLS &&
+                        {vendorName === VendorNames.DUTYCALLS &&
                             <React.Fragment>
-                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                                    activeStep === 1 ? <EnterDutyCallsCredentials setHeaders={setHeaders} /> :
-                                        activeStep === 2 ? <EnterDutyCallsChannels setUrl={setUrl} /> :
-                                            <EnterPayload payload={payload} setPayload={setPayload} />}
-                            </React.Fragment>
-                        }
-                        {outputType === EventOutputTypes.SENTRY &&
-                            <React.Fragment>
-                                {activeStep === 0 ? <SelectSeverities severities={forSeverities} setSeverities={setForSeverities} /> :
-                                    activeStep === 1 ? <EnterUrl url={url} setUrl={setUrl} /> :
-                                        <EnterPayload payload={payload} setPayload={setPayload} />}
+                                {activeStep === 0 ? <EnterCustomName name={customName} setName={setCustomName} /> :
+                                    activeStep === 1 ? <SelectEventTypes eventTypes={eventTypes} setEventTypes={setEventTypes} /> :
+                                        activeStep === 2 ? <SelectSeverity severity={forSeverity} setSeverity={setForSeverity} /> :
+                                            activeStep === 3 ? <EnterDutyCallsCredentials setHeaders={setHeaders} /> :
+                                                activeStep === 4 ? <EnterDutyCallsChannels setUrl={setUrl} /> :
+                                                    <EnterPayload payload={payload} setPayload={setPayload} />}
                             </React.Fragment>
                         }
                     </div>
