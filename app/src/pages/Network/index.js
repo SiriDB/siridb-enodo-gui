@@ -16,15 +16,14 @@ const styles = theme => ({
         marginTop: '20px',
         padding: theme.spacing(2),
         textAlign: 'center',
-        color: theme.palette.text.secondary,
+        color: theme.palette.text.secondary
     }
 });
 
 const NetworkPage = () => {
 
-    const [enodo_clients, set_enodo_clients] = useGlobal(
-        state => state.enodo_clients,
-        actions => null
+    const [enodo_clients] = useGlobal(
+        state => state.enodo_clients
     );
 
     let listeners = [];

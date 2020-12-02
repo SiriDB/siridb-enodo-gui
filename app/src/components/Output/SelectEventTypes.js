@@ -27,7 +27,7 @@ export default function SelectEventTypes({ eventTypes, setEventTypes }) {
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <Typography variant='subtitle2'>
-                    {'For which eventTypes shoud an event update be send?'}
+                    {'For which event types shoud an event update be send?'}
                 </Typography>
             </Grid>
             <Grid item xs={12}>

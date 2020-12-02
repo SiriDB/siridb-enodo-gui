@@ -35,6 +35,7 @@ export default function EnterCustomName({ name, setName }) {
                     variant="outlined"
                     className={classes.textField}
                     type="text"
+                    defaultValue={name}
                 />
             </Grid>
         </Grid >

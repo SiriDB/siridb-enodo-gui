@@ -1,4 +1,3 @@
-import Avatar from '@material-ui/core/Avatar';
 import DeleteIcon from "@material-ui/icons/Delete"
 import Grid from '@material-ui/core/Grid';
 import IconButton from "@material-ui/core/IconButton/IconButton";

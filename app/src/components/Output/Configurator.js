@@ -65,7 +65,7 @@ export default function Configurator({ vendorName, outputTypeProperties, onGoBac
             "data": {
                 "severity": forSeverity,
                 "url": url,
-                "headers": JSON.stringify(headers),
+                "headers": headers,
                 "payload": payload,
                 "custom_name": customName,
                 "vendor_name": vendorName,

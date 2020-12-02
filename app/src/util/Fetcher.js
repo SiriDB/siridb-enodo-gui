@@ -11,7 +11,6 @@ var Fetcher = (function () {
                 .then(response => cb(response.data));
         },
         setResource: function (path, data, cb, method) {
-            console.log(method);
             let params = {
                 method: method,
                 body: JSON.stringify(data)

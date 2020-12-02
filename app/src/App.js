@@ -16,25 +16,24 @@ import WorkOutlineIcon from '@material-ui/icons/WorkOutline';
 import { HashRouter, NavLink, Route, Switch } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 
+import './App.css';
 import NetworkPage from "./pages/Network";
 import OutputStreamsPage from "./pages/OutputStreams";
-import Settings from "./components/Settings";
 import TimeSeriesPage from "./pages/TimeSeries";
 import { useGlobal, setup_subscriptions } from './store';
-import './App.css';
 
 const drawerWidth = 90;
 
 const styles = theme => ({
     root: {
-        display: 'flex',
+        display: 'flex'
     },
     drawer: {
         width: drawerWidth,
-        flexShrink: 0,
+        flexShrink: 0
     },
     leftmenubtn: {
-        marginLeft: 16,
+        marginLeft: theme.spacing(2)
     },
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
@@ -43,7 +42,7 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
+        padding: theme.spacing(3)
     },
     logoContainer: {
         display: 'flex',
@@ -67,13 +66,12 @@ const styles = theme => ({
 });
 
 const App = (props) => {
-    const [globalState, globalActions] = useGlobal(
+    const [, globalActions] = useGlobal(
         state => null,
         actions => actions
     );
-    let [job, _] = useGlobal(
-        state => state.job,
-        actions => null
+    let [job] = useGlobal(
+        state => state.job
     );
     useEffect(() => {
         setup_subscriptions(globalActions);
@@ -136,8 +134,6 @@ const App = (props) => {
 
                     <Switch>
                         <Route exact path='/' component={TimeSeriesPage} />
-                        <Route path='/settings/:catid' component={Settings} />
-                        <Route path='/settings' component={Settings} />
                         <Route path='/network' component={NetworkPage} />
                         <Route path='/output-streams' component={OutputStreamsPage} />
                     </Switch>

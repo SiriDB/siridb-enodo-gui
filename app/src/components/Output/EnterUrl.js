@@ -35,6 +35,7 @@ export default function EnterUrl({ url, setUrl }) {
                     variant="outlined"
                     className={classes.textField}
                     type="text"
+                    defaultValue={url}
                 />
             </Grid>
         </Grid >

@@ -7,21 +7,23 @@ export default function EnterDutyCallsCredentials({ setHeaders }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const changeHeaders = () => {
+    const changeHeaders = (un, pass) => {
         let object = {};
-        const value = 'Basic ' + btoa(username + ":" + password);
+        const value = 'Basic ' + btoa(un + ":" + pass);
         object['Authorization'] = value;
         setHeaders(object);
     }
 
     const handleChangeUsername = (e) => {
-        setUsername(e.target.value);
-        changeHeaders();
+        const un = e.target.value;
+        setUsername(un);
+        changeHeaders(un, password);
     };
 
     const handleChangePassword = (e) => {
-        setPassword(e.target.value);
-        changeHeaders();
+        const pass = e.target.value;
+        setPassword(pass);
+        changeHeaders(username, pass);
     };
 
     const usernameError = username === '';

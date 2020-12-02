@@ -20,7 +20,7 @@ import { useGlobal, socket } from '../../store';
 const styles = theme => ({
     paper: {
         textAlign: 'center',
-        color: theme.palette.text.secondary,
+        color: theme.palette.text.secondary
     }
 });
 
@@ -43,22 +43,16 @@ const TimeSeriesPage = () => {
     };
 
     const showChart = (serie) => {
-        // ReactPubSubStore.publish('/series/' + serie.name, {}, "GET", (data) => {
         socket.emit('/api/series/details', { series_name: serie.name }, (data) => {
             data = JSON.parse(data).data;
-            // let points = data.points.concat(data.forecast_points);
-            console.log("HEREDATA", data);
 
             let points = [];
             if (isAnalysed(serie)) {
                 let history = data.points;
-                // let history = data.points.slice(Math.max(data.points.length - (data.forecast_points.length * 100), 1));
                 for (let i = 0; i < (history.length + data.forecast_points.length); i++) {
                     if (i < history.length) {
-                        // points.push([new Date(history[i][0]), history[i][1], null]);
                         points.push(_pointWithConditionalAnomaly([new Date(history[i][0] * 1000), history[i][1], null], data.anomalies));
                     } else {
-                        // points.push([new Date(data.forecast_points[i - history.length][0]), null, data.forecast_points[i - history.length][1]]);
                         points.push(_pointWithConditionalAnomaly([new Date(data.forecast_points[i - history.length][0] * 1000), null, data.forecast_points[i - history.length][1]], data.anomalies));
                     }
                 }
@@ -77,15 +71,12 @@ const TimeSeriesPage = () => {
             setViewType("graph");
             setPlotPoints(points);
             setCharFormat(isAnalysed(serie) ? ["x", "data", "forecast", "annomaly"] : ["x", "data"]);
-            console.log("HJA:::AP", points)
         });
     };
 
     const isAnalysed = (serie) => {
         return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3)
     };
-
-    console.log('Series: ', series);
 
     let chartData = [charFormat];
     chartData = chartData.concat(plotPoints);
@@ -152,7 +143,6 @@ const TimeSeriesPage = () => {
                                     chartType="LineChart"
                                     data={chartData}
                                     options={{
-                                        // backgroundColor: "#424242",
                                         explorer: {
                                             actions: ['dragToZoom', 'rightClickToReset'],
                                             axis: 'horizontal',

@@ -68,7 +68,7 @@ const Info = ({ output, open, handleClose }) => {
                                 <TableCell component="th" scope="row">
                                     Headers
                             </TableCell>
-                                <TableCell align="right">{String(output.data.headers)}</TableCell>
+                                <TableCell align="right">{JSON.stringify(output.data.headers)}</TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell component="th" scope="row">
@@ -80,13 +80,13 @@ const Info = ({ output, open, handleClose }) => {
                                 <TableCell component="th" scope="row">
                                     Severity
                             </TableCell>
-                                <TableCell align="right">{String(output.severity)}</TableCell>
+                                <TableCell align="right">{JSON.stringify(output.severity)}</TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell component="th" scope="row">
                                     Event types
                             </TableCell>
-                                <TableCell align="right">{String(output.for_event_types)}</TableCell>
+                                <TableCell align="right">{JSON.stringify(output.for_event_types)}</TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>}

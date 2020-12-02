@@ -32,7 +32,6 @@ socket.emit('authorize', { username: 'enodo', password: 'enodo' });
 let socketGlobalActions = {};
 
 socket.on('update', (data) => {
-    console.log("Update data: ", data);
     const resource = data.resource;
     const resourceData = data.resourceData;
     switch (data.updateType) {
