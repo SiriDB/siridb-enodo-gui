@@ -62,13 +62,13 @@ export default function EnterPayload({ payload, setPayload }) {
                             {'Available template variables:'}
                         </Box>
                         <Box className={classes.code}>
-                            {'title'}
+                            {'event.title'}
                         </Box>
                         <Box className={classes.code}>
-                            {'message'}
+                            {'event.message'}
                         </Box>
                         <Box className={classes.code}>
-                            {'ts'}
+                            {'event.ts'}
                         </Box>
                         <Box className={classes.code}>
                             {'severity'}

@@ -47,7 +47,7 @@ export default function Configurator({ vendorName, outputTypeProperties, onGoBac
     const [url, setUrl] = useState('');
     const [headers, setHeaders] = useState({});
     // eslint-disable-next-line
-    const [payload, setPayload] = useState('{\n  \"title\": \"{{title}}\",\n  \"body\": \"{{message}}\",\n  \"dateTime\": {{ts}},\n  \"severity\": \"{{severity}}\"\n}');
+    const [payload, setPayload] = useState('{\n  \"title\": \"{{event.title}}\",\n  \"body\": \"{{event.message}}\",\n  \"dateTime\": {{event.ts}},\n  \"severity\": \"{{severity}}\"\n}');
     const [eventTypes, setEventTypes] = useState([]);
     const [customName, setCustomName] = useState('');
 
