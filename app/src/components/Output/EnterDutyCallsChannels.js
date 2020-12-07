@@ -62,7 +62,6 @@ export default function EnterDutyCallsChannels({ setUrl }) {
     }
 
     let channelInvalid = (channel === '' || channels.includes(channel));
-    let error = channels.length < 1;
 
     return (
         <Grid container spacing={4}>
@@ -73,8 +72,6 @@ export default function EnterDutyCallsChannels({ setUrl }) {
                             value={channel}
                             label='Channel'
                             onChange={onChange}
-                            error={error}
-                            helperText={error ? 'No channel(s) added' : ''}
                         />
                     </Grid>
                     <Grid item>

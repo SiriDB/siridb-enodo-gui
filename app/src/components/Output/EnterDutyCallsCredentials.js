@@ -26,9 +26,6 @@ export default function EnterDutyCallsCredentials({ setHeaders }) {
         changeHeaders(username, pass);
     };
 
-    const usernameError = username === '';
-    const passwordError = password === '';
-
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -45,8 +42,6 @@ export default function EnterDutyCallsCredentials({ setHeaders }) {
                             label='Username'
                             variant="outlined"
                             type="text"
-                            error={usernameError}
-                            helperText={usernameError ? "You have not entered any username" : ''}
                         />
                     </Grid>
                     <Grid item>
@@ -56,8 +51,6 @@ export default function EnterDutyCallsCredentials({ setHeaders }) {
                             label='Password'
                             variant="outlined"
                             type="password"
-                            error={passwordError}
-                            helperText={passwordError ? "You have not entered any password" : ''}
                         />
                     </Grid>
                 </Grid>

@@ -1,7 +1,8 @@
 import Grid from '@material-ui/core/Grid';
-import React from 'react';
+import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import isURL from 'validator/lib/isURL';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
@@ -12,12 +13,18 @@ const useStyles = makeStyles(() => ({
 
 export default function EnterUrl({ url, setUrl }) {
     const classes = useStyles();
+    const [error, setError] = useState(false);
 
     const handleChange = (e) => {
-        setUrl(e.target.value);
+        const value = e.target.value
+        setUrl(value);
+        if (isURL(value)) {
+            setError(false);
+        }
+        else {
+            setError(true);
+        }
     };
-
-    const error = url === '';
 
     return (
         <Grid container spacing={2}>
@@ -29,7 +36,7 @@ export default function EnterUrl({ url, setUrl }) {
             <Grid item xs={12}>
                 <TextField
                     error={error}
-                    helperText={error ? "You have not entered any URL" : ''}
+                    helperText={error ? "You have not entered a valid URL" : ''}
                     placeholder='https://some-webhook-url.com'
                     onChange={handleChange}
                     variant="outlined"

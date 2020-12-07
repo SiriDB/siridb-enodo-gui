@@ -32,8 +32,6 @@ export default function EnterPayload({ payload, setPayload }) {
         setPayload(e.target.value);
     };
 
-    const error = payload === '';
-
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -43,8 +41,6 @@ export default function EnterPayload({ payload, setPayload }) {
             </Grid>
             <Grid item xs={12} md={6}>
                 <TextField
-                    error={error}
-                    helperText={error ? "You have not entered any payload" : ''}
                     defaultValue={payload}
                     multiline
                     rows={10}

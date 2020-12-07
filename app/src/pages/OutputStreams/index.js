@@ -9,6 +9,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/L
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import Paper from '@material-ui/core/Paper';
 import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
 import BasicPageLayout from '../../components/BasicPageLayout';
 import OutputDialog from '../../components/Output/Dialog';
@@ -16,14 +17,16 @@ import InfoOutputDialog from '../../components/Output/Info';
 import { socket } from '../../store';
 import { VendorNames } from '../../constants/enums';
 
-const styles = theme => ({
+const useStyles = makeStyles(() => ({
     paper: {
-        textAlign: 'center',
-        color: theme.palette.text.secondary
+        minHeight: 93,
+        display: 'flex',
+        alignItems: 'center'
     }
-});
+}));
 
 const OutputStreamsPage = () => {
+    const classes = useStyles();
     const [outputStreams, setOutputStreams] = useState([]);
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openInfoDialog, setOpenInfoDialog] = useState(false);
@@ -91,8 +94,8 @@ const OutputStreamsPage = () => {
                         {outputStreams.map((output) => {
                             return (
                                 <Grid item key={output.output_id}>
-                                    <Paper className={styles.paper} >
-                                        <div style={{ padding: "10px 0" }}>
+                                    <Paper className={classes.paper} >
+                                        <div style={{ padding: "10px 0", flex: 1 }}>
                                             <ListItem>
                                                 <ListItemAvatar>
                                                     <img

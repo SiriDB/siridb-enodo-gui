@@ -17,8 +17,6 @@ export default function EnterCustomName({ name, setName }) {
         setName(e.target.value);
     };
 
-    const error = name === '';
-
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -28,8 +26,6 @@ export default function EnterCustomName({ name, setName }) {
             </Grid>
             <Grid item xs={12}>
                 <TextField
-                    error={error}
-                    helperText={error ? "You have not entered any name" : ''}
                     placeholder='Some name'
                     onChange={handleChange}
                     variant="outlined"
