@@ -15,7 +15,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Configurator from './Configurator';
-import { VendorNames } from '../../constants/enums';
+import { VendorNames, EventOutputTypes } from '../../constants/enums';
+import { socket } from '../../store';
 
 const outputTypeProperties = {
     "webhook": {
@@ -102,6 +103,18 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
         resetVendorName();
     }
 
+    const handleAddOutputStream = (data) => {
+        const outputStream = {
+            "output_type": EventOutputTypes.ENODO_EVENT_OUTPUT_WEBHOOK,
+            "data": data
+        }
+        socket.emit(`/api/event/output/create`, outputStream, () => {
+            onSubmit();
+            resetVendorName();
+        });
+    };
+
+
     return (
         <Dialog
             open={open}
@@ -136,7 +149,8 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
                         vendorName={vendorName}
                         outputTypeProperties={outputTypeProperties[vendorName]}
                         onGoBack={resetVendorName}
-                        onSubmit={onSubmit}
+                        onSave={handleAddOutputStream}
+                        variant='add'
                     />}
             </DialogContent>
             <DialogActions>

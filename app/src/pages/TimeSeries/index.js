@@ -26,10 +26,9 @@ const styles = theme => ({
 
 const TimeSeriesPage = () => {
     const [addSerieModalState, setAddSerieModalState] = useState(false);
-    const [plotPoints, setPlotPoints] = useState([]);
+    const [chartData, setChartData] = useState([]);
     const [selectedSerie, setSelectedSerie] = useState("");
     const [viewType, setViewType] = useState("");
-    const [charFormat, setCharFormat] = useState(["x", "data", "forecast"]);
 
     const [series] = useGlobal(
         state => state.series
@@ -44,42 +43,39 @@ const TimeSeriesPage = () => {
 
     const showChart = (serie) => {
         socket.emit('/api/series/details', { series_name: serie.name }, (data) => {
-            data = JSON.parse(data).data;
+            const parsed_data = JSON.parse(data).data;
 
             let points = [];
             if (isAnalysed(serie)) {
-                let history = data.points;
-                for (let i = 0; i < (history.length + data.forecast_points.length); i++) {
+                let history = parsed_data.points;
+                for (let i = 0; i < (history.length + parsed_data.forecast_points.length); i++) {
                     if (i < history.length) {
-                        points.push(_pointWithConditionalAnomaly([new Date(history[i][0] * 1000), history[i][1], null], data.anomalies));
+                        points.push(_pointWithConditionalAnomaly([new Date(history[i][0] * 1000), history[i][1], null], parsed_data.anomalies));
                     } else {
-                        points.push(_pointWithConditionalAnomaly([new Date(data.forecast_points[i - history.length][0] * 1000), null, data.forecast_points[i - history.length][1]], data.anomalies));
+                        points.push(_pointWithConditionalAnomaly([new Date(parsed_data.forecast_points[i - history.length][0] * 1000), null, parsed_data.forecast_points[i - history.length][1]], parsed_data.anomalies));
                     }
                 }
-
-                for (let i = 0; i < (data.anomalies.length); i++) {
-                    points.push([new Date(data.anomalies[i][0] * 1000), null, null, data.anomalies[i][1]]);
+                for (let i = 0; i < (parsed_data.anomalies.length); i++) {
+                    points.push([new Date(parsed_data.anomalies[i][0] * 1000), null, null, parsed_data.anomalies[i][1]]);
                 }
             } else {
-                let history = data.points;
+                let history = parsed_data.points;
                 for (let i = 0; i < (history.length); i++) {
                     points.push([new Date(history[i][0] * 1000), history[i][1]]);
                 }
             }
-
+            let cData = [isAnalysed(serie) ? ["x", "data", "forecast", "annomaly"] : ["x", "data"]];
+            cData = cData.concat(points);
+            setChartData(cData);
             setSelectedSerie(serie.name);
             setViewType("graph");
-            setPlotPoints(points);
-            setCharFormat(isAnalysed(serie) ? ["x", "data", "forecast", "annomaly"] : ["x", "data"]);
         });
     };
 
     const isAnalysed = (serie) => {
-        return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3)
+        return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3 && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
     };
 
-    let chartData = [charFormat];
-    chartData = chartData.concat(plotPoints);
     return (
         <BasicPageLayout
             title='Series'

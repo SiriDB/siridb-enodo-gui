@@ -8,7 +8,7 @@ export const __updateStoreValue = (store, key, value, append) => {
         let alreadyExists = false;
         let list = store.state[key];
         list.forEach((item, index) => {
-            if (item.id === value.id) {
+            if (item.rid === value.rid) {
                 item = value;
                 alreadyExists = true;
             }
@@ -30,7 +30,7 @@ export const __updateStoreValue = (store, key, value, append) => {
 };
 
 export const __updateStoreResourceItem = (store, resource, entity_id, value) => {
-    let indexOfEntity = store.state[resource].findIndex(x => x.id === entity_id);
+    let indexOfEntity = store.state[resource].findIndex(x => x.rid === entity_id);
     if (indexOfEntity !== null) {
         let obj = {};
         obj[resource] = update(store.state[resource], { [indexOfEntity]: { $set: value } });
@@ -39,7 +39,7 @@ export const __updateStoreResourceItem = (store, resource, entity_id, value) => 
 };
 
 export const __deleteStoreResourceItem = (store, resource, entity_id) => {
-    let indexOfEntity = store.state[resource].findIndex(x => x.id === entity_id);
+    let indexOfEntity = store.state[resource].findIndex(x => x.rid === entity_id);
     if (indexOfEntity >= 0) {
         store.setState(update(store.state, { [resource]: { $splice: [[indexOfEntity, 1]] } }));
     }

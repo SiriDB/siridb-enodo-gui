@@ -42,7 +42,7 @@ socket.on('update', (data) => {
             socketGlobalActions.__updateStoreValue(resource, resourceData, true);
             break;
         case 'update':
-            socketGlobalActions.__updateStoreResourceItem(resource, resourceData.id, resourceData);
+            socketGlobalActions.__updateStoreResourceItem(resource, resourceData.rid, resourceData);
             break;
         case 'delete':
             socketGlobalActions.__deleteStoreResourceItem(resource, resourceData);

@@ -31,7 +31,6 @@ const Info = ({ output, open, handleClose }) => {
         >
             <DialogTitle id="alert-dialog-title">{"Output stream info"}</DialogTitle>
             <DialogContent>
-                {output &&
                     <Table className={styles.table}>
                         <TableHead>
                             <TableRow>
@@ -42,20 +41,20 @@ const Info = ({ output, open, handleClose }) => {
                                 <TableCell component="th" scope="row">
                                     Id
                             </TableCell>
-                                <TableCell align="right">{output.output_id}</TableCell>
+                                <TableCell align="right">{output.data.rid}</TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell component="th" scope="row">
                                     Name
                             </TableCell>
-                                <TableCell align="right">{output.custom_name}</TableCell>
+                                <TableCell align="right">{output.data.custom_name}</TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell component="th" scope="row">
                                     Vendor
                             </TableCell>
                                 <TableCell align="right">
-                                    {output.vendor_name === VendorNames.SLACK ? 'Slack' : output.vendor_name === VendorNames.MS_TEAMS ? 'Microsoft Teams' : output.vendor_name === VendorNames.DUTYCALLS ? 'DutyCalls' : 'Webhook'}
+                                    {output.data.vendor_name === VendorNames.SLACK ? 'Slack' : output.data.vendor_name === VendorNames.MS_TEAMS ? 'Microsoft Teams' : output.data.vendor_name === VendorNames.DUTYCALLS ? 'DutyCalls' : 'Webhook'}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -80,16 +79,16 @@ const Info = ({ output, open, handleClose }) => {
                                 <TableCell component="th" scope="row">
                                     Severity
                             </TableCell>
-                                <TableCell align="right">{JSON.stringify(output.severity)}</TableCell>
+                                <TableCell align="right">{JSON.stringify(output.data.severity)}</TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell component="th" scope="row">
                                     Event types
                             </TableCell>
-                                <TableCell align="right">{JSON.stringify(output.for_event_types)}</TableCell>
+                                <TableCell align="right">{JSON.stringify(output.data.for_event_types)}</TableCell>
                             </TableRow>
                         </TableBody>
-                    </Table>}
+                    </Table>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color='primary'>

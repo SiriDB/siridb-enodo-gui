@@ -19,8 +19,7 @@ import EnterPayload from './EnterPayload';
 import EnterUrl from './EnterUrl';
 import SelectEventTypes from './SelectEventTypes';
 import SelectSeverity from './SelectSeverity';
-import { VendorNames, EventOutputTypes } from '../../constants/enums';
-import { socket } from '../../store';
+import { VendorNames } from '../../constants/enums';
 
 const useStyles = makeStyles(theme => ({
     media: {
@@ -38,18 +37,18 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function Configurator({ vendorName, outputTypeProperties, onGoBack, onSubmit }) {
+export default function Configurator({ vendorName, outputTypeProperties, onSave, variant, onGoBack, existingData }) {
     const classes = useStyles();
     const theme = useTheme();
 
     const [activeStep, setActiveStep] = useState(0);
-    const [forSeverity, setForSeverity] = useState(null);
-    const [url, setUrl] = useState('');
-    const [headers, setHeaders] = useState({});
+    const [forSeverity, setForSeverity] = useState(existingData ? existingData.severity : null);
+    const [url, setUrl] = useState(existingData ? existingData.url : '');
+    const [headers, setHeaders] = useState(existingData ? existingData.headers : {});
     // eslint-disable-next-line
-    const [payload, setPayload] = useState('{\n  \"title\": \"{{event.title}}\",\n  \"body\": \"{{event.message}}\",\n  \"dateTime\": {{event.ts}},\n  \"severity\": \"{{severity}}\"\n}');
-    const [eventTypes, setEventTypes] = useState([]);
-    const [customName, setCustomName] = useState('');
+    const [payload, setPayload] = useState(existingData ? existingData.payload : '{\n  \"title\": \"{{event.title}}\",\n  \"body\": \"{{event.message}}\",\n  \"dateTime\": {{event.ts}},\n  \"severity\": \"{{severity}}\"\n}');
+    const [eventTypes, setEventTypes] = useState(existingData ? existingData.for_event_types : []);
+    const [customName, setCustomName] = useState(existingData ? existingData.custom_name : '');
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -59,35 +58,29 @@ export default function Configurator({ vendorName, outputTypeProperties, onGoBac
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleAddOutputStream = () => {
+    const submitForm = () => {
         const data = {
-            "output_type": EventOutputTypes.ENODO_EVENT_OUTPUT_WEBHOOK,
-            "data": {
-                "severity": forSeverity,
-                "url": url,
-                "headers": headers,
-                "payload": payload,
-                "custom_name": customName,
-                "vendor_name": vendorName,
-                "for_event_types": eventTypes
-            }
+            "severity": forSeverity,
+            "url": url,
+            "headers": headers,
+            "payload": payload,
+            "for_event_types": eventTypes,
+            "custom_name": customName,
+            "vendor_name": vendorName
         };
-        socket.emit(`/api/event/output/create`, data, () => {
-            onSubmit();
-            onGoBack();
-        });
+        onSave(data);
     };
 
     return (
         <Grid container spacing={4} className={classes.root}>
             <Grid item xs={12}>
                 <Grid container>
-                    <Grid item xs={2}>
-                        <IconButton onClick={onGoBack}>
-                            <ArrowBackIcon size='small' />
-                        </IconButton>
-
-                    </Grid>
+                    {variant === 'add' ?
+                        <Grid item xs={2}>
+                            <IconButton onClick={onGoBack}>
+                                <ArrowBackIcon size='small' />
+                            </IconButton>
+                        </Grid> : null}
                     <Grid item xs={2}>
                         <img
                             className={classes.media}
@@ -163,8 +156,8 @@ export default function Configurator({ vendorName, outputTypeProperties, onGoBac
                                     {'Next'}
                                     {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
                                 </Button> :
-                                <Button color='primary' onClick={handleAddOutputStream} disabled={activeStep !== outputTypeProperties.noSteps - 1}>
-                                    {'Add'}
+                                <Button color='primary' onClick={submitForm} disabled={activeStep !== outputTypeProperties.noSteps - 1}>
+                                    {variant === 'add' ? 'Add' : 'Save'}
                                 </Button>
                         }
                         backButton={

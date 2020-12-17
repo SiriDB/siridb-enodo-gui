@@ -1,4 +1,5 @@
 import DeleteIcon from "@material-ui/icons/Delete"
+import EditIcon from "@material-ui/icons/Edit"
 import Grid from '@material-ui/core/Grid';
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import InfoIcon from "@material-ui/icons/Info"
@@ -12,10 +13,11 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import BasicPageLayout from '../../components/BasicPageLayout';
-import OutputDialog from '../../components/Output/Dialog';
+import EditDialog from '../../components/Output/EditDialog';
 import InfoOutputDialog from '../../components/Output/Info';
-import { socket } from '../../store';
+import OutputDialog from '../../components/Output/Dialog';
 import { VendorNames } from '../../constants/enums';
+import { socket } from '../../store';
 
 const useStyles = makeStyles(() => ({
     paper: {
@@ -29,6 +31,7 @@ const OutputStreamsPage = () => {
     const classes = useStyles();
     const [outputStreams, setOutputStreams] = useState([]);
     const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openInfoDialog, setOpenInfoDialog] = useState(false);
     const [currentOutput, setCurrentOutput] = useState(null);
 
@@ -61,8 +64,8 @@ const OutputStreamsPage = () => {
     };
 
     const handleClickOpenInfoDialog = (output) => {
-        setOpenInfoDialog(true);
         setCurrentOutput(output);
+        setOpenInfoDialog(true);
     };
 
     const handleCloseInfoDialog = () => {
@@ -70,16 +73,27 @@ const OutputStreamsPage = () => {
         setCurrentOutput(null);
     };
 
+    const handleClickOpenEditDialog = (output) => {
+        setCurrentOutput(output);
+        setOpenEditDialog(true);
+    };
+
+    const handleCloseEditDialog = () => {
+        setOpenEditDialog(false);
+        setCurrentOutput(null);
+    };
+
     const handleSubmit = () => {
         retrieveOutputStreams();
         handleCloseAddDialog();
+        handleCloseEditDialog();
     }
 
-    const deleteOutput = (outputId) => {
-        var data = { output_id: outputId };
+    const deleteOutput = (rid) => {
+        var data = { output_id: rid };
         socket.emit(`/api/event/output/delete`, data, () => {
             const array = outputStreams.filter((obj) => {
-                return obj.output_id !== outputId;
+                return obj.data.rid !== rid;
             });
             setOutputStreams(array);
         });
@@ -93,24 +107,24 @@ const OutputStreamsPage = () => {
                     <Grid container direction='column' spacing={2}>
                         {outputStreams.map((output) => {
                             return (
-                                <Grid item key={output.output_id}>
+                                <Grid item key={output.data.rid}>
                                     <Paper className={classes.paper} >
                                         <div style={{ padding: "10px 0", flex: 1 }}>
                                             <ListItem>
                                                 <ListItemAvatar>
                                                     <img
-                                                        alt={`Avatar ${output.vendor_name}`}
-                                                        src={`assets/${output.vendor_name === VendorNames.SLACK ? 'slack_logo' :
-                                                            output.vendor_name === VendorNames.MS_TEAMS ? 'ms_teams_logo' :
-                                                                output.vendor_name === VendorNames.DUTYCALLS ? 'dc-icon-red' :
+                                                        alt={`Avatar ${output.data.vendor_name}`}
+                                                        src={`assets/${output.data.vendor_name === VendorNames.SLACK ? 'slack_logo' :
+                                                            output.data.vendor_name === VendorNames.MS_TEAMS ? 'ms_teams_logo' :
+                                                                output.data.vendor_name === VendorNames.DUTYCALLS ? 'dc-icon-red' :
                                                                     'webhooks'
                                                             }.png`}
                                                         style={{ width: 32 }}
                                                     />
                                                 </ListItemAvatar>
                                                 <ListItemText
-                                                    primary={output.custom_name}
-                                                    secondary={'Vendor: ' + (output.vendor_name === VendorNames.SLACK ? 'Slack' : output.vendor_name === VendorNames.MS_TEAMS ? 'Microsoft Teams' : output.vendor_name === VendorNames.DUTYCALLS ? 'DutyCalls' : 'Webhook')}
+                                                    primary={output.data.custom_name}
+                                                    secondary={'Vendor: ' + (output.data.vendor_name === VendorNames.SLACK ? 'Slack' : output.data.vendor_name === VendorNames.MS_TEAMS ? 'Microsoft Teams' : output.data.vendor_name === VendorNames.DUTYCALLS ? 'DutyCalls' : 'Webhook')}
                                                 />
                                                 <ListItemSecondaryAction>
                                                     <IconButton aria-label="Show info"
@@ -118,7 +132,10 @@ const OutputStreamsPage = () => {
                                                     >
                                                         <InfoIcon />
                                                     </IconButton>
-                                                    <IconButton aria-label="Delete" onClick={() => deleteOutput(output.output_id)}>
+                                                    <IconButton aria-label="Edit" onClick={() => handleClickOpenEditDialog(output)}>
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                    <IconButton aria-label="Delete" onClick={() => deleteOutput(output.data.rid)}>
                                                         <DeleteIcon />
                                                     </IconButton>
                                                 </ListItemSecondaryAction>
@@ -130,7 +147,8 @@ const OutputStreamsPage = () => {
                     </Grid>}
             </List>
             <OutputDialog open={openAddDialog} handleClose={handleCloseAddDialog} onSubmit={handleSubmit} />
-            <InfoOutputDialog open={openInfoDialog} handleClose={handleCloseInfoDialog} output={currentOutput} />
+            {currentOutput && <EditDialog open={openEditDialog} handleClose={handleCloseEditDialog} onSubmit={handleSubmit} currentOutputStream={currentOutput} />}
+            {currentOutput && <InfoOutputDialog open={openInfoDialog} handleClose={handleCloseInfoDialog} output={currentOutput} />}
         </BasicPageLayout>
     );
 }
