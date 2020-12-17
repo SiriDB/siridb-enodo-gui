@@ -83,7 +83,7 @@ const App = (props) => {
         job = [];
     }
 
-    job.sort((a, b) => { return a.job_id - b.job_id });
+    job.sort((a, b) => { return a.rid - b.rid });
 
     const drawer = (
         <div>
@@ -151,7 +151,7 @@ const App = (props) => {
                         <div>
                             <List style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden' }}>
                                 {job.map((job) => {
-                                    return <ListItem button className={classes.leftmenubtn} key={job.job_id}>
+                                    return <ListItem button className={classes.leftmenubtn} key={job.rid}>
                                         <ListItemIcon><FormatListBulletedIcon /></ListItemIcon>
                                         <ListItemText class="job-item" primary={job.series_name} secondary={job.job_type} />
                                     </ListItem>
