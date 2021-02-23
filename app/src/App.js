@@ -11,6 +11,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
+import SettingsIcon from '@material-ui/icons/Settings';
 import ViewStreamIcon from '@material-ui/icons/ViewStream';
 import WorkOutlineIcon from '@material-ui/icons/WorkOutline';
 import { HashRouter, NavLink, Route, Switch } from "react-router-dom";
@@ -19,6 +20,7 @@ import { withStyles } from '@material-ui/core/styles';
 import './App.css';
 import NetworkPage from "./pages/Network";
 import OutputStreamsPage from "./pages/OutputStreams";
+import SettingsPage from "./pages/Settings";
 import TimeSeriesPage from "./pages/TimeSeries";
 import { useGlobal, setup_subscriptions } from './store';
 
@@ -56,12 +58,9 @@ const styles = theme => ({
         paddingBottom: theme.spacing(2)
     },
     sidebar: {
-        width: '500px',
+        width: '400px',
         maxWidht: '20vw',
-        height: '100vh',
-        borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
-        backgroundColor: "white",
-        padding: "20px"
+        padding: theme.spacing(3)
     }
 });
 
@@ -110,6 +109,12 @@ const App = (props) => {
                         <ListItemText primary="" />
                     </ListItem>
                 </NavLink>
+                <NavLink to="/settings" exact activeClassName="menu-link-selected">
+                    <ListItem button className={classes.leftmenubtn}>
+                        <ListItemIcon><SettingsIcon /></ListItemIcon>
+                        <ListItemText primary="" />
+                    </ListItem>
+                </NavLink>
             </List>
         </div>
     );
@@ -136,11 +141,20 @@ const App = (props) => {
                         <Route exact path='/' component={TimeSeriesPage} />
                         <Route path='/network' component={NetworkPage} />
                         <Route path='/output-streams' component={OutputStreamsPage} />
+                        <Route path='/settings' component={SettingsPage} />
                     </Switch>
 
                 </main>
                 <Hidden smDown>
-                    <div className={classes.sidebar}>
+                    <Drawer
+                        variant="permanent"
+                        open
+                        className={classes.sidebar}
+                        classes={{
+                            paper: classes.sidebar
+                        }}
+                        anchor='right'
+                    >
                         <div className={classes.toolbar} />
                         <h2>
                             {'Open Jobs'}
@@ -158,7 +172,7 @@ const App = (props) => {
                                 })}
                             </List>
                         </div>
-                    </div>
+                    </Drawer>
                 </Hidden>
             </div>
         </HashRouter>
