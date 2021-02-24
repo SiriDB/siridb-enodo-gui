@@ -67,7 +67,7 @@ const OutputStreamsPage = () => {
 
     return (
         <BasicPageLayout title='Settings'>
-            {settings ?
+            {settings && siridb && siridbForecast ?
                 <Paper className={classes.paper}>
                     <Grid container direction='column' spacing={3}>
                         <Grid item>
@@ -91,7 +91,7 @@ const OutputStreamsPage = () => {
                                             variant="outlined"
                                             className={classes.textField}
                                             type="text"
-                                            defaultValue={settings['siridb'].host}
+                                            value={siridb.host}
                                         />
                                     </Grid>
                                     <Grid item>
@@ -102,7 +102,7 @@ const OutputStreamsPage = () => {
                                             variant="outlined"
                                             className={classes.textField}
                                             type="number"
-                                            defaultValue={settings['siridb'].port}
+                                            value={siridb.port}
                                         />
                                     </Grid>
                                     <Grid item>
@@ -113,7 +113,7 @@ const OutputStreamsPage = () => {
                                             variant="outlined"
                                             className={classes.textField}
                                             type="text"
-                                            defaultValue={settings['siridb'].user}
+                                            value={siridb.user}
                                         />
                                     </Grid>
                                     <Grid item>
@@ -124,7 +124,7 @@ const OutputStreamsPage = () => {
                                             variant="outlined"
                                             className={classes.textField}
                                             type="text"
-                                            defaultValue={settings['siridb'].password}
+                                            value={siridb.password}
                                         />
                                     </Grid>
                                     <Grid item>
@@ -135,7 +135,7 @@ const OutputStreamsPage = () => {
                                             variant="outlined"
                                             className={classes.textField}
                                             type="text"
-                                            defaultValue={settings['siridb'].database}
+                                            value={siridb.database}
                                         />
                                     </Grid>
                                 </React.Fragment>
@@ -143,10 +143,18 @@ const OutputStreamsPage = () => {
                                     <Button
                                         variant='contained'
                                         color='primary'
-                                        onClick={() => saveSettings({
-                                            "section": 'siridb',
-                                            "entries": siridb
-                                        })}
+                                        onClick={() => {
+                                            saveSettings({
+                                                "section": 'siridb',
+                                                "entries": siridb
+                                            });
+                                            if (sameDatabaseChecked) {
+                                                saveSettings({
+                                                    "section": 'siridb_forecast',
+                                                    "entries": siridb
+                                                });
+                                            }
+                                        }}
                                         disabled={siridb === settings['siridb']}
                                     >
                                         {'Save'}
@@ -190,7 +198,7 @@ const OutputStreamsPage = () => {
                                                 variant="outlined"
                                                 className={classes.textField}
                                                 type="text"
-                                                defaultValue={settings['siridb_forecast'].host}
+                                                value={siridbForecast.host}
                                             />
                                         </Grid>
                                         <Grid item>
@@ -201,7 +209,7 @@ const OutputStreamsPage = () => {
                                                 variant="outlined"
                                                 className={classes.textField}
                                                 type="number"
-                                                defaultValue={settings['siridb_forecast'].port}
+                                                value={siridbForecast.port}
                                             />
                                         </Grid>
                                         <Grid item>
@@ -212,7 +220,7 @@ const OutputStreamsPage = () => {
                                                 variant="outlined"
                                                 className={classes.textField}
                                                 type="text"
-                                                defaultValue={settings['siridb_forecast'].user}
+                                                value={siridbForecast.user}
                                             />
                                         </Grid>
                                         <Grid item>
@@ -223,7 +231,7 @@ const OutputStreamsPage = () => {
                                                 variant="outlined"
                                                 className={classes.textField}
                                                 type="text"
-                                                defaultValue={settings['siridb_forecast'].password}
+                                                value={siridbForecast.password}
                                             />
                                         </Grid>
                                         <Grid item>
@@ -234,23 +242,23 @@ const OutputStreamsPage = () => {
                                                 variant="outlined"
                                                 className={classes.textField}
                                                 type="text"
-                                                defaultValue={settings['siridb_forecast'].database}
+                                                value={siridbForecast.database}
                                             />
                                         </Grid>
+                                        <Grid item>
+                                            <Button
+                                                variant='contained'
+                                                color='primary'
+                                                onClick={() => saveSettings({
+                                                    "section": 'siridb_forecast',
+                                                    "entries": siridbForecast
+                                                })}
+                                                disabled={siridbForecast === settings['siridb_forecast']}
+                                            >
+                                                {'Save'}
+                                            </Button>
+                                        </Grid>
                                     </React.Fragment>}
-                                <Grid item>
-                                    <Button
-                                        variant='contained'
-                                        color='primary'
-                                        onClick={() => saveSettings({
-                                            "section": 'siridb_forecast',
-                                            "entries": siridbForecast
-                                        })}
-                                        disabled={siridbForecast === settings['siridb_forecast']}
-                                    >
-                                        {'Save'}
-                                    </Button>
-                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
