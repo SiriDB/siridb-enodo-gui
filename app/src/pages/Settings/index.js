@@ -47,6 +47,10 @@ const OutputStreamsPage = () => {
         setSameDatabaseChecked(newValue);
         if (newValue) {
             setSiridbForecast(siridb);
+            saveSettings({
+                "section": 'siridb_forecast',
+                "entries": siridb
+            });
         }
     };
 
