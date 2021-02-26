@@ -46,6 +46,13 @@ const outputTypeProperties = {
         noSteps: 6,
         description: 'Output events to a desired DutyCalls channel. A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://docs.dutycalls.me/getting-started/'
+    },
+    "sentry": {
+        name: "Sentry",
+        image: 'assets/sentry-glyph-dark-400x367.png',
+        noSteps: 5,
+        description: 'Output events to a desired Sentry project. A prerequisite for this configuration is that you have completed the following tutorial:',
+        link: 'https://docs.sentry.io/product/integrations/integration-platform/#internal-integrations'
     }
 };
 
@@ -139,6 +146,9 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
                         </Grid>
                         <Grid item xs={4}>
                             <OutputTypeCard name={outputTypeProperties[VendorNames.DUTYCALLS].name} image={outputTypeProperties[VendorNames.DUTYCALLS].image} onClick={() => setVendorName(VendorNames.DUTYCALLS)} />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <OutputTypeCard name={outputTypeProperties[VendorNames.SENTRY].name} image={outputTypeProperties[VendorNames.SENTRY].image} onClick={() => setVendorName(VendorNames.SENTRY)} />
                         </Grid>
                         <Grid item xs={4}>
                             <OutputTypeCard name={outputTypeProperties[VendorNames.WEBHOOK].name} image={outputTypeProperties[VendorNames.WEBHOOK].image} onClick={() => setVendorName(VendorNames.WEBHOOK)} />

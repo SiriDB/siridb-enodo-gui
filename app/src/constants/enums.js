@@ -2,7 +2,8 @@ export const VendorNames = Object.freeze({
     "WEBHOOK": "webhook",
     "SLACK": "slack",
     "MS_TEAMS": "ms_teams",
-    "DUTYCALLS": "dutycalls"
+    "DUTYCALLS": "dutycalls",
+    "SENTRY": "sentry"
 });
 
 export const EventTypes = Object.freeze({
@@ -11,6 +12,7 @@ export const EventTypes = Object.freeze({
     "ENODO_EVENT_LOST_CLIENT_WITHOUT_GOODBYE": "lost_client_without_goodbye"
 });
 
+// Make sure to edit the Sentry payload when these levels are changed
 export const EventSeverityLevels = Object.freeze({
     "ENODO_EVENT_SEVERITY_INFO": "info",
     "ENODO_EVENT_SEVERITY_WARNING": "warning",

@@ -1,15 +1,17 @@
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import React from 'react';
+import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles(theme => ({
     paper: {
         padding: theme.spacing(2),
-        height: 207
+        height: 235
     },
     code: {
         color: 'white',
@@ -25,11 +27,17 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function EnterPayload({ payload, setPayload }) {
+export default function EnterPayload({ payload, setPayload, addAdvancedButton }) {
     const classes = useStyles();
+
+    const [allowPayloadEdit, setAllowPayloadEdit] = useState(addAdvancedButton ? false : true);
 
     const handleChange = (e) => {
         setPayload(e.target.value);
+    };
+
+    const handleChangeCheckbox = (event) => {
+        setAllowPayloadEdit(event.target.checked);
     };
 
     return (
@@ -39,6 +47,13 @@ export default function EnterPayload({ payload, setPayload }) {
                     {'Please enter the payload which should be included in the event update:'}
                 </Typography>
             </Grid>
+            {addAdvancedButton &&
+                <Grid item xs={12}>
+                    <FormControlLabel
+                        control={<Checkbox checked={allowPayloadEdit} onChange={handleChangeCheckbox} />}
+                        label="Edit payload (only for advanced users)"
+                    />
+                </Grid>}
             <Grid item xs={12} md={6}>
                 <TextField
                     defaultValue={payload}
@@ -49,6 +64,7 @@ export default function EnterPayload({ payload, setPayload }) {
                     variant="outlined"
                     type="text"
                     fullWidth
+                    disabled={!allowPayloadEdit}
                 />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -65,6 +81,9 @@ export default function EnterPayload({ payload, setPayload }) {
                         </Box>
                         <Box className={classes.code}>
                             {'event.ts'}
+                        </Box>
+                        <Box className={classes.code}>
+                            {'event.uuid'}
                         </Box>
                         <Box className={classes.code}>
                             {'severity'}
