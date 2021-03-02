@@ -37,6 +37,13 @@ const outputTypeProperties = {
         noSteps: 6,
         description: 'Output events to a desired DutyCalls channel. A prerequisite for this configuration is that you have completed the following tutorial:',
         link: 'https://docs.dutycalls.me/getting-started/'
+    },
+    "sentry": {
+        name: "Sentry",
+        image: 'assets/sentry-glyph-dark-400x367.png',
+        noSteps: 5,
+        description: 'Output events to a desired Sentry project. A prerequisite for this configuration is that you have completed the following tutorial:',
+        link: 'https://docs.sentry.io/product/integrations/integration-platform/#internal-integrations'
     }
 };
 

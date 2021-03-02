@@ -63,6 +63,16 @@ export default function SelectEventTypes({ eventTypes, setEventTypes }) {
                             }
                             label="Lost client without goodbye"
                         />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={eventTypes.includes(EventTypes.ENODO_EVENT_STATIC_RULE_FAIL)}
+                                    onChange={handleChange}
+                                    name={EventTypes.ENODO_EVENT_STATIC_RULE_FAIL}
+                                />
+                            }
+                            label="Static rule fail"
+                        />
                     </FormGroup>
                     {error && <FormHelperText>{'You have not selected any event types'}</FormHelperText>}
                 </FormControl>

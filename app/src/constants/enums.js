@@ -9,7 +9,8 @@ export const VendorNames = Object.freeze({
 export const EventTypes = Object.freeze({
     "ENODO_EVENT_ANOMALY_DETECTED": "event_anomaly_detected",
     "ENODO_EVENT_JOB_QUEUE_TOO_LONG": "job_queue_too_long",
-    "ENODO_EVENT_LOST_CLIENT_WITHOUT_GOODBYE": "lost_client_without_goodbye"
+    "ENODO_EVENT_LOST_CLIENT_WITHOUT_GOODBYE": "lost_client_without_goodbye",
+    "ENODO_EVENT_STATIC_RULE_FAIL": "event_static_rule_fail"
 });
 
 // Make sure to edit the Sentry payload when these levels are changed

@@ -44,7 +44,7 @@ export default function EnterPayload({ payload, setPayload, addAdvancedButton })
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <Typography variant='subtitle2'>
-                    {'Please enter the payload which should be included in the event update:'}
+                    {!addAdvancedButton ? 'Please enter the payload, which will be included in the event update:' : 'If necessary, edit the payload below, which will be included in the event update:'}
                 </Typography>
             </Grid>
             {addAdvancedButton &&
