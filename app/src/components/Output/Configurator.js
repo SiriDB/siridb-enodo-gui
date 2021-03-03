@@ -16,6 +16,7 @@ import EnterDutyCallsChannels from './EnterDutyCallsChannels';
 import EnterDutyCallsCredentials from './EnterDutyCallsCredentials';
 import EnterHeaders from './EnterHeaders';
 import EnterPayload from './EnterPayload';
+import EnterSentryCredentials from './EnterSentryCredentials';
 import EnterUrl from './EnterUrl';
 import SelectEventTypes from './SelectEventTypes';
 import SelectSeverity from './SelectSeverity';
@@ -27,7 +28,7 @@ const useStyles = makeStyles(theme => ({
     },
     paperContent: {
         padding: theme.spacing(4),
-        height: 300
+        height: 340
     },
     textField: {
         width: 500
@@ -46,7 +47,11 @@ export default function Configurator({ vendorName, outputTypeProperties, onSave,
     const [url, setUrl] = useState(existingData ? existingData.url : '');
     const [headers, setHeaders] = useState(existingData ? existingData.headers : {});
     // eslint-disable-next-line
-    const [payload, setPayload] = useState(existingData ? existingData.payload : '{\n  \"title\": \"{{event.title}}\",\n  \"body\": \"{{event.message}}\",\n  \"dateTime\": {{event.ts}},\n  \"severity\": \"{{severity}}\"\n}');
+    const [payload, setPayload] = useState(existingData ? existingData.payload :
+        vendorName !== VendorNames.SENTRY ?
+        '{\n  "title": \"{{event.title}}\",\n  "body": \"{{event.message}}\",\n  "dateTime": {{event.ts}},\n  "severity": \"{{severity}}\"\n}' :
+        '{\n  "message": \"{{event.title}}\",\n  "transaction": \"{{event.message}}\",\n  "timestamp": {{event.ts}},\n  "level": \"{{severity}}\",\n  "event_id": \"{{event.uuid}}\",\n  "platform": "other"\n}'
+        );
     const [eventTypes, setEventTypes] = useState(existingData ? existingData.for_event_types : []);
     const [customName, setCustomName] = useState(existingData ? existingData.custom_name : '');
 
@@ -141,6 +146,15 @@ export default function Configurator({ vendorName, outputTypeProperties, onSave,
                                             activeStep === 3 ? <EnterDutyCallsCredentials setHeaders={setHeaders} /> :
                                                 activeStep === 4 ? <EnterDutyCallsChannels setUrl={setUrl} /> :
                                                     <EnterPayload payload={payload} setPayload={setPayload} />}
+                            </React.Fragment>
+                        }
+                        {vendorName === VendorNames.SENTRY &&
+                            <React.Fragment>
+                                {activeStep === 0 ? <EnterCustomName name={customName} setName={setCustomName} /> :
+                                    activeStep === 1 ? <SelectEventTypes eventTypes={eventTypes} setEventTypes={setEventTypes} /> :
+                                        activeStep === 2 ? <SelectSeverity severity={forSeverity} setSeverity={setForSeverity} /> :
+                                            activeStep === 3 ? <EnterSentryCredentials setUrl={setUrl} /> :
+                                                    <EnterPayload payload={payload} setPayload={setPayload} addAdvancedButton />}
                             </React.Fragment>
                         }
                     </div>

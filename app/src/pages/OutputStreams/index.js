@@ -117,14 +117,15 @@ const OutputStreamsPage = () => {
                                                         src={`assets/${output.data.vendor_name === VendorNames.SLACK ? 'slack_logo' :
                                                             output.data.vendor_name === VendorNames.MS_TEAMS ? 'ms_teams_logo' :
                                                                 output.data.vendor_name === VendorNames.DUTYCALLS ? 'dc-icon-red' :
-                                                                    'webhooks'
+                                                                    output.data.vendor_name === VendorNames.SENTRY ? 'sentry-glyph-dark-400x367' :
+                                                                        'webhooks'
                                                             }.png`}
                                                         style={{ width: 32 }}
                                                     />
                                                 </ListItemAvatar>
                                                 <ListItemText
                                                     primary={output.data.custom_name}
-                                                    secondary={'Vendor: ' + (output.data.vendor_name === VendorNames.SLACK ? 'Slack' : output.data.vendor_name === VendorNames.MS_TEAMS ? 'Microsoft Teams' : output.data.vendor_name === VendorNames.DUTYCALLS ? 'DutyCalls' : 'Webhook')}
+                                                    secondary={'Vendor: ' + (output.data.vendor_name === VendorNames.SLACK ? 'Slack' : output.data.vendor_name === VendorNames.MS_TEAMS ? 'Microsoft Teams' : output.data.vendor_name === VendorNames.DUTYCALLS ? 'DutyCalls' : output.data.vendor_name === VendorNames.SENTRY ? 'Sentry' : 'Webhook')}
                                                 />
                                                 <ListItemSecondaryAction>
                                                     <IconButton aria-label="Show info"

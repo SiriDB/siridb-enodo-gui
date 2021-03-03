@@ -46,7 +46,7 @@ const TimeSeriesPage = () => {
             const parsed_data = JSON.parse(data).data;
 
             let points = [];
-            if (isAnalysed(serie)) {
+            if (hasForecast(serie)) {
                 let history = parsed_data.points;
                 for (let i = 0; i < (history.length + parsed_data.forecast_points.length); i++) {
                     if (i < history.length) {
@@ -64,7 +64,7 @@ const TimeSeriesPage = () => {
                     points.push([new Date(history[i][0] * 1000), history[i][1]]);
                 }
             }
-            let cData = [isAnalysed(serie) ? ["x", "data", "forecast", "annomaly"] : ["x", "data"]];
+            let cData = [hasAnomaliesDetected(serie) ? ["x", "data", "forecast", "annomaly"] : hasForecast(serie) ? ["x", "data", "forecast"] : ["x", "data"]];
             cData = cData.concat(points);
             setChartData(cData);
             setSelectedSerie(serie.name);
@@ -73,7 +73,18 @@ const TimeSeriesPage = () => {
     };
 
     const isAnalysed = (serie) => {
-        return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3 && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
+        return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3);
+            // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
+    };
+
+    const hasForecast = (serie) => {
+        return (serie.job_statuses.job_forecast !== undefined && serie.job_statuses.job_forecast === 3);
+            // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
+    };
+
+    const hasAnomaliesDetected = (serie) => {
+        return (serie.job_statuses.job_anomaly_detect !== undefined && serie.job_statuses.job_anomaly_detect === 3) || (serie.job_statuses.job_realtime_anomaly_detect !== undefined && serie.job_statuses.job_realtime_anomaly_detect === 3);
+            // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
     };
 
     return (
