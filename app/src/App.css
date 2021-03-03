@@ -1,0 +1,28 @@
+body {
+    background-color: #f0f0f0;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+span[class^='MuiBadge-badge-'] {
+    background-color: #09BBAD;
+}
+
+.menu-link-selected > div {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.job-item span {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.centered-message {
+    text-align: center;
+    height: 100px;
+    margin-top: 100px;
+    font-size: 30px;
+    font-weight: 100;
+}
