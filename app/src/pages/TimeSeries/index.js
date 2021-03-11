@@ -21,6 +21,7 @@ import { Chart } from "react-google-charts";
 import { makeStyles } from '@material-ui/core/styles';
 
 import AddSerie from "../../components/Serie/Add";
+import EditSerie from "../../components/Serie/Edit";
 import BasicPageLayout from '../../components/BasicPageLayout';
 import Info from "../../components/Serie/Info";
 import SerieDetails from "../../components/Serie/Dialog";
@@ -58,6 +59,8 @@ const TimeSeriesPage = () => {
     const classes = useStyles();
 
     const [addSerieModalState, setAddSerieModalState] = useState(false);
+    const [editSerieModalState, setEditSerieModalState] = useState(false);
+
     const [chartData, setChartData] = useState([]);
     const [selectedSerieName, setSelectedSerieName] = useState("");
     const [viewType, setViewType] = useState("");
@@ -69,6 +72,8 @@ const TimeSeriesPage = () => {
 
     const [referenceObject, setReferenceObject] = useState(null);
     const [selectedSerie, setSelectedSerie] = useState(null);
+
+    const [editedSerie, setEditedSerie] = useState(null);
 
     const [series] = useGlobal(
         state => state.series
@@ -110,11 +115,6 @@ const TimeSeriesPage = () => {
             setSelectedSerieName(serie.name);
             setViewType("graph");
         });
-    };
-
-    const isAnalysed = (serie) => {
-        return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3);
-        // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
     };
 
     const hasForecast = (serie) => {
@@ -180,9 +180,6 @@ const TimeSeriesPage = () => {
                                     </TableSortLabel>
                                 </TableCell>
                                 <TableCell>
-                                    {'Analysed'}
-                                </TableCell>
-                                <TableCell>
                                     {'Base analysis'}
                                 </TableCell>
                                 <TableCell>
@@ -213,23 +210,20 @@ const TimeSeriesPage = () => {
                                                 <TableCell >
                                                     {serie.name}
                                                 </TableCell>
-                                                <TableCell >
-                                                    {isAnalysed(serie) === true ? "Yes" : "No"}
-                                                </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_models.job_base_analysis ?
+                                                    {serie.config.job_config.job_base_analysis ?
                                                         <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_models.job_forecast ?
+                                                    {serie.config.job_config.job_forecast ?
                                                         <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_models.job_anomaly_detect ?
+                                                    {serie.config.job_config.job_anomaly_detect ?
                                                         <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_models.job_static_rules ?
+                                                    {serie.config.job_config.job_static_rules ?
                                                         <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
                                                 </TableCell>
                                                 <TableCell align='right'>
@@ -263,7 +257,9 @@ const TimeSeriesPage = () => {
                 />
                 <Popper open={Boolean(referenceObject)} anchorEl={referenceObject} className={classes.popper} placement="left">
                     <Paper>
-                        <ClickAwayListener onClickAway={closeMenu}>
+                        <ClickAwayListener
+                            onClickAway={closeMenu}
+                        >
                             <MenuList>
                                 <MenuItem
                                     onClick={() => {
@@ -287,10 +283,11 @@ const TimeSeriesPage = () => {
                                     </Typography>
                                 </MenuItem>
                                 <MenuItem
-                                // onClick={() => {
-                                //     setViewType('info');
-                                //     setSelectedSerieName(serie.name);
-                                // }}
+                                    onClick={() => {
+                                        setEditedSerie(selectedSerie);
+                                        setEditSerieModalState(true);
+                                        closeMenu();
+                                    }}
                                 >
                                     <Typography>
                                         {'Edit serie'}
@@ -349,6 +346,15 @@ const TimeSeriesPage = () => {
             }
             {addSerieModalState &&
                 <AddSerie close={() => { setAddSerieModalState(false) }} />
+            }
+            {editSerieModalState &&
+                <EditSerie
+                    close={() => {
+                        setEditSerieModalState(false);
+                        setEditedSerie(null);
+                    }}
+                    currentSerie={editedSerie}
+                />
             }
         </BasicPageLayout >
     );
