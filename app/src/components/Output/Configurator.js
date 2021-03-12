@@ -161,7 +161,7 @@ export default function Configurator({ vendorName, outputTypeProperties, onSave,
                     <MobileStepper
                         steps={outputTypeProperties.noSteps}
                         position="static"
-                        variant="text"
+                        variant="dots"
                         activeStep={activeStep}
                         className={classes.stepper}
                         nextButton={
@@ -170,7 +170,7 @@ export default function Configurator({ vendorName, outputTypeProperties, onSave,
                                     {'Next'}
                                     {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
                                 </Button> :
-                                <Button color='primary' onClick={submitForm} disabled={activeStep !== outputTypeProperties.noSteps - 1}>
+                                <Button variant='contained' disableElevation color='primary' onClick={submitForm} disabled={activeStep !== outputTypeProperties.noSteps - 1}>
                                     {variant === 'add' ? 'Add' : 'Save'}
                                 </Button>
                         }

@@ -1,5 +1,9 @@
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -11,6 +15,10 @@ import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import MobileStepper from '@material-ui/core/MobileStepper';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { JobTypes } from '../../constants/enums';
 import { useGlobal } from '../../store';
@@ -44,7 +52,7 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                 <Fragment>
                     <Grid item xs={12} sm={6}>
                         <FormControl variant="outlined" fullWidth >
-                            <InputLabel required>{'Job Model'}</InputLabel>
+                            <InputLabel required error={!config.model}>{'Job Model'}</InputLabel>
                             <Select
                                 value={config.model ? config.model : ''}
                                 onChange={changeModel}
@@ -72,6 +80,7 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                                 type='number'
                                 name={jobType}
                                 required
+                                error={!config.job_schedule}
                             />
                         </FormControl>
                     </Grid>
@@ -88,6 +97,7 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                                                 setConfig({ ...config, model_params: { ...config.model_params, [key]: Number(e.target.value) } });
                                             }}
                                             required={value}
+                                            error={value && !config.model_params[key]}
                                             type='number'
                                         />
                                     </FormControl>
@@ -112,7 +122,17 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
     );
 };
 
-function SerieConfigurator({ dialog, onSubmit, currentSerie }) {
+const useStyles = makeStyles(() => ({
+    stepper: {
+        backgroundColor: '#fff'
+    }
+}));
+
+function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie }) {
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const [activeStep, setActiveStep] = useState(0);
 
     const [checkedJobs, setCheckedJobs] = useState({
         [JobTypes.JOB_BASE_ANALYSIS]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? true : false,
@@ -134,16 +154,6 @@ function SerieConfigurator({ dialog, onSubmit, currentSerie }) {
     const [forecastJobConfig, setForcastJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_FORECAST] ? currentSerie.config.job_config[JobTypes.JOB_FORECAST] : null);
     const [anomalyDetectionJobConfig, setAnomalyDetectionJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? currentSerie.config.job_config[JobTypes.JOB_ANOMALY_DETECT] : null);
     const [staticRulesJobConfig, setStaticRuleJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_STATIC_RULES] ? currentSerie.config.job_config[JobTypes.JOB_STATIC_RULES] : null);
-
-
-    console.log({
-        name,
-        minDataPoints,
-        baseAnalysisJobConfig,
-        forecastJobConfig,
-        anomalyDetectionJobConfig,
-        staticRulesJobConfig
-    })
 
     const toggleCheckbox = (event) => {
         setCheckedJobs({ ...checkedJobs, [event.target.name]: event.target.checked });
@@ -200,7 +210,7 @@ function SerieConfigurator({ dialog, onSubmit, currentSerie }) {
     }
 
     const changeModel = (event) => {
-        const value = event.target.value;
+        const value = event.target.value ? event.target.value : null;
         if (event.target.name === JobTypes.JOB_BASE_ANALYSIS) {
             setBaseAnalysisJobConfig({ ...baseAnalysisJobConfig, model: value });
         }
@@ -231,138 +241,195 @@ function SerieConfigurator({ dialog, onSubmit, currentSerie }) {
         }
     }
 
-    return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <FormControl fullWidth>
-                    <TextField
-                        label="Serie name"
-                        variant="outlined"
-                        defaultValue={name}
-                        onChange={(e) => {
-                            setName(e.target.value);
-                        }}
-                        required
-                        disabled={dialog === 'edit' ? true : false}
-                    />
-                </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-                <FormControl fullWidth>
-                    <TextField
-                        label="Min. Data points"
-                        variant="outlined"
-                        defaultValue={minDataPoints}
-                        onChange={(e) => {
-                            setMinDataPoints(Number(e.target.value));
-                        }}
-                        type='number'
-                        required
-                    />
-                </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-                <Divider />
-            </Grid>
-            <JobConfigurator
-                title={'Base Analysis'}
-                jobType={JobTypes.JOB_BASE_ANALYSIS}
-                config={baseAnalysisJobConfig}
-                setConfig={setBaseAnalysisJobConfig}
-                toggleCheckbox={toggleCheckbox}
-                changeModel={changeModel}
-                changeSchedule={changeSchedule}
-                changeActivitated={changeActivitated}
-                checkedJobs={checkedJobs}
-            />
-            <Grid item xs={12}>
-                <Divider />
-            </Grid>
-            <JobConfigurator
-                title={'Forecast'}
-                jobType={JobTypes.JOB_FORECAST}
-                config={forecastJobConfig}
-                setConfig={setForcastJobConfig}
-                toggleCheckbox={toggleCheckbox}
-                changeModel={changeModel}
-                changeSchedule={changeSchedule}
-                changeActivitated={changeActivitated}
-                checkedJobs={checkedJobs}
-            />
-            <Grid item xs={12}>
-                <Divider />
-            </Grid>
-            <JobConfigurator
-                title={'Anomaly Detection'}
-                jobType={JobTypes.JOB_ANOMALY_DETECT}
-                config={anomalyDetectionJobConfig}
-                setConfig={setAnomalyDetectionJobConfig}
-                toggleCheckbox={toggleCheckbox}
-                changeModel={changeModel}
-                changeSchedule={changeSchedule}
-                changeActivitated={changeActivitated}
-                checkedJobs={checkedJobs}
-            />
-            <Grid item xs={12}>
-                <Divider />
-            </Grid>
-            <JobConfigurator
-                title={'Static Rules'}
-                jobType={JobTypes.JOB_STATIC_RULES}
-                config={staticRulesJobConfig}
-                setConfig={setStaticRuleJobConfig}
-                toggleCheckbox={toggleCheckbox}
-                changeModel={changeModel}
-                changeSchedule={changeSchedule}
-                changeActivitated={changeActivitated}
-                checkedJobs={checkedJobs}
-            />
-            <Grid item xs={12}>
-                <Divider />
-            </Grid>
-            <Grid item xs={12}>
-                <FormControl>
-                    <Button
-                        variant="contained"
-                        color='primary'
-                        onClick={() => {
-                            let config = {
-                                min_data_points: minDataPoints,
-                                job_config: {}
-                            };
-                            if (baseAnalysisJobConfig) {
-                                config.job_config[JobTypes.JOB_BASE_ANALYSIS] = baseAnalysisJobConfig;
-                            }
-                            if (forecastJobConfig) {
-                                config.job_config[JobTypes.JOB_FORECAST] = forecastJobConfig;
-                            }
-                            if (anomalyDetectionJobConfig) {
-                                config.job_config[JobTypes.JOB_ANOMALY_DETECT] = anomalyDetectionJobConfig;
-                            }
-                            if (staticRulesJobConfig) {
-                                config.job_config[JobTypes.JOB_STATIC_RULES] = staticRulesJobConfig;
-                            }
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
 
-                            onSubmit(
-                                dialog === 'add' ?
-                                    {
-                                        name: name,
-                                        config: config
-                                    } :
-                                    {
-                                        name: name,
-                                        data: {
-                                            config: config
-                                        }
-                                    }
-                            );
-                        }}
-                    >
-                        {dialog === 'add' ? 'Add' : 'Edit'}
-                    </Button>
-                </FormControl>
-            </Grid>
-        </Grid>
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    return (
+        <Dialog
+            open={true}
+            onClose={onClose}
+            fullWidth
+            maxWidth='md'
+        >
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent dividers>
+                <Grid container spacing={2}>
+                    {activeStep === 0 ?
+                        <Fragment>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <Typography variant='h6' color='primary'>
+                                        {'General'}
+                                    </Typography>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Series name"
+                                        variant="outlined"
+                                        defaultValue={name}
+                                        onChange={(e) => {
+                                            setName(e.target.value);
+                                        }}
+                                        required
+                                        error={!name}
+                                        disabled={dialog === 'edit' ? true : false}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Min. Data points"
+                                        variant="outlined"
+                                        defaultValue={minDataPoints}
+                                        onChange={(e) => {
+                                            setMinDataPoints(Number(e.target.value));
+                                        }}
+                                        type='number'
+                                        required
+                                        error={!minDataPoints}
+                                    />
+                                </FormControl>
+                            </Grid>
+                        </Fragment> :
+                        <Fragment>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <Typography variant='h6' color='primary'>
+                                        {'Jobs'}
+                                    </Typography>
+                                </FormControl>
+                            </Grid>
+                            <JobConfigurator
+                                title={'Base Analysis'}
+                                jobType={JobTypes.JOB_BASE_ANALYSIS}
+                                config={baseAnalysisJobConfig}
+                                setConfig={setBaseAnalysisJobConfig}
+                                toggleCheckbox={toggleCheckbox}
+                                changeModel={changeModel}
+                                changeSchedule={changeSchedule}
+                                changeActivitated={changeActivitated}
+                                checkedJobs={checkedJobs}
+                            />
+                            <Grid item xs={12}>
+                                <Divider />
+                            </Grid>
+                            <JobConfigurator
+                                title={'Forecast'}
+                                jobType={JobTypes.JOB_FORECAST}
+                                config={forecastJobConfig}
+                                setConfig={setForcastJobConfig}
+                                toggleCheckbox={toggleCheckbox}
+                                changeModel={changeModel}
+                                changeSchedule={changeSchedule}
+                                changeActivitated={changeActivitated}
+                                checkedJobs={checkedJobs}
+                            />
+                            <Grid item xs={12}>
+                                <Divider />
+                            </Grid>
+                            <JobConfigurator
+                                title={'Anomaly Detection'}
+                                jobType={JobTypes.JOB_ANOMALY_DETECT}
+                                config={anomalyDetectionJobConfig}
+                                setConfig={setAnomalyDetectionJobConfig}
+                                toggleCheckbox={toggleCheckbox}
+                                changeModel={changeModel}
+                                changeSchedule={changeSchedule}
+                                changeActivitated={changeActivitated}
+                                checkedJobs={checkedJobs}
+                            />
+                            <Grid item xs={12}>
+                                <Divider />
+                            </Grid>
+                            <JobConfigurator
+                                title={'Static Rules'}
+                                jobType={JobTypes.JOB_STATIC_RULES}
+                                config={staticRulesJobConfig}
+                                setConfig={setStaticRuleJobConfig}
+                                toggleCheckbox={toggleCheckbox}
+                                changeModel={changeModel}
+                                changeSchedule={changeSchedule}
+                                changeActivitated={changeActivitated}
+                                checkedJobs={checkedJobs}
+                            />
+                        </Fragment>}
+                    <Grid item xs={12}>
+                        <MobileStepper
+                            steps={2}
+                            position="static"
+                            variant="dots"
+                            activeStep={activeStep}
+                            className={classes.stepper}
+                            nextButton={
+                                activeStep === 0 ?
+                                    <Button size="small" onClick={handleNext}>
+                                        {'Next'}
+                                        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                                    </Button> :
+                                    <Button
+                                        color='primary'
+                                        variant='contained'
+                                        disableElevation
+                                        onClick={() => {
+                                            let config = {
+                                                min_data_points: minDataPoints,
+                                                job_config: {}
+                                            };
+                                            if (baseAnalysisJobConfig) {
+                                                config.job_config[JobTypes.JOB_BASE_ANALYSIS] = baseAnalysisJobConfig;
+                                            }
+                                            if (forecastJobConfig) {
+                                                config.job_config[JobTypes.JOB_FORECAST] = forecastJobConfig;
+                                            }
+                                            if (anomalyDetectionJobConfig) {
+                                                config.job_config[JobTypes.JOB_ANOMALY_DETECT] = anomalyDetectionJobConfig;
+                                            }
+                                            if (staticRulesJobConfig) {
+                                                config.job_config[JobTypes.JOB_STATIC_RULES] = staticRulesJobConfig;
+                                            }
+
+                                            onSubmit(
+                                                dialog === 'add' ?
+                                                    {
+                                                        name: name,
+                                                        config: config
+                                                    } :
+                                                    {
+                                                        name: name,
+                                                        data: {
+                                                            config: config
+                                                        }
+                                                    }
+                                            );
+                                        }}
+                                    >
+                                        {dialog === 'add' ? 'Add' : 'Edit'}
+                                    </Button>
+                            }
+                            backButton={
+                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                                    {'Back'}
+                                </Button>
+                            }
+                        />
+                    </Grid>
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>
+                    {'Close'}
+                </Button>
+            </DialogActions>
+        </Dialog>
     )
 };
 

@@ -164,7 +164,7 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
                     />}
             </DialogContent>
             <DialogActions>
-                <Button onClick={closeDialog} color="primary">
+                <Button onClick={closeDialog}>
                     {'Cancel'}
                 </Button>
             </DialogActions>

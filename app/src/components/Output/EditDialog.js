@@ -95,7 +95,7 @@ export default function EditDialog({ open, handleClose, onSubmit, currentOutputS
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={closeDialog} color="primary">
+                <Button onClick={closeDialog}>
                     {'Cancel'}
                 </Button>
             </DialogActions>
