@@ -44,7 +44,7 @@ const Info = (props) => {
                 </TableRow>
                 <TableRow>
                     <TableCell component="th" scope="row">
-                        Is Analysed
+                        Initially analyzed
                     </TableCell>
                     <TableCell align="right">{serie.analysed ? "Yes" : "No"}</TableCell>
                 </TableRow>
@@ -64,7 +64,7 @@ const Info = (props) => {
                     <TableCell component="th" scope="row">
                         Trend
                     </TableCell>
-                    <TableCell align="right">{serie.series_characteristics ? (serie.series_characteristics.trend ? serie.series_characteristics.trend : '') : ''}</TableCell>
+                    <TableCell align="right">{serie.series_characteristics && serie.series_characteristics.trend ? serie.series_characteristics.trend : '?'}</TableCell>
                 </TableRow>
             </TableBody>
         </Table>

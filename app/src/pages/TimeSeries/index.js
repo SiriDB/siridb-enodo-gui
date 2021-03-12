@@ -1,34 +1,112 @@
-import DeleteIcon from "@material-ui/icons/Delete"
-import Grid from '@material-ui/core/Grid';
+import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import IconButton from "@material-ui/core/IconButton/IconButton";
-import InfoIcon from "@material-ui/icons/Info"
-import List from "@material-ui/core/List/List";
-import ListItem from "@material-ui/core/ListItem/ListItem";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText/ListItemText";
+import InputBase from '@material-ui/core/InputBase';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import MoreIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
 import React, { useState } from 'react';
-import ShowChartIcon from "@material-ui/icons/ShowChart"
+import SearchIcon from '@material-ui/icons/Search';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import { Chart } from "react-google-charts";
+import { makeStyles, fade } from '@material-ui/core/styles';
 
 import AddSerie from "../../components/Serie/Add";
+import EditSerie from "../../components/Serie/Edit";
 import BasicPageLayout from '../../components/BasicPageLayout';
 import Info from "../../components/Serie/Info";
 import SerieDetails from "../../components/Serie/Dialog";
+import { getComparator, stableSort } from '../../util/GlobalMethods';
 import { useGlobal, socket } from '../../store';
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
+    root: {
+        width: '100%',
+    },
     paper: {
-        textAlign: 'center',
-        color: theme.palette.text.secondary
-    }
-});
+        width: '100%',
+        marginBottom: theme.spacing(2),
+    },
+    table: {
+        minWidth: 750,
+    },
+    popper: {
+        zIndex: 1500,
+    },
+    grow: {
+        flexGrow: 1,
+    },
+    search: {
+        position: 'relative',
+        borderRadius: theme.shape.borderRadius,
+        backgroundColor: fade(theme.palette.common.white, 0.15),
+        '&:hover': {
+            backgroundColor: fade(theme.palette.common.white, 0.25),
+        },
+        marginRight: theme.spacing(2),
+        marginLeft: 0,
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            marginLeft: theme.spacing(3),
+            width: 'auto',
+        },
+    },
+    searchIcon: {
+        padding: theme.spacing(0, 2),
+        height: '100%',
+        position: 'absolute',
+        pointerEvents: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    inputRoot: {
+        color: 'inherit',
+    },
+    inputInput: {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+            width: '20ch',
+        },
+    },
+}));
 
 const TimeSeriesPage = () => {
+    const classes = useStyles();
+
     const [addSerieModalState, setAddSerieModalState] = useState(false);
+    const [editSerieModalState, setEditSerieModalState] = useState(false);
+
     const [chartData, setChartData] = useState([]);
-    const [selectedSerie, setSelectedSerie] = useState("");
+    const [selectedSerieName, setSelectedSerieName] = useState("");
     const [viewType, setViewType] = useState("");
+
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('name');
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [search, setSearch] = useState('');
+
+    const [referenceObject, setReferenceObject] = useState(null);
+    const [selectedSerie, setSelectedSerie] = useState(null);
+
+    const [editedSerie, setEditedSerie] = useState(null);
 
     const [series] = useGlobal(
         state => state.series
@@ -67,25 +145,47 @@ const TimeSeriesPage = () => {
             let cData = [hasAnomaliesDetected(serie) ? ["x", "data", "forecast", "annomaly"] : hasForecast(serie) ? ["x", "data", "forecast"] : ["x", "data"]];
             cData = cData.concat(points);
             setChartData(cData);
-            setSelectedSerie(serie.name);
+            setSelectedSerieName(serie.name);
             setViewType("graph");
         });
     };
 
-    const isAnalysed = (serie) => {
-        return (serie.job_statuses.job_base_analysis !== undefined && serie.job_statuses.job_base_analysis === 3);
-            // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
-    };
-
     const hasForecast = (serie) => {
         return (serie.job_statuses.job_forecast !== undefined && serie.job_statuses.job_forecast === 3);
-            // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
+        // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
     };
 
     const hasAnomaliesDetected = (serie) => {
         return (serie.job_statuses.job_anomaly_detect !== undefined && serie.job_statuses.job_anomaly_detect === 3) || (serie.job_statuses.job_realtime_anomaly_detect !== undefined && serie.job_statuses.job_realtime_anomaly_detect === 3);
-            // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
+        // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
     };
+
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const openMenu = (event, serie) => {
+        setSelectedSerie(serie);
+        setReferenceObject(event.currentTarget);
+    };
+
+    const closeMenu = () => {
+        setSelectedSerie(null);
+        setReferenceObject(null);
+    };
+
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, series.length - page * rowsPerPage);
 
     return (
         <BasicPageLayout
@@ -93,96 +193,222 @@ const TimeSeriesPage = () => {
             buttonAction={() => setAddSerieModalState(true)}
             buttonText='Add'
         >
-            <Grid container>
-                <Grid item xs={12}>
-                    <List style={{ maxHeight: 'calc(100vh - 200px)' }}>
-                        {series.length < 1 ? <div className="centered-message">No series found</div> : ""}
-                        {series &&
-                            <Grid container direction='column' spacing={2}>
-                                {series.map((serie) => {
-                                    return (
-                                        <Grid item key={serie.name}>
-                                            <Paper className={styles.paper}>
-                                                <div style={{ padding: "10px 0" }}>
-                                                    <ListItem>
-                                                        <ListItemText
-                                                            primary={serie.name}
-                                                            secondary={`Analysed: ${(isAnalysed(serie) === true ? "yes" : "no")}`}
-                                                        />
-                                                        <ListItemSecondaryAction>
-                                                            <IconButton aria-label="Show info"
-                                                                onClick={() => {
-                                                                    setViewType('info');
-                                                                    setSelectedSerie(serie.name);
-                                                                }}>
-                                                                <InfoIcon />
-                                                            </IconButton>
-                                                            <IconButton onClick={() => {
-                                                                showChart(serie);
-                                                            }} aria-label="Show graph">
-                                                                <ShowChartIcon />
-                                                            </IconButton>
-                                                            <IconButton aria-label="Delete" onClick={() => {
-                                                                var data = { name: serie.name };
-                                                                socket.emit(`/api/series/delete`, data);
-                                                            }}>
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                        </ListItemSecondaryAction>
-                                                    </ListItem>
-                                                </div>
-                                            </Paper>
-                                        </Grid>);
-                                })}
-                            </Grid>}
-                    </List>
-                </Grid>
-                <Grid item xs={12} hidden>
-                    <Paper className={styles.paper}>
-
-                        {(selectedSerie === "" || selectedSerie === null) && "Select a serie"}
-                        {viewType === "graph" &&
-                            <SerieDetails close={() => {
-                                setViewType('');
-                                setSelectedSerie(null);
-                            }}>
-                                <Chart
-                                    chartType="LineChart"
-                                    data={chartData}
-                                    options={{
-                                        explorer: {
-                                            actions: ['dragToZoom', 'rightClickToReset'],
-                                            axis: 'horizontal',
-                                            keepInBounds: true,
-                                            maxZoomIn: 4.0
-                                        },
-                                        series: {
-                                            2: { pointShape: 'circle', pointSize: 10, lineWidth: 0 },
-                                        }
+            <Paper className={classes.paper}>
+                <Toolbar>
+                    <div className={classes.grow} />
+                    <div className={classes.search}>
+                        <div className={classes.searchIcon}>
+                            <SearchIcon />
+                        </div>
+                        <InputBase
+                            placeholder="Search by name…"
+                            classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                            }}
+                            inputProps={{ 'aria-label': 'search' }}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                </Toolbar>
+                <TableContainer>
+                    <Table
+                        className={classes.table}
+                        size='medium'
+                    >
+                        <TableHead>
+                            <TableRow>
+                                <TableCell
+                                    sortDirection={orderBy === 'name' ? order : false}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === 'name'}
+                                        direction={orderBy === 'name' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'name')}
+                                    >
+                                        {'Name'}
+                                    </TableSortLabel>
+                                </TableCell>
+                                <TableCell>
+                                    {'Base analysis'}
+                                </TableCell>
+                                <TableCell>
+                                    {'Forecast'}
+                                </TableCell>
+                                <TableCell>
+                                    {'Anomaly detect'}
+                                </TableCell>
+                                <TableCell>
+                                    {'Static rules'}
+                                </TableCell>
+                                <TableCell align='right'>
+                                    {'Actions'}
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        {series ?
+                            <TableBody>
+                                {stableSort(
+                                    series.filter(s => search ? s.name.toLowerCase().includes(search.toLowerCase()) : true),
+                                    getComparator(order, orderBy)
+                                ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((serie, index) => {
+                                        return (
+                                            <TableRow
+                                                hover
+                                                tabIndex={-1}
+                                                key={serie.rid}
+                                            >
+                                                <TableCell >
+                                                    {serie.name}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {serie.config.job_config.job_base_analysis ?
+                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {serie.config.job_config.job_forecast ?
+                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {serie.config.job_config.job_anomaly_detect ?
+                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {serie.config.job_config.job_static_rules ?
+                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                </TableCell>
+                                                <TableCell align='right'>
+                                                    <IconButton
+                                                        edge="end"
+                                                        onClick={(e) => openMenu(e, serie)}
+                                                    >
+                                                        <MoreIcon />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                {emptyRows > 0 && (
+                                    <TableRow style={{ height: 53 * emptyRows }}>
+                                        <TableCell colSpan={7} />
+                                    </TableRow>
+                                )}
+                            </TableBody> :
+                            <div className="centered-message">No series found</div>}
+                    </Table>
+                </TableContainer >
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={series.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+                <Popper open={Boolean(referenceObject)} anchorEl={referenceObject} className={classes.popper} placement="left">
+                    <Paper>
+                        <ClickAwayListener
+                            onClickAway={closeMenu}
+                        >
+                            <MenuList>
+                                <MenuItem
+                                    onClick={() => {
+                                        setViewType('info');
+                                        setSelectedSerieName(selectedSerie.name);
+                                        closeMenu();
                                     }}
-                                    width="100%"
-                                    height="400px"
-                                    legendToggle
-                                />
-                            </SerieDetails>
-                        }
-                        {viewType === "info" &&
-                            <SerieDetails close={() => {
-                                setViewType('');
-                                setSelectedSerie(null);
-                            }}>
-                                <Info serie={selectedSerie} />
-                            </SerieDetails>
-                        }
+                                >
+                                    <Typography>
+                                        {'Show info'}
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        showChart(selectedSerie);
+                                        closeMenu();
+                                    }}
+                                >
+                                    <Typography>
+                                        {'Show graph'}
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        setEditedSerie(selectedSerie);
+                                        setEditSerieModalState(true);
+                                        closeMenu();
+                                    }}
+                                >
+                                    <Typography>
+                                        {'Edit serie'}
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        const data = { name: selectedSerie.name };
+                                        socket.emit(`/api/series/delete`, data);
+                                        closeMenu();
+                                    }}
+                                >
+                                    <Typography color="primary">
+                                        {'Delete serie'}
+                                    </Typography>
+                                </MenuItem>
+                            </MenuList>
+                        </ClickAwayListener>
                     </Paper>
-                </Grid>
-            </Grid>
-            <div className="row">
-                {addSerieModalState &&
-                    <AddSerie close={() => { setAddSerieModalState(false) }} />
-                }
-            </div>
-        </BasicPageLayout>
+                </Popper>
+            </Paper >
+            {viewType === "graph" &&
+                <SerieDetails
+                    close={() => {
+                        setViewType('');
+                        setSelectedSerieName(null);
+                    }}
+                >
+                    <Chart
+                        chartType="LineChart"
+                        data={chartData}
+                        options={{
+                            explorer: {
+                                actions: ['dragToZoom', 'rightClickToReset'],
+                                axis: 'horizontal',
+                                keepInBounds: true,
+                                maxZoomIn: 4.0
+                            },
+                            series: {
+                                2: { pointShape: 'circle', pointSize: 10, lineWidth: 0 },
+                            }
+                        }}
+                        width="100%"
+                        height="400px"
+                        legendToggle
+                    />
+                </SerieDetails>
+            }
+            {viewType === "info" &&
+                <SerieDetails close={() => {
+                    setViewType('');
+                    setSelectedSerieName(null);
+                }}>
+                    <Info serie={selectedSerieName} />
+                </SerieDetails>
+            }
+            {addSerieModalState &&
+                <AddSerie close={() => { setAddSerieModalState(false) }} />
+            }
+            {editSerieModalState &&
+                <EditSerie
+                    close={() => {
+                        setEditSerieModalState(false);
+                        setEditedSerie(null);
+                    }}
+                    currentSerie={editedSerie}
+                />
+            }
+        </BasicPageLayout >
     );
 }
 

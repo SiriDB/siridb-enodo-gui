@@ -23,3 +23,10 @@ export const EventSeverityLevels = Object.freeze({
 export const EventOutputTypes = Object.freeze({
     "ENODO_EVENT_OUTPUT_WEBHOOK": 1
 });
+
+export const JobTypes = Object.freeze({
+    "JOB_BASE_ANALYSIS": "job_base_analysis",
+    "JOB_FORECAST": "job_forecast",
+    "JOB_ANOMALY_DETECT": "job_anomaly_detect",
+    "JOB_STATIC_RULES": "job_static_rules"
+});
