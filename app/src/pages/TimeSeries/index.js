@@ -94,7 +94,7 @@ const TimeSeriesPage = () => {
     const [editSerieModalState, setEditSerieModalState] = useState(false);
 
     const [chartData, setChartData] = useState([]);
-    const [selectedSerieName, setSelectedSerieName] = useState("");
+    const [selectedSeriesName, setSelectedSeriesName] = useState("");
     const [viewType, setViewType] = useState("");
 
     const [order, setOrder] = useState('asc');
@@ -145,7 +145,7 @@ const TimeSeriesPage = () => {
             let cData = [hasAnomaliesDetected(serie) ? ["x", "data", "forecast", "annomaly"] : hasForecast(serie) ? ["x", "data", "forecast"] : ["x", "data"]];
             cData = cData.concat(points);
             setChartData(cData);
-            setSelectedSerieName(serie.name);
+            setSelectedSeriesName(serie.name);
             setViewType("graph");
         });
     };
@@ -316,7 +316,7 @@ const TimeSeriesPage = () => {
                                 <MenuItem
                                     onClick={() => {
                                         setViewType('info');
-                                        setSelectedSerieName(selectedSerie.name);
+                                        setSelectedSeriesName(selectedSerie.name);
                                         closeMenu();
                                     }}
                                 >
@@ -365,7 +365,7 @@ const TimeSeriesPage = () => {
                 <SerieDetails
                     close={() => {
                         setViewType('');
-                        setSelectedSerieName(null);
+                        setSelectedSeriesName(null);
                     }}
                 >
                     <Chart
@@ -391,9 +391,9 @@ const TimeSeriesPage = () => {
             {viewType === "info" &&
                 <SerieDetails close={() => {
                     setViewType('');
-                    setSelectedSerieName(null);
+                    setSelectedSeriesName(null);
                 }}>
-                    <Info serie={selectedSerieName} />
+                    <Info serie={selectedSeriesName} />
                 </SerieDetails>
             }
             {addSerieModalState &&

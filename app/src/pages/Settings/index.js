@@ -33,7 +33,6 @@ const OutputStreamsPage = () => {
             setSettings(data.data)
             setSiridb(data.data.siridb);
             setSiridbForecast(data.data.siridb_forecast);
-            console.log(data.data);
             setSameDatabaseChecked(JSON.stringify(data.data.siridb) === JSON.stringify(data.data.siridb_forecast));
         });
     };
