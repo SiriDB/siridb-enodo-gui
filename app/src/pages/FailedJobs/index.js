@@ -1,13 +1,7 @@
-import CancelIcon from '@material-ui/icons/Cancel';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import IconButton from "@material-ui/core/IconButton/IconButton";
+import Button from '@material-ui/core/Button';
 import InputBase from '@material-ui/core/InputBase';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import MoreIcon from '@material-ui/icons/MoreVert';
+import Moment from 'moment';
 import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
 import React, { useEffect, useState } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import Table from '@material-ui/core/Table';
@@ -19,17 +13,12 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { Chart } from "react-google-charts";
 import { makeStyles, fade } from '@material-ui/core/styles';
 
-import AddSerie from "../../components/Serie/Add";
-import EditSerie from "../../components/Serie/Edit";
 import BasicPageLayout from '../../components/BasicPageLayout';
-import Info from "../../components/Serie/Info";
-import SerieDetails from "../../components/Serie/Dialog";
+import ResolveDialog from "../../components/FailedJobs/ResolveDialog";
 import { getComparator, stableSort } from '../../util/GlobalMethods';
-import { useGlobal, socket } from '../../store';
+import { socket } from '../../store';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -41,9 +30,6 @@ const useStyles = makeStyles((theme) => ({
     },
     table: {
         minWidth: 750,
-    },
-    popper: {
-        zIndex: 1500,
     },
     grow: {
         flexGrow: 1,
@@ -98,20 +84,26 @@ const FailedJobsPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [search, setSearch] = useState('');
 
-    const [referenceObject, setReferenceObject] = useState(null);
-    const [selectedSerie, setSelectedSerie] = useState(null);
-
     const [failedJobs, setFailedJobs] = useState([]);
 
     const retrieveFailedJobs = () => {
         socket.emit('/api/job/failed', {}, (data) => {
-            console.log(data);
             setFailedJobs(data.data)
         });
     };
 
     useEffect(() => {
         retrieveFailedJobs();
+    }, []);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            retrieveFailedJobs();
+        }, 5000);
+
+        return () => {
+            clearInterval(interval);
+        };
     }, []);
 
     const handleRequestSort = (event, property) => {
@@ -129,11 +121,6 @@ const FailedJobsPage = () => {
         setPage(0);
     };
 
-    const openMenu = (event, serie) => {
-        setSelectedSerie(serie);
-        setReferenceObject(event.currentTarget);
-    };
-
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, failedJobs.length - page * rowsPerPage);
 
     return (
@@ -142,13 +129,22 @@ const FailedJobsPage = () => {
         >
             <Paper className={classes.paper}>
                 <Toolbar>
+                    <Button
+                        variant='contained'
+                        disableElevation
+                        color='primary'
+                        onClick={() => setOpenResolveDialog(true)}
+                        disabled={failedJobs.length === 0}
+                    >
+                        {'Resolve'}
+                    </Button>
                     <div className={classes.grow} />
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
                         </div>
                         <InputBase
-                            placeholder="Search by name…"
+                            placeholder="Search by series name…"
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
@@ -158,7 +154,7 @@ const FailedJobsPage = () => {
                         />
                     </div>
                 </Toolbar>
-                {/* <TableContainer>
+                <TableContainer>
                     <Table
                         className={classes.table}
                         size='medium'
@@ -166,61 +162,89 @@ const FailedJobsPage = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell
-                                    sortDirection={orderBy === 'name' ? order : false}
+                                    sortDirection={orderBy === 'rid' ? order : false}
                                 >
                                     <TableSortLabel
-                                        active={orderBy === 'name'}
-                                        direction={orderBy === 'name' ? order : 'asc'}
-                                        onClick={(e) => handleRequestSort(e, 'name')}
+                                        active={orderBy === 'rid'}
+                                        direction={orderBy === 'rid' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'rid')}
                                     >
-                                        {'Name'}
+                                        {'Id'}
                                     </TableSortLabel>
                                 </TableCell>
-                                <TableCell>
-                                    {'Base analysis'}
+                                <TableCell
+                                    sortDirection={orderBy === 'job_type' ? order : false}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === 'job_type'}
+                                        direction={orderBy === 'job_type' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'job_type')}
+                                    >
+                                        {'Job type'}
+                                    </TableSortLabel>
                                 </TableCell>
-                                <TableCell>
-                                    {'Forecast'}
+                                <TableCell
+                                    sortDirection={orderBy === 'series_name' ? order : false}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === 'series_name'}
+                                        direction={orderBy === 'series_name' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'series_name')}
+                                    >
+                                        {'Series name'}
+                                    </TableSortLabel>
                                 </TableCell>
-                                <TableCell>
-                                    {'Anomaly detect'}
+                                <TableCell
+                                    sortDirection={orderBy === 'send_at' ? order : false}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === 'send_at'}
+                                        direction={orderBy === 'send_at' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'send_at')}
+                                    >
+                                        {'Send at'}
+                                    </TableSortLabel>
                                 </TableCell>
-                                <TableCell>
-                                    {'Static rules'}
+                                <TableCell
+                                    sortDirection={orderBy === 'worker_id' ? order : false}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === 'worker_id'}
+                                        direction={orderBy === 'worker_id' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'worker_id')}
+                                    >
+                                        {'Worker id'}
+                                    </TableSortLabel>
                                 </TableCell>
                             </TableRow>
                         </TableHead>
-                        {series ?
+                        {failedJobs ?
                             <TableBody>
                                 {stableSort(
-                                    series.filter(s => search ? s.name.toLowerCase().includes(search.toLowerCase()) : true),
+                                    failedJobs.filter(j => search ? j.series_name.toLowerCase().includes(search.toLowerCase()) : true),
                                     getComparator(order, orderBy)
                                 ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((serie, index) => {
+                                    .map((job, index) => {
                                         return (
                                             <TableRow
                                                 hover
                                                 tabIndex={-1}
-                                                key={serie.rid}
+                                                key={job.rid}
                                             >
                                                 <TableCell >
-                                                    {serie.name}
+                                                    {job.rid}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_config.job_base_analysis ?
-                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                    {job.job_type}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_config.job_forecast ?
-                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                    {job.series_name}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_config.job_anomaly_detect ?
-                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                    {Moment.unix(job.send_at).format('YYYY-MM-DD HH:mm')}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_config.job_static_rules ?
-                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                    {job.worker_id}
                                                 </TableCell>
                                             </TableRow>
                                         );
@@ -231,9 +255,9 @@ const FailedJobsPage = () => {
                                     </TableRow>
                                 )}
                             </TableBody> :
-                            <div className="centered-message">No series found</div>}
+                            <div className="centered-message">No failed jobs found</div>}
                     </Table>
-                </TableContainer > */}
+                </TableContainer >
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
@@ -244,9 +268,14 @@ const FailedJobsPage = () => {
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
             </Paper >
-            {openResolveDialog &&
-                <AddSerie open={openResolveDialog} onClose={() => { setOpenResolveDialog(false) }} />
-            }
+            <ResolveDialog
+                open={openResolveDialog}
+                onClose={() => {
+                    setOpenResolveDialog(false);
+                    retrieveFailedJobs();
+                }}
+                failedJobs={failedJobs}
+            />
         </BasicPageLayout >
     );
 }
