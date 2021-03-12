@@ -2,12 +2,14 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import IconButton from "@material-ui/core/IconButton/IconButton";
+import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import React, { useState } from 'react';
+import SearchIcon from '@material-ui/icons/Search';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -16,9 +18,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { Chart } from "react-google-charts";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, fade } from '@material-ui/core/styles';
 
 import AddSerie from "../../components/Serie/Add";
 import EditSerie from "../../components/Serie/Edit";
@@ -39,20 +42,49 @@ const useStyles = makeStyles((theme) => ({
     table: {
         minWidth: 750,
     },
-    visuallyHidden: {
-        border: 0,
-        clip: 'rect(0 0 0 0)',
-        height: 1,
-        margin: -1,
-        overflow: 'hidden',
-        padding: 0,
-        position: 'absolute',
-        top: 20,
-        width: 1,
-    },
     popper: {
         zIndex: 1500,
-    }
+    },
+    grow: {
+        flexGrow: 1,
+    },
+    search: {
+        position: 'relative',
+        borderRadius: theme.shape.borderRadius,
+        backgroundColor: fade(theme.palette.common.white, 0.15),
+        '&:hover': {
+            backgroundColor: fade(theme.palette.common.white, 0.25),
+        },
+        marginRight: theme.spacing(2),
+        marginLeft: 0,
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            marginLeft: theme.spacing(3),
+            width: 'auto',
+        },
+    },
+    searchIcon: {
+        padding: theme.spacing(0, 2),
+        height: '100%',
+        position: 'absolute',
+        pointerEvents: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    inputRoot: {
+        color: 'inherit',
+    },
+    inputInput: {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+            width: '20ch',
+        },
+    },
 }));
 
 const TimeSeriesPage = () => {
@@ -69,6 +101,7 @@ const TimeSeriesPage = () => {
     const [orderBy, setOrderBy] = useState('name');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [search, setSearch] = useState('');
 
     const [referenceObject, setReferenceObject] = useState(null);
     const [selectedSerie, setSelectedSerie] = useState(null);
@@ -161,6 +194,23 @@ const TimeSeriesPage = () => {
             buttonText='Add'
         >
             <Paper className={classes.paper}>
+                <Toolbar>
+                    <div className={classes.grow} />
+                    <div className={classes.search}>
+                        <div className={classes.searchIcon}>
+                            <SearchIcon />
+                        </div>
+                        <InputBase
+                            placeholder="Search by name…"
+                            classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                            }}
+                            inputProps={{ 'aria-label': 'search' }}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                </Toolbar>
                 <TableContainer>
                     <Table
                         className={classes.table}
@@ -198,8 +248,10 @@ const TimeSeriesPage = () => {
                         </TableHead>
                         {series ?
                             <TableBody>
-                                {stableSort(series, getComparator(order, orderBy))
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                {stableSort(
+                                    series.filter(s => search ? s.name.toLowerCase().includes(search.toLowerCase()) : true),
+                                    getComparator(order, orderBy)
+                                ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((serie, index) => {
                                         return (
                                             <TableRow
