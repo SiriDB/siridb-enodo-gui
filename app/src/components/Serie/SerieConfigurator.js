@@ -1,3 +1,4 @@
+import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,15 +10,15 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import MenuItem from '@material-ui/core/MenuItem';
+import MobileStepper from '@material-ui/core/MobileStepper';
 import React, { useState, Fragment } from "react";
 import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import MobileStepper from '@material-ui/core/MobileStepper';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { JobTypes } from '../../constants/enums';
@@ -128,7 +129,7 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie }) {
+function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, socketError }) {
     const classes = useStyles();
     const theme = useTheme();
 
@@ -424,6 +425,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie }) {
                     </Grid>
                 </Grid>
             </DialogContent>
+            {socketError && <Alert severity="error">{socketError}</Alert>}
             <DialogActions>
                 <Button onClick={onClose}>
                     {'Close'}
