@@ -3,15 +3,15 @@ import React, { useState } from "react";
 import SerieConfigurator from './SerieConfigurator';
 import { socket } from '../../store';
 
-function AddSerie({ close }) {
+function EditSerie({ close, currentSerie }) {
 
     const [socketError, setSocketError] = useState(null);
 
     return (
         <SerieConfigurator
-            title='Add serie'
+            title={"Edit serie"}
             onSubmit={(data) => {
-                socket.emit('/api/series/create', data, (data) => {
+                socket.emit('/api/series/update', data, (data) => {
                     const value = JSON.parse(data);
                     if (value.error) {
                         setSocketError(value.error);
@@ -22,10 +22,11 @@ function AddSerie({ close }) {
                 });
             }}
             onClose={close}
-            dialog='add'
+            dialog='edit'
+            currentSerie={currentSerie}
             socketError={socketError}
         />
     )
 };
 
-export default AddSerie;
+export default EditSerie;

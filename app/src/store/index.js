@@ -65,7 +65,7 @@ const setup_subscriptions = (globalActions) => {
         socketGlobalActions.__updateStoreValue('series', data.data);
     });
     socket.emit('/subscribe/enodo/model', {}, (data) => {
-        socketGlobalActions.__updateStoreValue('enodo_model', data.data);
+        socketGlobalActions.__updateStoreValue('enodo_model', data.data.models);
     });
     socket.emit('/subscribe/queue', {}, (data) => {
         data = JSON.parse(data);
