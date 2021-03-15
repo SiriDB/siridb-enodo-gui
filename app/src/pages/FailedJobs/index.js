@@ -14,10 +14,11 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles, fade } from '@material-ui/core/styles';
+import { useHistory } from "react-router-dom";
 
 import BasicPageLayout from '../../components/BasicPageLayout';
 import ResolveDialog from "../../components/FailedJobs/ResolveDialog";
-import { getComparator, stableSort } from '../../util/GlobalMethods';
+import { getComparator, stableSort, historyGetQueryParam } from '../../util/GlobalMethods';
 import { socket } from '../../store';
 
 const useStyles = makeStyles((theme) => ({
@@ -75,6 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 const FailedJobsPage = () => {
     const classes = useStyles();
+    let history = useHistory();
 
     const [openResolveDialog, setOpenResolveDialog] = useState(false);
 
@@ -105,6 +107,13 @@ const FailedJobsPage = () => {
             clearInterval(interval);
         };
     }, []);
+
+    useEffect(() => {
+        const param = historyGetQueryParam(history, 'series');
+        if (param) {
+            setSearch(param);
+        }
+    }, [history]);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
