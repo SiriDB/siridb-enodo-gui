@@ -102,15 +102,15 @@ const App = (props) => {
                         <ListItemText primary="" />
                     </ListItem>
                 </NavLink>
-                <NavLink to={ROUTES.SETTINGS} exact activeClassName="menu-link-selected">
-                    <ListItem button className={classes.leftmenubtn}>
-                        <ListItemIcon><SettingsIcon /></ListItemIcon>
-                        <ListItemText primary="" />
-                    </ListItem>
-                </NavLink>
                 <NavLink to={ROUTES.FAILED_JOBS} exact activeClassName="menu-link-selected">
                     <ListItem button className={classes.leftmenubtn}>
                         <ListItemIcon><WorkOffIcon /></ListItemIcon>
+                        <ListItemText primary="" />
+                    </ListItem>
+                </NavLink>
+                <NavLink to={ROUTES.SETTINGS} exact activeClassName="menu-link-selected">
+                    <ListItem button className={classes.leftmenubtn}>
+                        <ListItemIcon><SettingsIcon /></ListItemIcon>
                         <ListItemText primary="" />
                     </ListItem>
                 </NavLink>
