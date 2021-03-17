@@ -1,3 +1,4 @@
+import Badge from '@material-ui/core/Badge';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -8,7 +9,7 @@ import MenuList from '@material-ui/core/MenuList';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -20,12 +21,15 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import WorkOffIcon from '@material-ui/icons/WorkOff';
 import { Chart } from "react-google-charts";
 import { makeStyles, fade } from '@material-ui/core/styles';
+import { useHistory } from "react-router-dom";
 
+import * as ROUTES from '../../constants/routes';
 import AddSerie from "../../components/Serie/Add";
-import EditSerie from "../../components/Serie/Edit";
 import BasicPageLayout from '../../components/BasicPageLayout';
+import EditSerie from "../../components/Serie/Edit";
 import Info from "../../components/Serie/Info";
 import SerieDetails from "../../components/Serie/Dialog";
 import { getComparator, stableSort } from '../../util/GlobalMethods';
@@ -89,6 +93,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TimeSeriesPage = () => {
     const classes = useStyles();
+    let history = useHistory();
 
     const [addSerieModalState, setAddSerieModalState] = useState(false);
     const [editSerieModalState, setEditSerieModalState] = useState(false);
@@ -108,6 +113,28 @@ const TimeSeriesPage = () => {
 
     const [editedSerie, setEditedSerie] = useState(null);
 
+    const [failedJobs, setFailedJobs] = useState([]);
+
+    const retrieveFailedJobs = () => {
+        socket.emit('/api/job/failed', {}, (data) => {
+            setFailedJobs(data.data)
+        });
+    };
+
+    useEffect(() => {
+        retrieveFailedJobs();
+    }, []);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            retrieveFailedJobs();
+        }, 5000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
     const [series] = useGlobal(
         state => state.series
     );
@@ -119,12 +146,12 @@ const TimeSeriesPage = () => {
         return point;
     };
 
-    const showChart = (serie) => {
-        socket.emit('/api/series/details', { series_name: serie.name }, (data) => {
+    const showChart = (series) => {
+        socket.emit('/api/series/details', { series_name: series.name }, (data) => {
             const parsed_data = JSON.parse(data).data;
 
             let points = [];
-            if (hasForecast(serie)) {
+            if (hasForecast(series)) {
                 let history = parsed_data.points;
                 for (let i = 0; i < (history.length + parsed_data.forecast_points.length); i++) {
                     if (i < history.length) {
@@ -142,21 +169,21 @@ const TimeSeriesPage = () => {
                     points.push([new Date(history[i][0] * 1000), history[i][1]]);
                 }
             }
-            let cData = [hasAnomaliesDetected(serie) ? ["x", "data", "forecast", "annomaly"] : hasForecast(serie) ? ["x", "data", "forecast"] : ["x", "data"]];
+            let cData = [hasAnomaliesDetected(series) ? ["x", "data", "forecast", "annomaly"] : hasForecast(series) ? ["x", "data", "forecast"] : ["x", "data"]];
             cData = cData.concat(points);
             setChartData(cData);
-            setSelectedSeriesName(serie.name);
+            setSelectedSeriesName(series.name);
             setViewType("graph");
         });
     };
 
-    const hasForecast = (serie) => {
-        return (serie.job_statuses.job_forecast !== undefined && serie.job_statuses.job_forecast === 3);
+    const hasForecast = (series) => {
+        return (series.job_statuses.job_forecast !== undefined && series.job_statuses.job_forecast === 3);
         // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
     };
 
-    const hasAnomaliesDetected = (serie) => {
-        return (serie.job_statuses.job_anomaly_detect !== undefined && serie.job_statuses.job_anomaly_detect === 3) || (serie.job_statuses.job_realtime_anomaly_detect !== undefined && serie.job_statuses.job_realtime_anomaly_detect === 3);
+    const hasAnomaliesDetected = (series) => {
+        return (series.job_statuses.job_anomaly_detect !== undefined && series.job_statuses.job_anomaly_detect === 3) || (series.job_statuses.job_realtime_anomaly_detect !== undefined && series.job_statuses.job_realtime_anomaly_detect === 3);
         // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
     };
 
@@ -175,8 +202,8 @@ const TimeSeriesPage = () => {
         setPage(0);
     };
 
-    const openMenu = (event, serie) => {
-        setSelectedSerie(serie);
+    const openMenu = (event, series) => {
+        setSelectedSerie(series);
         setReferenceObject(event.currentTarget);
     };
 
@@ -184,6 +211,15 @@ const TimeSeriesPage = () => {
         setSelectedSerie(null);
         setReferenceObject(null);
     };
+
+    const getNoFailedJobs = (seriesName) => {
+        const filtered = failedJobs.filter(fj => fj.series_name === seriesName);
+        return filtered.length;
+    };
+
+    const navigateToFailedJobs = (seriesName) => {
+        history.push({ pathname: ROUTES.FAILED_JOBS, search: `?series=${seriesName}` });
+    }
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, series.length - page * rowsPerPage);
 
@@ -241,6 +277,7 @@ const TimeSeriesPage = () => {
                                 <TableCell>
                                     {'Static rules'}
                                 </TableCell>
+                                <TableCell />
                                 <TableCell align='right'>
                                     {'Actions'}
                                 </TableCell>
@@ -252,36 +289,44 @@ const TimeSeriesPage = () => {
                                     series.filter(s => search ? s.name.toLowerCase().includes(search.toLowerCase()) : true),
                                     getComparator(order, orderBy)
                                 ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((serie, index) => {
+                                    .map((series, index) => {
                                         return (
                                             <TableRow
                                                 hover
                                                 tabIndex={-1}
-                                                key={serie.rid}
+                                                key={series.rid}
                                             >
                                                 <TableCell >
-                                                    {serie.name}
+                                                    {series.name}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_config.job_base_analysis ?
+                                                    {series.config.job_config.job_base_analysis ?
                                                         <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_config.job_forecast ?
+                                                    {series.config.job_config.job_forecast ?
                                                         <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_config.job_anomaly_detect ?
+                                                    {series.config.job_config.job_anomaly_detect ?
                                                         <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {serie.config.job_config.job_static_rules ?
+                                                    {series.config.job_config.job_static_rules ?
                                                         <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                                </TableCell>
+                                                <TableCell >
+                                                    {getNoFailedJobs(series.name) > 0 ?
+                                                        <IconButton onClick={() => navigateToFailedJobs(series.name)}>
+                                                            <Badge badgeContent={getNoFailedJobs(series.name)} color="error">
+                                                                <WorkOffIcon />
+                                                            </Badge>
+                                                        </IconButton> : null}
                                                 </TableCell>
                                                 <TableCell align='right'>
                                                     <IconButton
                                                         edge="end"
-                                                        onClick={(e) => openMenu(e, serie)}
+                                                        onClick={(e) => openMenu(e, series)}
                                                     >
                                                         <MoreIcon />
                                                     </IconButton>
@@ -342,7 +387,7 @@ const TimeSeriesPage = () => {
                                     }}
                                 >
                                     <Typography>
-                                        {'Edit serie'}
+                                        {'Edit series'}
                                     </Typography>
                                 </MenuItem>
                                 <MenuItem
@@ -353,7 +398,7 @@ const TimeSeriesPage = () => {
                                     }}
                                 >
                                     <Typography color="primary">
-                                        {'Delete serie'}
+                                        {'Delete series'}
                                     </Typography>
                                 </MenuItem>
                             </MenuList>

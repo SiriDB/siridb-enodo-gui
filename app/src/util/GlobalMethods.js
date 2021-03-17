@@ -23,3 +23,9 @@ export function stableSort(array, comparator) {
     });
     return stabilizedThis.map((el) => el[0]);
 }
+
+export function historyGetQueryParam(history, name) {
+    const params = new URLSearchParams(history.location.search);
+    const result = params.get(name);
+    return result;
+}

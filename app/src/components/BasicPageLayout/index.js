@@ -1,13 +1,15 @@
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import React, { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
+import WorkIcon from '@material-ui/icons/Work';
+import WorkOffIcon from '@material-ui/icons/WorkOff';
 import WorkOutlineIcon from '@material-ui/icons/WorkOutline';
 import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
 
 import { socket } from '../../store';
 
@@ -107,7 +109,7 @@ const BasicPageLayout = ({ title, buttonAction, buttonText, hideJobDrawer, child
                             <Typography variant='h6' gutterBottom>
                                 {'Active'}
                                 <Badge badgeContent={stats ? stats.no_active_jobs : null} color="primary" style={{ marginLeft: 12 }}>
-                                    <WorkOutlineIcon />
+                                    <WorkIcon />
                                 </Badge>
                             </Typography>
                             <Typography>
@@ -117,7 +119,7 @@ const BasicPageLayout = ({ title, buttonAction, buttonText, hideJobDrawer, child
                             <Typography variant='h6' gutterBottom>
                                 {'Failed'}
                                 <Badge badgeContent={stats ? stats.no_failed_jobs : null} color="primary" style={{ marginLeft: 12 }}>
-                                    <WorkOutlineIcon />
+                                    <WorkOffIcon />
                                 </Badge>
                             </Typography>
                             <Typography>
