@@ -11,7 +11,7 @@ const initialState = {
     enodo_status: {},
     enodo_model: [],
     settings: null,
-    siridb_status: null,
+    siridb_status: {},
     series: [],
     job: [],
     event_output: []
@@ -65,7 +65,7 @@ const setup_subscriptions = (globalActions) => {
         socketGlobalActions.__updateStoreValue('series', data.data);
     });
     socket.emit('/subscribe/enodo/model', {}, (data) => {
-        socketGlobalActions.__updateStoreValue('enodo_model', data.data);
+        socketGlobalActions.__updateStoreValue('enodo_model', data.data.models);
     });
     socket.emit('/subscribe/queue', {}, (data) => {
         data = JSON.parse(data);
@@ -73,6 +73,9 @@ const setup_subscriptions = (globalActions) => {
     });
     socket.emit('/subscribe/event/output', {}, (data) => {
         socketGlobalActions.__updateStoreValue('event_outputs', data.data);
+    });
+    socket.emit('/subscribe/siridb/status', {}, (data) => {
+        socketGlobalActions.__updateStoreValue('siridb_status', data);
     });
     setInterval(() => {
         fetchValueFromREST('/enodo/status', socketGlobalActions.__updateStoreValue, 'enodo_status');

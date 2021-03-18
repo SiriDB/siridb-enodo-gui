@@ -11,12 +11,14 @@ import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ViewStreamIcon from '@material-ui/icons/ViewStream';
+import WorkOffIcon from '@material-ui/icons/WorkOff';
 import { HashRouter, NavLink, Route, Switch } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 
 import './App.css';
 import * as ROUTES from './constants/routes';
 import DashboardPage from './pages/Dashboard';
+import FailedJobsPage from "./pages/FailedJobs";
 import NetworkPage from "./pages/Network";
 import OutputStreamsPage from "./pages/OutputStreams";
 import SettingsPage from "./pages/Settings";
@@ -100,6 +102,12 @@ const App = (props) => {
                         <ListItemText primary="" />
                     </ListItem>
                 </NavLink>
+                <NavLink to={ROUTES.FAILED_JOBS} exact activeClassName="menu-link-selected">
+                    <ListItem button className={classes.leftmenubtn}>
+                        <ListItemIcon><WorkOffIcon /></ListItemIcon>
+                        <ListItemText primary="" />
+                    </ListItem>
+                </NavLink>
                 <NavLink to={ROUTES.SETTINGS} exact activeClassName="menu-link-selected">
                     <ListItem button className={classes.leftmenubtn}>
                         <ListItemIcon><SettingsIcon /></ListItemIcon>
@@ -134,6 +142,7 @@ const App = (props) => {
                         <Route path={ROUTES.NETWORK} component={NetworkPage} />
                         <Route path={ROUTES.OUTPUT_STREAMS} component={OutputStreamsPage} />
                         <Route path={ROUTES.SETTINGS} component={SettingsPage} />
+                        <Route path={ROUTES.FAILED_JOBS} component={FailedJobsPage} />
                     </Switch>
 
                 </main>
