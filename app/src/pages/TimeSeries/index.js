@@ -20,7 +20,9 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import UpdateIcon from '@material-ui/icons/Update';
 import WorkOffIcon from '@material-ui/icons/WorkOff';
 import { Chart } from "react-google-charts";
 import { makeStyles, fade } from '@material-ui/core/styles';
@@ -89,6 +91,9 @@ const useStyles = makeStyles((theme) => ({
             width: '20ch',
         },
     },
+    realtime: {
+        width: 25
+    }
 }));
 
 const TimeSeriesPage = () => {
@@ -254,6 +259,7 @@ const TimeSeriesPage = () => {
                     >
                         <TableHead>
                             <TableRow>
+                                <TableCell className={classes.realtime} />
                                 <TableCell
                                     sortDirection={orderBy === 'name' ? order : false}
                                 >
@@ -296,6 +302,13 @@ const TimeSeriesPage = () => {
                                                 tabIndex={-1}
                                                 key={series.rid}
                                             >
+                                                <TableCell className={classes.realtime}>
+                                                    {series.config.realtime ?
+                                                        <Tooltip title='Real-time analysis is enabled for this series'>
+                                                            <UpdateIcon color='primary' />
+                                                        </Tooltip>
+                                                        : null}
+                                                </TableCell>
                                                 <TableCell >
                                                     {series.name}
                                                 </TableCell>
@@ -336,7 +349,7 @@ const TimeSeriesPage = () => {
                                     })}
                                 {emptyRows > 0 && (
                                     <TableRow style={{ height: 53 * emptyRows }}>
-                                        <TableCell colSpan={7} />
+                                        <TableCell colSpan={8} />
                                     </TableRow>
                                 )}
                             </TableBody> :

@@ -150,6 +150,9 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
     // Min no. data points
     const [minDataPoints, setMinDataPoints] = useState(dialog === 'edit' ? currentSerie.config.min_data_points : 2);
 
+    // Realtime analysis
+    const [realtime, setRealtime] = useState(dialog === 'edit' ? currentSerie.config.realtime : false);
+
     // Job specific config
     const [baseAnalysisJobConfig, setBaseAnalysisJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] : null);
     const [forecastJobConfig, setForcastJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_FORECAST] ? currentSerie.config.job_config[JobTypes.JOB_FORECAST] : null);
@@ -299,6 +302,23 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                     />
                                 </FormControl>
                             </Grid>
+                            <Grid item xs={12}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={realtime}
+                                            onChange={(e) => {
+                                                setRealtime(e.target.checked)
+                                            }}
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Real-time analysis"
+                                />
+                            </Grid>
+                            {realtime && <Grid item xs={12}>
+                                <Alert severity="warning">{'Enabling real-time analysis can have a negative impact on the performance of the system.'}</Alert>
+                            </Grid>}
                         </Fragment> :
                         <Fragment>
                             <Grid item xs={12}>
@@ -382,6 +402,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                         onClick={() => {
                                             let config = {
                                                 min_data_points: minDataPoints,
+                                                realtime: realtime,
                                                 job_config: {}
                                             };
                                             if (baseAnalysisJobConfig) {
