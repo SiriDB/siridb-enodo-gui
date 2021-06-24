@@ -2,6 +2,8 @@ import Badge from '@material-ui/core/Badge';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import Grid from '@material-ui/core/Grid';
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -34,7 +36,7 @@ import BasicPageLayout from '../../components/BasicPageLayout';
 import EditSerie from "../../components/Serie/Edit";
 import Info from "../../components/Serie/Info";
 import SerieDetails from "../../components/Serie/Dialog";
-import { getComparator, stableSort } from '../../util/GlobalMethods';
+import { getComparator, stableSort, healthToColor, healthToText } from '../../util/GlobalMethods';
 import { useGlobal, socket } from '../../store';
 
 const useStyles = makeStyles((theme) => ({
@@ -91,8 +93,11 @@ const useStyles = makeStyles((theme) => ({
             width: '20ch',
         },
     },
-    realtime: {
-        width: 25
+    health: {
+        width: 52
+    },
+    name: {
+        marginBottom: theme.spacing(0.5)
     }
 }));
 
@@ -255,11 +260,11 @@ const TimeSeriesPage = () => {
                 <TableContainer>
                     <Table
                         className={classes.table}
-                        size='medium'
+                        size='small'
                     >
                         <TableHead>
                             <TableRow>
-                                <TableCell className={classes.realtime} />
+                                <TableCell className={classes.health} />
                                 <TableCell
                                     sortDirection={orderBy === 'name' ? order : false}
                                 >
@@ -302,15 +307,29 @@ const TimeSeriesPage = () => {
                                                 tabIndex={-1}
                                                 key={series.rid}
                                             >
-                                                <TableCell className={classes.realtime}>
-                                                    {series.config.realtime ?
-                                                        <Tooltip title='Real-time analysis is enabled for this series'>
-                                                            <UpdateIcon color='primary' />
-                                                        </Tooltip>
-                                                        : null}
+                                                <TableCell className={classes.health}>
+                                                    <Grid container spacing={1} alignItems='center'>
+                                                        <Grid item>
+                                                            <Tooltip title={healthToText(series.health / 100) + " health - " + series.health} >
+                                                                <FiberManualRecordIcon
+                                                                    fontSize="small"
+                                                                    style={{ color: healthToColor([0, 1], series.health / 100) }}
+                                                                />
+                                                            </Tooltip>
+                                                        </Grid>
+                                                        {series.config.realtime ?
+                                                            <Grid item>
+                                                                <Tooltip title='Real-time analysis is enabled for this series'>
+                                                                    <UpdateIcon color='primary' />
+                                                                </Tooltip>
+                                                            </Grid>
+                                                            : null}
+                                                    </Grid>
                                                 </TableCell>
                                                 <TableCell >
-                                                    {series.name}
+                                                    <div item className={classes.name}>
+                                                        {series.name}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     {series.config.job_config.job_base_analysis ?

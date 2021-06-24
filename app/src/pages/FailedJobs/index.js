@@ -181,7 +181,7 @@ const FailedJobsPage = () => {
                 <TableContainer>
                     <Table
                         className={classes.table}
-                        size='medium'
+                        size='small'
                     >
                         <TableHead>
                             <TableRow>
