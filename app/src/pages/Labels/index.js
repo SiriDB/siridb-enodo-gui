@@ -1,10 +1,13 @@
-import Button from '@material-ui/core/Button';
-import ErrorIcon from '@material-ui/icons/Error';
-import IconButton from '@material-ui/core/IconButton';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import IconButton from "@material-ui/core/IconButton/IconButton";
 import InputBase from '@material-ui/core/InputBase';
-import Moment from 'moment';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import MoreIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
-import React, { useEffect, useState } from 'react';
+import Popper from '@material-ui/core/Popper';
+import React, { useState, useEffect } from 'react';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import SearchIcon from '@material-ui/icons/Search';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,13 +18,13 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles, fade } from '@material-ui/core/styles';
-import { useHistory } from "react-router-dom";
 
 import BasicPageLayout from '../../components/BasicPageLayout';
-import ErrorDialog from "../../components/FailedJobs/ErrorDialog";
-import ResolveDialog from "../../components/FailedJobs/ResolveDialog";
-import { getComparator, stableSort, historyGetQueryParam } from '../../util/GlobalMethods';
+import AddLabelDialog from "../../components/Labels/AddLabelDialog";
+import DeleteLabelDialog from "../../components/Labels/DeleteLabelDialog";
+import { getComparator, stableSort } from '../../util/GlobalMethods';
 import { socket } from '../../store';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
     },
     table: {
         minWidth: 750,
+    },
+    popper: {
+        zIndex: 1500,
     },
     grow: {
         flexGrow: 1,
@@ -74,51 +80,45 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('md')]: {
             width: '20ch',
         },
-    },
+    }
 }));
 
-const FailedJobsPage = () => {
+const LabelsPage = () => {
     const classes = useStyles();
-    let history = useHistory();
 
-    const [openResolveDialog, setOpenResolveDialog] = useState(false);
+    const [addLabelModalState, setAddLabelModalState] = useState(false);
+    const [deleteLabelModalState, setDeleteLabelModalState] = useState(false);
 
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('name');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [search, setSearch] = useState('');
-    const [openErrorDialog, setOpenErrorDialog] = useState(false);
-    const [error, setError] = useState('');
 
-    const [failedJobs, setFailedJobs] = useState([]);
+    const [referenceObject, setReferenceObject] = useState(null);
+    const [selectedLabel, setSelectedLabel] = useState(null);
 
-    const retrieveFailedJobs = () => {
-        socket.emit('/api/job/failed', {}, (data) => {
-            setFailedJobs(data.data)
+    const [labels, setLabels] = useState([]);
+
+    const retrieveLabels = () => {
+        socket.emit('/api/enodo/labels', {}, (data) => {
+            setLabels(data.data.labels)
         });
     };
 
     useEffect(() => {
-        retrieveFailedJobs();
+        retrieveLabels();
     }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            retrieveFailedJobs();
+            retrieveLabels();
         }, 5000);
 
         return () => {
             clearInterval(interval);
         };
     }, []);
-
-    useEffect(() => {
-        const param = historyGetQueryParam(history, 'series');
-        if (param) {
-            setSearch(param);
-        }
-    }, [history]);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -135,40 +135,53 @@ const FailedJobsPage = () => {
         setPage(0);
     };
 
-    const handleOpenErrorDialog = (error) => {
-        setOpenErrorDialog(true);
-        setError(error);
+    const openMenu = (event, labels) => {
+        setSelectedLabel(labels);
+        setReferenceObject(event.currentTarget);
     };
 
-    const handleCloseErrorDialog = () => {
-        setOpenErrorDialog(false);
-        setError('');
+    const closeMenu = () => {
+        setReferenceObject(null);
     };
 
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, failedJobs.length - page * rowsPerPage);
+    const closeAddDialog = () => {
+        setAddLabelModalState(false);
+        setSelectedLabel(null);
+        retrieveLabels();
+    };
+
+    const closeDeleteDialog = () => {
+        setDeleteLabelModalState(false);
+        setSelectedLabel(null);
+        retrieveLabels();
+    };
+
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, labels.length - page * rowsPerPage);
 
     return (
         <BasicPageLayout
-            title='Failed jobs'
+            title='Labels'
+            buttonAction={() => setAddLabelModalState(true)}
+            buttonText='Add'
+            titleButton={
+                <IconButton
+                    aria-label='refresh'
+                    size='small'
+                    onClick={retrieveLabels}
+                >
+                    <RefreshIcon />
+                </IconButton>
+            }
         >
             <Paper className={classes.paper}>
                 <Toolbar>
-                    <Button
-                        variant='contained'
-                        disableElevation
-                        color='primary'
-                        onClick={() => setOpenResolveDialog(true)}
-                        disabled={failedJobs.length === 0}
-                    >
-                        {'Resolve'}
-                    </Button>
                     <div className={classes.grow} />
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
                         </div>
                         <InputBase
-                            placeholder="Search by series name…"
+                            placeholder="Search by name…"
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
@@ -186,58 +199,25 @@ const FailedJobsPage = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell
-                                    sortDirection={orderBy === 'rid' ? order : false}
+                                    sortDirection={orderBy === 'name' ? order : false}
                                 >
                                     <TableSortLabel
-                                        active={orderBy === 'rid'}
-                                        direction={orderBy === 'rid' ? order : 'asc'}
-                                        onClick={(e) => handleRequestSort(e, 'rid')}
+                                        active={orderBy === 'name'}
+                                        direction={orderBy === 'name' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'name')}
                                     >
-                                        {'Id'}
+                                        {'Name'}
                                     </TableSortLabel>
                                 </TableCell>
                                 <TableCell
-                                    sortDirection={orderBy === 'job_type' ? order : false}
+                                    sortDirection={orderBy === 'grouptag' ? order : false}
                                 >
                                     <TableSortLabel
-                                        active={orderBy === 'job_type'}
-                                        direction={orderBy === 'job_type' ? order : 'asc'}
-                                        onClick={(e) => handleRequestSort(e, 'job_type')}
+                                        active={orderBy === 'grouptag'}
+                                        direction={orderBy === 'grouptag' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'grouptag')}
                                     >
-                                        {'Job type'}
-                                    </TableSortLabel>
-                                </TableCell>
-                                <TableCell
-                                    sortDirection={orderBy === 'series_name' ? order : false}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === 'series_name'}
-                                        direction={orderBy === 'series_name' ? order : 'asc'}
-                                        onClick={(e) => handleRequestSort(e, 'series_name')}
-                                    >
-                                        {'Series name'}
-                                    </TableSortLabel>
-                                </TableCell>
-                                <TableCell
-                                    sortDirection={orderBy === 'send_at' ? order : false}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === 'send_at'}
-                                        direction={orderBy === 'send_at' ? order : 'asc'}
-                                        onClick={(e) => handleRequestSort(e, 'send_at')}
-                                    >
-                                        {'Send at'}
-                                    </TableSortLabel>
-                                </TableCell>
-                                <TableCell
-                                    sortDirection={orderBy === 'worker_id' ? order : false}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === 'worker_id'}
-                                        direction={orderBy === 'worker_id' ? order : 'asc'}
-                                        onClick={(e) => handleRequestSort(e, 'worker_id')}
-                                    >
-                                        {'Worker id'}
+                                        {'Group/Tag'}
                                     </TableSortLabel>
                                 </TableCell>
                                 <TableCell />
@@ -245,34 +225,28 @@ const FailedJobsPage = () => {
                         </TableHead>
                         <TableBody>
                             {stableSort(
-                                failedJobs.filter(j => search ? j.series_name.toLowerCase().includes(search.toLowerCase()) : true),
+                                labels.filter(s => search ? s.name.toLowerCase().includes(search.toLowerCase()) : true),
                                 getComparator(order, orderBy)
                             ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((job, index) => {
+                                .map((label, index) => {
                                     return (
                                         <TableRow
                                             hover
                                             tabIndex={-1}
-                                            key={job.rid}
+                                            key={index}
                                         >
                                             <TableCell >
-                                                {job.rid}
+                                                {label.name}
                                             </TableCell>
                                             <TableCell>
-                                                {job.job_type}
+                                                {label.grouptag}
                                             </TableCell>
-                                            <TableCell>
-                                                {job.series_name}
-                                            </TableCell>
-                                            <TableCell>
-                                                {Moment.unix(job.send_at).format('YYYY-MM-DD HH:mm')}
-                                            </TableCell>
-                                            <TableCell>
-                                                {job.worker_id}
-                                            </TableCell>
-                                            <TableCell align='center'>
-                                                <IconButton onClick={() => handleOpenErrorDialog(job.error)}>
-                                                    <ErrorIcon color='error' />
+                                            <TableCell align='right'>
+                                                <IconButton
+                                                    edge="end"
+                                                    onClick={(e) => openMenu(e, label)}
+                                                >
+                                                    <MoreIcon />
                                                 </IconButton>
                                             </TableCell>
                                         </TableRow>
@@ -289,24 +263,44 @@ const FailedJobsPage = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={failedJobs.length}
+                    count={labels.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onChangePage={handleChangePage}
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
+                <Popper open={Boolean(referenceObject)} anchorEl={referenceObject} className={classes.popper} placement="left">
+                    <Paper>
+                        <ClickAwayListener
+                            onClickAway={closeMenu}
+                        >
+                            <MenuList>
+                                <MenuItem
+                                    onClick={() => {
+                                        setDeleteLabelModalState(true);
+                                        closeMenu();
+                                    }}
+                                >
+                                    <Typography color="primary">
+                                        {'Delete label'}
+                                    </Typography>
+                                </MenuItem>
+                            </MenuList>
+                        </ClickAwayListener>
+                    </Paper>
+                </Popper>
             </Paper >
-            <ResolveDialog
-                open={openResolveDialog}
-                onClose={() => {
-                    setOpenResolveDialog(false);
-                    retrieveFailedJobs();
-                }}
-                failedJobs={failedJobs}
+            <AddLabelDialog
+                open={addLabelModalState}
+                handleClose={closeAddDialog}
             />
-            <ErrorDialog open={openErrorDialog} handleClose={handleCloseErrorDialog} error={error} />
+            <DeleteLabelDialog
+                open={deleteLabelModalState}
+                handleClose={closeDeleteDialog}
+                selectedLabel={selectedLabel}
+            />
         </BasicPageLayout >
     );
 }
 
-export default FailedJobsPage;
+export default LabelsPage;
