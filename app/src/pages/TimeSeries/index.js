@@ -34,7 +34,7 @@ import * as ROUTES from '../../constants/routes';
 import AddSerie from "../../components/Serie/Add";
 import BasicPageLayout from '../../components/BasicPageLayout';
 import EditSerie from "../../components/Serie/Edit";
-import Info from "../../components/Serie/Info";
+import InfoDialog from "../../components/Serie/Info";
 import SerieDetails from "../../components/Serie/Dialog";
 import { getComparator, stableSort, healthToColor, healthToText } from '../../util/GlobalMethods';
 import { useGlobal, socket } from '../../store';
@@ -310,7 +310,7 @@ const TimeSeriesPage = () => {
                                                 <TableCell className={classes.health}>
                                                     <Grid container spacing={1} alignItems='center'>
                                                         <Grid item>
-                                                            <Tooltip title={healthToText(series.health / 100) + " health - " + series.health} >
+                                                            <Tooltip title={healthToText(series.health / 100) + " health - " + series.health + '%'} >
                                                                 <FiberManualRecordIcon
                                                                     fontSize="small"
                                                                     style={{ color: healthToColor([0, 1], series.health / 100) }}
@@ -466,12 +466,13 @@ const TimeSeriesPage = () => {
                 </SerieDetails>
             }
             {viewType === "info" &&
-                <SerieDetails close={() => {
-                    setViewType('');
-                    setSelectedSeriesName(null);
-                }}>
-                    <Info serie={selectedSeriesName} />
-                </SerieDetails>
+                <InfoDialog
+                    close={() => {
+                        setViewType('');
+                        setSelectedSeriesName(null);
+                    }}
+                    serie={selectedSeriesName}
+                />
             }
             {addSerieModalState &&
                 <AddSerie close={() => { setAddSerieModalState(false) }} />
