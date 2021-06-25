@@ -49,7 +49,7 @@ export default function AddLabelDialog({ open, handleClose }) {
                     <Grid item xs={12}>
                         <FormControl fullWidth>
                             <TextField
-                                label="Group/Tag"
+                                label="Group/Tag name"
                                 variant="outlined"
                                 defaultValue={grouptag}
                                 onChange={(e) => {
@@ -61,7 +61,7 @@ export default function AddLabelDialog({ open, handleClose }) {
                     </Grid>
                     <Grid item xs={12}>
                         <Alert severity='info'>
-                            {'The term label is used for group and tag selections in SiriDB. Creating a tag results in adding all series belonging to the specified SiriDB group or tag name.'}
+                            {'The term label is used for group and tag selections in SiriDB. Creating a label results in adding all series belonging to the specified SiriDB group or tag name.'}
                         </Alert>
                     </Grid>
                 </Grid>

@@ -1,4 +1,5 @@
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grid from '@material-ui/core/Grid';
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -19,6 +20,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import moment from 'moment';
 import { makeStyles, fade } from '@material-ui/core/styles';
 
 import BasicPageLayout from '../../components/BasicPageLayout';
@@ -98,11 +100,13 @@ const LabelsPage = () => {
     const [referenceObject, setReferenceObject] = useState(null);
     const [selectedLabel, setSelectedLabel] = useState(null);
 
+    const [lastUpdate, setLastUpdate] = useState(null);
     const [labels, setLabels] = useState([]);
 
     const retrieveLabels = () => {
         socket.emit('/api/enodo/labels', {}, (data) => {
-            setLabels(data.data.labels)
+            setLastUpdate(data.data.last_update);
+            setLabels(data.data.labels);
         });
     };
 
@@ -175,21 +179,27 @@ const LabelsPage = () => {
         >
             <Paper className={classes.paper}>
                 <Toolbar>
-                    <div className={classes.grow} />
-                    <div className={classes.search}>
-                        <div className={classes.searchIcon}>
-                            <SearchIcon />
-                        </div>
-                        <InputBase
-                            placeholder="Search by name…"
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
-                            inputProps={{ 'aria-label': 'search' }}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
+                    <Grid container justify='space-between'>
+                        <Grid item>
+                            <Typography>
+                                {'Last update: ' + (lastUpdate ? moment.unix(lastUpdate).format('YYYY-MM-DD HH:mm') : 'unknown')}
+                            </Typography>
+                        </Grid>
+                        <Grid item className={classes.search}>
+                            <div className={classes.searchIcon}>
+                                <SearchIcon />
+                            </div>
+                            <InputBase
+                                placeholder="Search by name…"
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{ 'aria-label': 'search' }}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </Grid>
+                    </Grid>
                 </Toolbar>
                 <TableContainer>
                     <Table
