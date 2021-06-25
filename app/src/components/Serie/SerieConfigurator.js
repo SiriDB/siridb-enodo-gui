@@ -63,11 +63,13 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                                 <MenuItem value="">
                                     <em>{'None'}</em>
                                 </MenuItem>
-                                {models.map((model) => (
-                                    <MenuItem value={model.model_name} key={model.model_name}>
-                                        {model.model_name}
-                                    </MenuItem>
-                                ))}
+                                {models.map((model) => {
+                                    if (model.supported_jobs.includes(jobType)) {
+                                    return <MenuItem value={model.name} key={model.name}>
+                                            {model.name}
+                                        </MenuItem>
+                                    }
+                                })}
                             </Select>
                         </FormControl>
                     </Grid>
@@ -87,18 +89,18 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                     </Grid>
                     {config.model &&
                         <Fragment>
-                            {Object.entries(models.find(m => m.model_name === config.model).model_arguments).map(([key, value]) => (
-                                <Grid item xs={12} sm={6} key={key}>
+                            {models.find(m => m.name === config.model).model_arguments.map((argument) => (
+                                <Grid item xs={12} sm={6} key={argument.name}>
                                     <FormControl fullWidth>
                                         <TextField
-                                            label={key}
+                                            label={argument.name}
                                             variant="outlined"
-                                            defaultValue={config.model_params[key]}
+                                            defaultValue={config.model_params[argument.name]}
                                             onChange={(e) => {
-                                                setConfig({ ...config, model_params: { ...config.model_params, [key]: Number(e.target.value) } });
+                                                setConfig({ ...config, model_params: { ...config.model_params, [argument.name]: Number(e.target.value) } });
                                             }}
-                                            required={value}
-                                            error={value && !config.model_params[key]}
+                                            required={argument.required}
+                                            error={argument.required && !config.model_params[argument.name]}
                                             type='number'
                                         />
                                     </FormControl>
