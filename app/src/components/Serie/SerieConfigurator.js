@@ -129,35 +129,44 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, socketError }) {
+const DialogTypes = {
+    ADD: 'add',
+    EDIT: 'edit',
+    ADD_LABEL: 'addLabel'
+};
+
+function SerieConfigurator({ title, dialog, onSubmit, onClose, currentConfig, socketError }) {
     const classes = useStyles();
     const theme = useTheme();
 
     const [activeStep, setActiveStep] = useState(0);
 
     const [checkedJobs, setCheckedJobs] = useState({
-        [JobTypes.JOB_BASE_ANALYSIS]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? true : false,
-        [JobTypes.JOB_FORECAST]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_FORECAST] ? true : false,
-        [JobTypes.JOB_ANOMALY_DETECT]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? true : false,
-        [JobTypes.JOB_STATIC_RULES]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_STATIC_RULES] ? true : false
+        [JobTypes.JOB_BASE_ANALYSIS]: dialog === 'edit' && currentConfig.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? true : false,
+        [JobTypes.JOB_FORECAST]: dialog === 'edit' && currentConfig.config.job_config[JobTypes.JOB_FORECAST] ? true : false,
+        [JobTypes.JOB_ANOMALY_DETECT]: dialog === 'edit' && currentConfig.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? true : false,
+        [JobTypes.JOB_STATIC_RULES]: dialog === 'edit' && currentConfig.config.job_config[JobTypes.JOB_STATIC_RULES] ? true : false
     })
 
     // Config
 
     // Name
-    const [name, setName] = useState(dialog === 'edit' ? currentSerie.name : '');
+    const [name, setName] = useState(dialog === 'edit' ? currentConfig.name : '');
+
+    // Grouptag. Only used for configuring labels.
+    const [grouptag, setGrouptag] = useState('');
 
     // Min no. data points
-    const [minDataPoints, setMinDataPoints] = useState(dialog === 'edit' ? currentSerie.config.min_data_points : 2);
+    const [minDataPoints, setMinDataPoints] = useState(dialog === 'edit' ? currentConfig.config.min_data_points : 2);
 
     // Realtime analysis
-    const [realtime, setRealtime] = useState(dialog === 'edit' ? currentSerie.config.realtime : false);
+    const [realtime, setRealtime] = useState(dialog === 'edit' ? currentConfig.config.realtime : false);
 
     // Job specific config
-    const [baseAnalysisJobConfig, setBaseAnalysisJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] : null);
-    const [forecastJobConfig, setForcastJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_FORECAST] ? currentSerie.config.job_config[JobTypes.JOB_FORECAST] : null);
-    const [anomalyDetectionJobConfig, setAnomalyDetectionJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? currentSerie.config.job_config[JobTypes.JOB_ANOMALY_DETECT] : null);
-    const [staticRulesJobConfig, setStaticRuleJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_STATIC_RULES] ? currentSerie.config.job_config[JobTypes.JOB_STATIC_RULES] : null);
+    const [baseAnalysisJobConfig, setBaseAnalysisJobConfig] = useState(dialog === 'edit' && currentConfig.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? currentConfig.config.job_config[JobTypes.JOB_BASE_ANALYSIS] : null);
+    const [forecastJobConfig, setForcastJobConfig] = useState(dialog === 'edit' && currentConfig.config.job_config[JobTypes.JOB_FORECAST] ? currentConfig.config.job_config[JobTypes.JOB_FORECAST] : null);
+    const [anomalyDetectionJobConfig, setAnomalyDetectionJobConfig] = useState(dialog === 'edit' && currentConfig.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? currentConfig.config.job_config[JobTypes.JOB_ANOMALY_DETECT] : null);
+    const [staticRulesJobConfig, setStaticRuleJobConfig] = useState(dialog === 'edit' && currentConfig.config.job_config[JobTypes.JOB_STATIC_RULES] ? currentConfig.config.job_config[JobTypes.JOB_STATIC_RULES] : null);
 
     const toggleCheckbox = (event) => {
         setCheckedJobs({ ...checkedJobs, [event.target.name]: event.target.checked });
@@ -275,7 +284,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        label="Series name"
+                                        label={dialog !== DialogTypes.ADD_LABEL ? "Series name" : "Label name"}
                                         variant="outlined"
                                         defaultValue={name}
                                         onChange={(e) => {
@@ -287,6 +296,22 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                     />
                                 </FormControl>
                             </Grid>
+                            {dialog === DialogTypes.ADD_LABEL ?
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            label="Group/Tag name"
+                                            variant="outlined"
+                                            defaultValue={grouptag}
+                                            onChange={(e) => {
+                                                setGrouptag(e.target.value);
+                                            }}
+                                            required
+                                            error={!grouptag}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                : null}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
@@ -424,12 +449,18 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                                         name: name,
                                                         config: config
                                                     } :
-                                                    {
-                                                        name: name,
-                                                        data: {
-                                                            config: config
+                                                    dialog === DialogTypes.EDIT ?
+                                                        {
+                                                            name: name,
+                                                            data: {
+                                                                config: config
+                                                            }
+                                                        } :
+                                                        {
+                                                            name: name,
+                                                            grouptag: grouptag,
+                                                            series_config: config
                                                         }
-                                                    }
                                             );
                                         }}
                                     >
@@ -452,7 +483,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                     {'Close'}
                 </Button>
             </DialogActions>
-        </Dialog>
+        </Dialog >
     )
 };
 

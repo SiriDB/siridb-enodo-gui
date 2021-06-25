@@ -300,10 +300,10 @@ const LabelsPage = () => {
                     </Paper>
                 </Popper>
             </Paper >
-            <AddLabelDialog
-                open={addLabelModalState}
-                handleClose={closeAddDialog}
-            />
+            {addLabelModalState &&
+                <AddLabelDialog
+                    handleClose={closeAddDialog}
+                />}
             <DeleteLabelDialog
                 open={deleteLabelModalState}
                 handleClose={closeDeleteDialog}
