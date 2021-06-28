@@ -228,14 +228,14 @@ const LabelsPage = () => {
                                     </TableSortLabel>
                                 </TableCell>
                                 <TableCell
-                                    sortDirection={orderBy === 'grouptag' ? order : false}
+                                    sortDirection={orderBy === 'description' ? order : false}
                                 >
                                     <TableSortLabel
-                                        active={orderBy === 'grouptag'}
-                                        direction={orderBy === 'grouptag' ? order : 'asc'}
-                                        onClick={(e) => handleRequestSort(e, 'grouptag')}
+                                        active={orderBy === 'description'}
+                                        direction={orderBy === 'description' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'description')}
                                     >
-                                        {'Group/Tag'}
+                                        {'Description'}
                                     </TableSortLabel>
                                 </TableCell>
                                 <TableCell />
@@ -254,10 +254,10 @@ const LabelsPage = () => {
                                             key={index}
                                         >
                                             <TableCell >
-                                                {label.name}
+                                                {label.selector}
                                             </TableCell>
                                             <TableCell>
-                                                {label.grouptag}
+                                                {label.description}
                                             </TableCell>
                                             <TableCell align='right'>
                                                 <IconButton
