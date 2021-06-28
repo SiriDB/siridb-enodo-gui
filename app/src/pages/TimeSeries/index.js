@@ -427,7 +427,7 @@ const TimeSeriesPage = () => {
                                         closeMenu();
                                     }}
                                 >
-                                    <Typography color="primary">
+                                    <Typography color="error">
                                         {'Delete series'}
                                     </Typography>
                                 </MenuItem>

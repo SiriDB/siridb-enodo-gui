@@ -23,9 +23,10 @@ import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
 import { makeStyles, fade } from '@material-ui/core/styles';
 
-import BasicPageLayout from '../../components/BasicPageLayout';
 import AddLabelDialog from "../../components/Labels/AddLabelDialog";
+import BasicPageLayout from '../../components/BasicPageLayout';
 import DeleteLabelDialog from "../../components/Labels/DeleteLabelDialog";
+import ConfigDialog from "../../components/Labels/ConfigDialog";
 import { getComparator, stableSort } from '../../util/GlobalMethods';
 import { socket } from '../../store';
 
@@ -89,6 +90,7 @@ const LabelsPage = () => {
     const classes = useStyles();
 
     const [addLabelModalState, setAddLabelModalState] = useState(false);
+    const [infoLabelModalState, setInfoLabelModalState] = useState(false);
     const [deleteLabelModalState, setDeleteLabelModalState] = useState(false);
 
     const [order, setOrder] = useState('asc');
@@ -139,8 +141,9 @@ const LabelsPage = () => {
         setPage(0);
     };
 
-    const openMenu = (event, labels) => {
-        setSelectedLabel(labels);
+    const openMenu = (event, label) => {
+        label.config = label.series_config;
+        setSelectedLabel(label);
         setReferenceObject(event.currentTarget);
     };
 
@@ -152,6 +155,11 @@ const LabelsPage = () => {
         setAddLabelModalState(false);
         setSelectedLabel(null);
         retrieveLabels();
+    };
+
+    const closeInfoDialog = () => {
+        setInfoLabelModalState(false);
+        setSelectedLabel(null);
     };
 
     const closeDeleteDialog = () => {
@@ -287,11 +295,21 @@ const LabelsPage = () => {
                             <MenuList>
                                 <MenuItem
                                     onClick={() => {
+                                        setInfoLabelModalState(true);
+                                        closeMenu();
+                                    }}
+                                >
+                                    <Typography >
+                                        {'View config'}
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
                                         setDeleteLabelModalState(true);
                                         closeMenu();
                                     }}
                                 >
-                                    <Typography color="primary">
+                                    <Typography color="error">
                                         {'Delete label'}
                                     </Typography>
                                 </MenuItem>
@@ -303,6 +321,11 @@ const LabelsPage = () => {
             {addLabelModalState &&
                 <AddLabelDialog
                     handleClose={closeAddDialog}
+                />}
+            {infoLabelModalState &&
+                <ConfigDialog
+                    handleClose={closeInfoDialog}
+                    label={selectedLabel}
                 />}
             <DeleteLabelDialog
                 open={deleteLabelModalState}
