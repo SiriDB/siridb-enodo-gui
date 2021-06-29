@@ -11,7 +11,7 @@ import { socket } from '../../store';
 export default function DeleteLabelDialog({ open, handleClose, selectedLabel }) {
 
     const onDelete = () => {
-        const data = { grouptag: selectedLabel.grouptag };
+        const data = { selector: selectedLabel.name };
         socket.emit('/api/enodo/labels/delete', data, () => {
             handleClose();
         });

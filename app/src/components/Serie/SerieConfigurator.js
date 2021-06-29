@@ -482,8 +482,8 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentConfig, so
                                                             }
                                                         } :
                                                         {
-                                                            selector: name,
-                                                            grouptag: labelDescription,
+                                                            name: name,
+                                                            description: labelDescription,
                                                             series_config: config
                                                         }
                                             );

@@ -238,6 +238,17 @@ const LabelsPage = () => {
                                         {'Description'}
                                     </TableSortLabel>
                                 </TableCell>
+                                <TableCell
+                                    sortDirection={orderBy === 'selector' ? order : false}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === 'selector'}
+                                        direction={orderBy === 'selector' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'selector')}
+                                    >
+                                        {'Selector'}
+                                    </TableSortLabel>
+                                </TableCell>
                                 <TableCell />
                             </TableRow>
                         </TableHead>
@@ -254,10 +265,13 @@ const LabelsPage = () => {
                                             key={index}
                                         >
                                             <TableCell >
-                                                {label.selector}
+                                                {label.name}
                                             </TableCell>
                                             <TableCell>
                                                 {label.description}
+                                            </TableCell>
+                                            <TableCell>
+                                                {label.selector}
                                             </TableCell>
                                             <TableCell align='right'>
                                                 <IconButton
