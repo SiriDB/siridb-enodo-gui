@@ -2,6 +2,8 @@ import Badge from '@material-ui/core/Badge';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import Grid from '@material-ui/core/Grid';
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -32,9 +34,9 @@ import * as ROUTES from '../../constants/routes';
 import AddSerie from "../../components/Serie/Add";
 import BasicPageLayout from '../../components/BasicPageLayout';
 import EditSerie from "../../components/Serie/Edit";
-import Info from "../../components/Serie/Info";
+import InfoDialog from "../../components/Serie/Info";
 import SerieDetails from "../../components/Serie/Dialog";
-import { getComparator, stableSort } from '../../util/GlobalMethods';
+import { getComparator, stableSort, healthToColor, healthToText } from '../../util/GlobalMethods';
 import { useGlobal, socket } from '../../store';
 
 const useStyles = makeStyles((theme) => ({
@@ -91,8 +93,11 @@ const useStyles = makeStyles((theme) => ({
             width: '20ch',
         },
     },
-    realtime: {
-        width: 25
+    health: {
+        width: 52
+    },
+    name: {
+        marginBottom: theme.spacing(0.5)
     }
 }));
 
@@ -255,11 +260,11 @@ const TimeSeriesPage = () => {
                 <TableContainer>
                     <Table
                         className={classes.table}
-                        size='medium'
+                        size='small'
                     >
                         <TableHead>
                             <TableRow>
-                                <TableCell className={classes.realtime} />
+                                <TableCell className={classes.health} />
                                 <TableCell
                                     sortDirection={orderBy === 'name' ? order : false}
                                 >
@@ -289,71 +294,83 @@ const TimeSeriesPage = () => {
                                 </TableCell>
                             </TableRow>
                         </TableHead>
-                        {series ?
-                            <TableBody>
-                                {stableSort(
-                                    series.filter(s => search ? s.name.toLowerCase().includes(search.toLowerCase()) : true),
-                                    getComparator(order, orderBy)
-                                ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((series, index) => {
-                                        return (
-                                            <TableRow
-                                                hover
-                                                tabIndex={-1}
-                                                key={series.rid}
-                                            >
-                                                <TableCell className={classes.realtime}>
-                                                    {series.config.realtime ?
-                                                        <Tooltip title='Real-time analysis is enabled for this series'>
-                                                            <UpdateIcon color='primary' />
+                        <TableBody>
+                            {stableSort(
+                                series.filter(s => search ? s.name.toLowerCase().includes(search.toLowerCase()) : true),
+                                getComparator(order, orderBy)
+                            ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((series, index) => {
+                                    return (
+                                        <TableRow
+                                            hover
+                                            tabIndex={-1}
+                                            key={series.rid}
+                                        >
+                                            <TableCell className={classes.health}>
+                                                <Grid container spacing={1} alignItems='center'>
+                                                    <Grid item>
+                                                        <Tooltip title={healthToText(series.health / 100) + " health - " + series.health + '%'} >
+                                                            <FiberManualRecordIcon
+                                                                fontSize="small"
+                                                                style={{ color: healthToColor([0, 1], series.health / 100) }}
+                                                            />
                                                         </Tooltip>
+                                                    </Grid>
+                                                    {series.config.realtime ?
+                                                        <Grid item>
+                                                            <Tooltip title='Real-time analysis is enabled for this series'>
+                                                                <UpdateIcon color='primary' />
+                                                            </Tooltip>
+                                                        </Grid>
                                                         : null}
-                                                </TableCell>
-                                                <TableCell >
+                                                </Grid>
+                                            </TableCell>
+                                            <TableCell >
+                                                <div className={classes.name}>
                                                     {series.name}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {series.config.job_config.job_base_analysis ?
-                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {series.config.job_config.job_forecast ?
-                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {series.config.job_config.job_anomaly_detect ?
-                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {series.config.job_config.job_static_rules ?
-                                                        <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
-                                                </TableCell>
-                                                <TableCell >
-                                                    {getNoFailedJobs(series.name) > 0 ?
-                                                        <IconButton onClick={() => navigateToFailedJobs(series.name)}>
-                                                            <Badge badgeContent={getNoFailedJobs(series.name)} color="error">
-                                                                <WorkOffIcon />
-                                                            </Badge>
-                                                        </IconButton> : null}
-                                                </TableCell>
-                                                <TableCell align='right'>
-                                                    <IconButton
-                                                        edge="end"
-                                                        onClick={(e) => openMenu(e, series)}
-                                                    >
-                                                        <MoreIcon />
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                {emptyRows > 0 && (
-                                    <TableRow style={{ height: 53 * emptyRows }}>
-                                        <TableCell colSpan={8} />
-                                    </TableRow>
-                                )}
-                            </TableBody> :
-                            <div className="centered-message">No series found</div>}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                {series.config.job_config.job_base_analysis ?
+                                                    <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                            </TableCell>
+                                            <TableCell>
+                                                {series.config.job_config.job_forecast ?
+                                                    <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                            </TableCell>
+                                            <TableCell>
+                                                {series.config.job_config.job_anomaly_detect ?
+                                                    <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                            </TableCell>
+                                            <TableCell>
+                                                {series.config.job_config.job_static_rules ?
+                                                    <CheckCircleIcon color='primary' /> : <CancelIcon color='error' />}
+                                            </TableCell>
+                                            <TableCell >
+                                                {getNoFailedJobs(series.name) > 0 ?
+                                                    <IconButton onClick={() => navigateToFailedJobs(series.name)}>
+                                                        <Badge badgeContent={getNoFailedJobs(series.name)} color="error">
+                                                            <WorkOffIcon />
+                                                        </Badge>
+                                                    </IconButton> : null}
+                                            </TableCell>
+                                            <TableCell align='right'>
+                                                <IconButton
+                                                    edge="end"
+                                                    onClick={(e) => openMenu(e, series)}
+                                                >
+                                                    <MoreIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            {emptyRows > 0 && (
+                                <TableRow style={{ height: 53 * emptyRows }}>
+                                    <TableCell colSpan={8} />
+                                </TableRow>
+                            )}
+                        </TableBody>
                     </Table>
                 </TableContainer >
                 <TablePagination
@@ -410,7 +427,7 @@ const TimeSeriesPage = () => {
                                         closeMenu();
                                     }}
                                 >
-                                    <Typography color="primary">
+                                    <Typography color="error">
                                         {'Delete series'}
                                     </Typography>
                                 </MenuItem>
@@ -447,12 +464,13 @@ const TimeSeriesPage = () => {
                 </SerieDetails>
             }
             {viewType === "info" &&
-                <SerieDetails close={() => {
-                    setViewType('');
-                    setSelectedSeriesName(null);
-                }}>
-                    <Info serie={selectedSeriesName} />
-                </SerieDetails>
+                <InfoDialog
+                    close={() => {
+                        setViewType('');
+                        setSelectedSeriesName(null);
+                    }}
+                    serie={selectedSeriesName}
+                />
             }
             {addSerieModalState &&
                 <AddSerie close={() => { setAddSerieModalState(false) }} />

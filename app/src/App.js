@@ -3,6 +3,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import Divider from '@material-ui/core/Divider';
 import DnsIcon from '@material-ui/icons/Dns';
 import Drawer from '@material-ui/core/Drawer';
+import LabelIcon from '@material-ui/icons/Label';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -19,6 +20,7 @@ import './App.css';
 import * as ROUTES from './constants/routes';
 import DashboardPage from './pages/Dashboard';
 import FailedJobsPage from "./pages/FailedJobs";
+import LabelsPage from './pages/Labels';
 import NetworkPage from "./pages/Network";
 import OutputStreamsPage from "./pages/OutputStreams";
 import SettingsPage from "./pages/Settings";
@@ -90,6 +92,12 @@ const App = (props) => {
                         <ListItemText primary="" />
                     </ListItem>
                 </NavLink>
+                <NavLink to={ROUTES.LABELS} exact activeClassName="menu-link-selected">
+                    <ListItem button className={classes.leftmenubtn}>
+                        <ListItemIcon><LabelIcon /></ListItemIcon>
+                        <ListItemText primary="" />
+                    </ListItem>
+                </NavLink>
                 <NavLink to={ROUTES.NETWORK} exact activeClassName="menu-link-selected">
                     <ListItem button className={classes.leftmenubtn}>
                         <ListItemIcon><DnsIcon /></ListItemIcon>
@@ -139,6 +147,7 @@ const App = (props) => {
                     <Switch>
                         <Route exact path={ROUTES.LANDING} component={DashboardPage} />
                         <Route exact path={ROUTES.TIME_SERIES} component={TimeSeriesPage} />
+                        <Route exact path={ROUTES.LABELS} component={LabelsPage} />
                         <Route path={ROUTES.NETWORK} component={NetworkPage} />
                         <Route path={ROUTES.OUTPUT_STREAMS} component={OutputStreamsPage} />
                         <Route path={ROUTES.SETTINGS} component={SettingsPage} />
