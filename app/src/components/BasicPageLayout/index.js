@@ -14,9 +14,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { socket } from '../../store';
 
 const useStyles = makeStyles(theme => ({
-    leftmenubtn: {
-        marginLeft: theme.spacing(2)
-    },
     toolbar: theme.mixins.toolbar,
     sidebar: {
         width: 350,
@@ -32,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const BasicPageLayout = ({ title, buttonAction, buttonText, hideJobDrawer, children }) => {
+const BasicPageLayout = ({ title, buttonAction, buttonText, hideJobDrawer, titleButton, children }) => {
     const classes = useStyles();
 
     const [stats, setStats] = useState(null);
@@ -62,18 +59,25 @@ const BasicPageLayout = ({ title, buttonAction, buttonText, hideJobDrawer, child
             <Grid item style={{ flex: 1 }}>
                 <Grid container direction='column' spacing={2} >
                     <Grid item>
-                        <div>
-                            <div style={{ float: "left" }}>
-                                <Typography variant='h4' gutterBottom>{title}</Typography>
-                            </div>
-                            <div style={{ float: "right" }}>
+                        <Grid container justify='space-between'>
+                            <Grid item>
+                                <Grid container spacing={1} alignItems='center'>
+                                    <Grid item>
+                                        <Typography variant='h4'>{title}</Typography>
+                                    </Grid>
+                                    {titleButton ?
+                                        <Grid item>
+                                            {titleButton}
+                                        </Grid> : null}
+                                </Grid>
+                            </Grid>
+                            <Grid>
                                 {buttonAction && buttonText &&
                                     <Button variant='contained' color='primary' onClick={buttonAction}>
                                         {buttonText}
                                     </Button>}
-                            </div>
-                            <div style={{ clear: "both" }}></div>
-                        </div>
+                            </Grid>
+                        </Grid>
                     </Grid>
                     <Grid item>
                         {children}
@@ -115,7 +119,7 @@ const BasicPageLayout = ({ title, buttonAction, buttonText, hideJobDrawer, child
                             <Typography>
                                 {`Currently there are ${stats ? stats.no_active_jobs : 0} jobs being processed by a worker.`}
                             </Typography>
-                            <Divider className={classes.divider}/>
+                            <Divider className={classes.divider} />
                             <Typography variant='h6' gutterBottom>
                                 {'Failed'}
                                 <Badge badgeContent={stats ? stats.no_failed_jobs : null} color="primary" style={{ marginLeft: 12 }}>

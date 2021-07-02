@@ -23,7 +23,7 @@ function EditSerie({ close, currentSerie }) {
             }}
             onClose={close}
             dialog='edit'
-            currentSerie={currentSerie}
+            currentConfig={currentSerie}
             socketError={socketError}
         />
     )
