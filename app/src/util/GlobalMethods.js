@@ -1,3 +1,8 @@
+import * as chroma from 'chroma-js';
+import green from '@material-ui/core/colors/green';
+import orange from '@material-ui/core/colors/orange';
+import red from '@material-ui/core/colors/red';
+
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -29,3 +34,13 @@ export function historyGetQueryParam(history, name) {
     const result = params.get(name);
     return result;
 }
+
+export function healthToText(severity) {
+    const sevs = ["low", "medium", "high"];
+    const x = Math.floor((1 / (3 + 1)) * (((3 - 1) * severity) + 1) * sevs.length);
+    return sevs[x];
+};
+
+export function healthToColor(domain, severity) {
+    return chroma.scale([red[500], orange[500], green[500]]).domain(domain)(severity);
+};

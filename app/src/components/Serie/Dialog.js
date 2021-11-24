@@ -15,9 +15,8 @@ const SerieDetails = (props) => {
             maxWidth='lg'
             open={true}
             onClose={closeCb}
-            aria-labelledby="max-width-dialog-title"
         >
-            <DialogTitle id="max-width-dialog-title">Serie Data</DialogTitle>
+            <DialogTitle>{'Series data'}</DialogTitle>
             <DialogContent>
                 {props.children}
             </DialogContent>
