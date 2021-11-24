@@ -26,6 +26,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import UpdateIcon from '@material-ui/icons/Update';
 import WorkOffIcon from '@material-ui/icons/WorkOff';
+import LabelIcon from '@material-ui/icons/Label';
 import { Chart } from "react-google-charts";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
@@ -94,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     health: {
-        width: 52
+        width: 90
     },
     name: {
         marginBottom: theme.spacing(0.5)
@@ -309,10 +310,10 @@ const TimeSeriesPage = () => {
                                             <TableCell className={classes.health}>
                                                 <Grid container spacing={1} alignItems='center'>
                                                     <Grid item>
-                                                        <Tooltip title={healthToText(series.health / 100) + " health - " + series.health + '%'} >
+                                                        <Tooltip title={series.health === null ? "unknown" : healthToText(series.health / 100) + " health - " + series.health + '%'} >
                                                             <FiberManualRecordIcon
                                                                 fontSize="small"
-                                                                style={{ color: healthToColor([0, 1], series.health / 100) }}
+                                                                style={{ color: series.health === null ? "#D1D1D1" : healthToColor([0, 1], series.health / 100) }}
                                                             />
                                                         </Tooltip>
                                                     </Grid>
@@ -320,6 +321,13 @@ const TimeSeriesPage = () => {
                                                         <Grid item>
                                                             <Tooltip title='Real-time analysis is enabled for this series'>
                                                                 <UpdateIcon color='primary' />
+                                                            </Tooltip>
+                                                        </Grid>
+                                                        : null}
+                                                    {series.label_name ?
+                                                        <Grid item>
+                                                            <Tooltip title={`This series is added on basis of the label '${series.label_name}'`}>
+                                                                <LabelIcon color='primary' />
                                                             </Tooltip>
                                                         </Grid>
                                                         : null}

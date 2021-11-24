@@ -228,14 +228,25 @@ const LabelsPage = () => {
                                     </TableSortLabel>
                                 </TableCell>
                                 <TableCell
-                                    sortDirection={orderBy === 'grouptag' ? order : false}
+                                    sortDirection={orderBy === 'description' ? order : false}
                                 >
                                     <TableSortLabel
-                                        active={orderBy === 'grouptag'}
-                                        direction={orderBy === 'grouptag' ? order : 'asc'}
-                                        onClick={(e) => handleRequestSort(e, 'grouptag')}
+                                        active={orderBy === 'description'}
+                                        direction={orderBy === 'description' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'description')}
                                     >
-                                        {'Group/Tag'}
+                                        {'Description'}
+                                    </TableSortLabel>
+                                </TableCell>
+                                <TableCell
+                                    sortDirection={orderBy === 'selector' ? order : false}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === 'selector'}
+                                        direction={orderBy === 'selector' ? order : 'asc'}
+                                        onClick={(e) => handleRequestSort(e, 'selector')}
+                                    >
+                                        {'Selector'}
                                     </TableSortLabel>
                                 </TableCell>
                                 <TableCell />
@@ -257,7 +268,10 @@ const LabelsPage = () => {
                                                 {label.name}
                                             </TableCell>
                                             <TableCell>
-                                                {label.grouptag}
+                                                {label.description}
+                                            </TableCell>
+                                            <TableCell>
+                                                {label.selector}
                                             </TableCell>
                                             <TableCell align='right'>
                                                 <IconButton

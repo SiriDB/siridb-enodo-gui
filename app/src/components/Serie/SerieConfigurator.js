@@ -163,8 +163,8 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentConfig, so
     // Name
     const [name, setName] = useState(existingConfig ? currentConfig.name : '');
 
-    // Grouptag. Only used for configuring labels.
-    const [grouptag, setGrouptag] = useState(dialog === DialogTypes.INFO_LABEL ? currentConfig.grouptag : '');
+    // Label description. Only used for configuring labels.
+    const [labelDescription, setLabelDescription] = useState(dialog === DialogTypes.INFO_LABEL ? currentConfig.description : '');
 
     // Min no. data points
     const [minDataPoints, setMinDataPoints] = useState(existingConfig ? currentConfig.config.min_data_points : 2);
@@ -300,7 +300,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentConfig, so
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        label={aboutSeries ? "Series name" : "Label name"}
+                                        label={aboutSeries ? "Series name" : "Label name (SiriDB Group)"}
                                         variant="outlined"
                                         defaultValue={name}
                                         onChange={(e) => {
@@ -316,14 +316,12 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentConfig, so
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <TextField
-                                            label="Group/Tag name"
+                                            label="Description"
                                             variant="outlined"
-                                            defaultValue={grouptag}
+                                            defaultValue={labelDescription}
                                             onChange={(e) => {
-                                                setGrouptag(e.target.value);
+                                                setLabelDescription(e.target.value);
                                             }}
-                                            required
-                                            error={!grouptag}
                                             disabled={infoVariant}
                                         />
                                     </FormControl>
@@ -485,7 +483,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentConfig, so
                                                         } :
                                                         {
                                                             name: name,
-                                                            grouptag: grouptag,
+                                                            description: labelDescription,
                                                             series_config: config
                                                         }
                                             );
