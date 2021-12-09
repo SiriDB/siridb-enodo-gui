@@ -24,7 +24,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { JobTypes } from '../../constants/enums';
 import { useGlobal } from '../../store';
 
-function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, changeModel, changeSchedule, changeActivitated, checkedJobs }) {
+function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, changeModel, changeSchedule, changeActivitated, checkedJobs, disabled }) {
 
     const [models] = useGlobal(
         state => state.enodo_model
@@ -45,6 +45,7 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                             checked={checkedJobs[jobType]}
                             onChange={toggleCheckbox}
                             color="primary"
+                            disabled={disabled}
                         />
                     </Grid>
                 </Grid>
@@ -59,15 +60,18 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                                 onChange={changeModel}
                                 label={'Job Model'}
                                 name={jobType}
+                                disabled={disabled}
                             >
                                 <MenuItem value="">
                                     <em>{'None'}</em>
                                 </MenuItem>
-                                {models.map((model) => (
-                                    <MenuItem value={model.model_name} key={model.model_name}>
-                                        {model.model_name}
-                                    </MenuItem>
-                                ))}
+                                {models.map((model) => {
+                                    if (model.supported_jobs.includes(jobType)) {
+                                    return <MenuItem value={model.name} key={model.name}>
+                                            {model.name}
+                                        </MenuItem>
+                                    }
+                                })}
                             </Select>
                         </FormControl>
                     </Grid>
@@ -82,24 +86,26 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                                 name={jobType}
                                 required
                                 error={!config.job_schedule}
+                                disabled={disabled}
                             />
                         </FormControl>
                     </Grid>
                     {config.model &&
                         <Fragment>
-                            {Object.entries(models.find(m => m.model_name === config.model).model_arguments).map(([key, value]) => (
-                                <Grid item xs={12} sm={6} key={key}>
+                            {models.find(m => m.name === config.model).model_arguments.map((argument) => (
+                                <Grid item xs={12} sm={6} key={argument.name}>
                                     <FormControl fullWidth>
                                         <TextField
-                                            label={key}
+                                            label={argument.name}
                                             variant="outlined"
-                                            defaultValue={config.model_params[key]}
+                                            defaultValue={config.model_params[argument.name]}
                                             onChange={(e) => {
-                                                setConfig({ ...config, model_params: { ...config.model_params, [key]: Number(e.target.value) } });
+                                                setConfig({ ...config, model_params: { ...config.model_params, [argument.name]: Number(e.target.value) } });
                                             }}
-                                            required={value}
-                                            error={value && !config.model_params[key]}
+                                            required={argument.required}
+                                            error={argument.required && !config.model_params[argument.name]}
                                             type='number'
+                                            disabled={disabled}
                                         />
                                     </FormControl>
                                 </Grid>))}
@@ -112,6 +118,7 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                                     onChange={changeActivitated}
                                     name={jobType}
                                     color="primary"
+                                    disabled={disabled}
                                 />
                             }
                             label="Activated"
@@ -129,32 +136,47 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, socketError }) {
+const DialogTypes = {
+    ADD: 'add',
+    EDIT: 'edit',
+    ADD_LABEL: 'addLabel',
+    INFO_LABEL: 'infoLabel'
+};
+
+function SerieConfigurator({ title, dialog, onSubmit, onClose, currentConfig, socketError }) {
     const classes = useStyles();
     const theme = useTheme();
 
     const [activeStep, setActiveStep] = useState(0);
 
+    const existingConfig = dialog === DialogTypes.EDIT || dialog === DialogTypes.INFO_LABEL;
+
     const [checkedJobs, setCheckedJobs] = useState({
-        [JobTypes.JOB_BASE_ANALYSIS]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? true : false,
-        [JobTypes.JOB_FORECAST]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_FORECAST] ? true : false,
-        [JobTypes.JOB_ANOMALY_DETECT]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? true : false,
-        [JobTypes.JOB_STATIC_RULES]: dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_STATIC_RULES] ? true : false
+        [JobTypes.JOB_BASE_ANALYSIS]: existingConfig && currentConfig.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? true : false,
+        [JobTypes.JOB_FORECAST]: existingConfig && currentConfig.config.job_config[JobTypes.JOB_FORECAST] ? true : false,
+        [JobTypes.JOB_ANOMALY_DETECT]: existingConfig && currentConfig.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? true : false,
+        [JobTypes.JOB_STATIC_RULES]: existingConfig && currentConfig.config.job_config[JobTypes.JOB_STATIC_RULES] ? true : false
     })
 
     // Config
 
     // Name
-    const [name, setName] = useState(dialog === 'edit' ? currentSerie.name : '');
+    const [name, setName] = useState(existingConfig ? currentConfig.name : '');
+
+    // Label description. Only used for configuring labels.
+    const [labelDescription, setLabelDescription] = useState(dialog === DialogTypes.INFO_LABEL ? currentConfig.description : '');
 
     // Min no. data points
-    const [minDataPoints, setMinDataPoints] = useState(dialog === 'edit' ? currentSerie.config.min_data_points : 2);
+    const [minDataPoints, setMinDataPoints] = useState(existingConfig ? currentConfig.config.min_data_points : 2);
+
+    // Realtime analysis
+    const [realtime, setRealtime] = useState(existingConfig ? currentConfig.config.realtime : false);
 
     // Job specific config
-    const [baseAnalysisJobConfig, setBaseAnalysisJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? currentSerie.config.job_config[JobTypes.JOB_BASE_ANALYSIS] : null);
-    const [forecastJobConfig, setForcastJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_FORECAST] ? currentSerie.config.job_config[JobTypes.JOB_FORECAST] : null);
-    const [anomalyDetectionJobConfig, setAnomalyDetectionJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? currentSerie.config.job_config[JobTypes.JOB_ANOMALY_DETECT] : null);
-    const [staticRulesJobConfig, setStaticRuleJobConfig] = useState(dialog === 'edit' && currentSerie.config.job_config[JobTypes.JOB_STATIC_RULES] ? currentSerie.config.job_config[JobTypes.JOB_STATIC_RULES] : null);
+    const [baseAnalysisJobConfig, setBaseAnalysisJobConfig] = useState(existingConfig && currentConfig.config.job_config[JobTypes.JOB_BASE_ANALYSIS] ? currentConfig.config.job_config[JobTypes.JOB_BASE_ANALYSIS] : null);
+    const [forecastJobConfig, setForcastJobConfig] = useState(existingConfig && currentConfig.config.job_config[JobTypes.JOB_FORECAST] ? currentConfig.config.job_config[JobTypes.JOB_FORECAST] : null);
+    const [anomalyDetectionJobConfig, setAnomalyDetectionJobConfig] = useState(existingConfig && currentConfig.config.job_config[JobTypes.JOB_ANOMALY_DETECT] ? currentConfig.config.job_config[JobTypes.JOB_ANOMALY_DETECT] : null);
+    const [staticRulesJobConfig, setStaticRuleJobConfig] = useState(existingConfig && currentConfig.config.job_config[JobTypes.JOB_STATIC_RULES] ? currentConfig.config.job_config[JobTypes.JOB_STATIC_RULES] : null);
 
     const toggleCheckbox = (event) => {
         setCheckedJobs({ ...checkedJobs, [event.target.name]: event.target.checked });
@@ -250,6 +272,12 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
+    const addVariant = dialog === DialogTypes.ADD || dialog === DialogTypes.ADD_LABEL;
+    const infoVariant = dialog === DialogTypes.INFO_LABEL;
+
+    const aboutSeries = dialog === DialogTypes.ADD || dialog === DialogTypes.EDIT;
+    const aboutLabels = dialog === DialogTypes.ADD_LABEL || dialog === DialogTypes.INFO_LABEL;
+
     return (
         <Dialog
             open={true}
@@ -272,7 +300,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        label="Series name"
+                                        label={aboutSeries ? "Series name" : "Label name (SiriDB Group)"}
                                         variant="outlined"
                                         defaultValue={name}
                                         onChange={(e) => {
@@ -280,10 +308,25 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                         }}
                                         required
                                         error={!name}
-                                        disabled={dialog === 'edit' ? true : false}
+                                        disabled={existingConfig}
                                     />
                                 </FormControl>
                             </Grid>
+                            {aboutLabels ?
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            label="Description"
+                                            variant="outlined"
+                                            defaultValue={labelDescription}
+                                            onChange={(e) => {
+                                                setLabelDescription(e.target.value);
+                                            }}
+                                            disabled={infoVariant}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                : null}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
@@ -296,9 +339,28 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                         type='number'
                                         required
                                         error={!minDataPoints}
+                                        disabled={infoVariant}
                                     />
                                 </FormControl>
                             </Grid>
+                            <Grid item xs={12}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={realtime}
+                                            onChange={(e) => {
+                                                setRealtime(e.target.checked)
+                                            }}
+                                            color="primary"
+                                            disabled={infoVariant}
+                                        />
+                                    }
+                                    label="Real-time analysis"
+                                />
+                            </Grid>
+                            {realtime && <Grid item xs={12}>
+                                <Alert severity="warning">{'Enabling real-time analysis can have a negative impact on the performance of the system.'}</Alert>
+                            </Grid>}
                         </Fragment> :
                         <Fragment>
                             <Grid item xs={12}>
@@ -318,6 +380,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                 changeSchedule={changeSchedule}
                                 changeActivitated={changeActivitated}
                                 checkedJobs={checkedJobs}
+                                disabled={infoVariant}
                             />
                             <Grid item xs={12}>
                                 <Divider />
@@ -332,6 +395,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                 changeSchedule={changeSchedule}
                                 changeActivitated={changeActivitated}
                                 checkedJobs={checkedJobs}
+                                disabled={infoVariant}
                             />
                             <Grid item xs={12}>
                                 <Divider />
@@ -346,6 +410,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                 changeSchedule={changeSchedule}
                                 changeActivitated={changeActivitated}
                                 checkedJobs={checkedJobs}
+                                disabled={infoVariant}
                             />
                             <Grid item xs={12}>
                                 <Divider />
@@ -360,7 +425,11 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                 changeSchedule={changeSchedule}
                                 changeActivitated={changeActivitated}
                                 checkedJobs={checkedJobs}
+                                disabled={infoVariant}
                             />
+                            {infoVariant && <Grid item xs={12}>
+                                <Alert severity="info">{'When series are added by making use of labels, it is not possible to adjust the configuration of these series afterwards.'}</Alert>
+                            </Grid>}
                         </Fragment>}
                     <Grid item xs={12}>
                         <MobileStepper
@@ -379,9 +448,11 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                         color='primary'
                                         variant='contained'
                                         disableElevation
+                                        style={{ visibility: infoVariant ? 'hidden' : null }}
                                         onClick={() => {
                                             let config = {
                                                 min_data_points: minDataPoints,
+                                                realtime: realtime,
                                                 job_config: {}
                                             };
                                             if (baseAnalysisJobConfig) {
@@ -398,25 +469,36 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                                             }
 
                                             onSubmit(
-                                                dialog === 'add' ?
+                                                dialog === DialogTypes.ADD ?
                                                     {
                                                         name: name,
                                                         config: config
                                                     } :
-                                                    {
-                                                        name: name,
-                                                        data: {
-                                                            config: config
+                                                    dialog === DialogTypes.EDIT ?
+                                                        {
+                                                            name: name,
+                                                            data: {
+                                                                config: config
+                                                            }
+                                                        } :
+                                                        {
+                                                            name: name,
+                                                            description: labelDescription,
+                                                            series_config: config
                                                         }
-                                                    }
                                             );
                                         }}
                                     >
-                                        {dialog === 'add' ? 'Add' : 'Edit'}
+                                        {addVariant ? 'Add' : 'Edit'}
                                     </Button>
                             }
                             backButton={
-                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                                <Button
+                                    size="small"
+                                    onClick={handleBack}
+                                    disabled={activeStep === 0}
+                                    style={{ visibility: activeStep === 0 ? 'hidden' : null }}
+                                >
                                     {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
                                     {'Back'}
                                 </Button>
@@ -431,7 +513,7 @@ function SerieConfigurator({ title, dialog, onSubmit, onClose, currentSerie, soc
                     {'Close'}
                 </Button>
             </DialogActions>
-        </Dialog>
+        </Dialog >
     )
 };
 

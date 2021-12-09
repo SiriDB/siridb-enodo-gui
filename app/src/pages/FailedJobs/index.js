@@ -1,4 +1,6 @@
 import Button from '@material-ui/core/Button';
+import ErrorIcon from '@material-ui/icons/Error';
+import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import Moment from 'moment';
 import Paper from '@material-ui/core/Paper';
@@ -17,6 +19,7 @@ import { makeStyles, fade } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 
 import BasicPageLayout from '../../components/BasicPageLayout';
+import ErrorDialog from "../../components/FailedJobs/ErrorDialog";
 import ResolveDialog from "../../components/FailedJobs/ResolveDialog";
 import { getComparator, stableSort, historyGetQueryParam } from '../../util/GlobalMethods';
 import { socket } from '../../store';
@@ -85,6 +88,8 @@ const FailedJobsPage = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [search, setSearch] = useState('');
+    const [openErrorDialog, setOpenErrorDialog] = useState(false);
+    const [error, setError] = useState('');
 
     const [failedJobs, setFailedJobs] = useState([]);
 
@@ -130,6 +135,16 @@ const FailedJobsPage = () => {
         setPage(0);
     };
 
+    const handleOpenErrorDialog = (error) => {
+        setOpenErrorDialog(true);
+        setError(error);
+    };
+
+    const handleCloseErrorDialog = () => {
+        setOpenErrorDialog(false);
+        setError('');
+    };
+
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, failedJobs.length - page * rowsPerPage);
 
     return (
@@ -166,7 +181,7 @@ const FailedJobsPage = () => {
                 <TableContainer>
                     <Table
                         className={classes.table}
-                        size='medium'
+                        size='small'
                     >
                         <TableHead>
                             <TableRow>
@@ -225,46 +240,50 @@ const FailedJobsPage = () => {
                                         {'Worker id'}
                                     </TableSortLabel>
                                 </TableCell>
+                                <TableCell />
                             </TableRow>
                         </TableHead>
-                        {failedJobs ?
-                            <TableBody>
-                                {stableSort(
-                                    failedJobs.filter(j => search ? j.series_name.toLowerCase().includes(search.toLowerCase()) : true),
-                                    getComparator(order, orderBy)
-                                ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((job, index) => {
-                                        return (
-                                            <TableRow
-                                                hover
-                                                tabIndex={-1}
-                                                key={job.rid}
-                                            >
-                                                <TableCell >
-                                                    {job.rid}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {job.job_type}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {job.series_name}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {Moment.unix(job.send_at).format('YYYY-MM-DD HH:mm')}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {job.worker_id}
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                {emptyRows > 0 && (
-                                    <TableRow style={{ height: 53 * emptyRows }}>
-                                        <TableCell colSpan={7} />
-                                    </TableRow>
-                                )}
-                            </TableBody> :
-                            <div className="centered-message">No failed jobs found</div>}
+                        <TableBody>
+                            {stableSort(
+                                failedJobs.filter(j => search ? j.series_name.toLowerCase().includes(search.toLowerCase()) : true),
+                                getComparator(order, orderBy)
+                            ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((job, index) => {
+                                    return (
+                                        <TableRow
+                                            hover
+                                            tabIndex={-1}
+                                            key={job.rid}
+                                        >
+                                            <TableCell >
+                                                {job.rid}
+                                            </TableCell>
+                                            <TableCell>
+                                                {job.job_type}
+                                            </TableCell>
+                                            <TableCell>
+                                                {job.series_name}
+                                            </TableCell>
+                                            <TableCell>
+                                                {Moment.unix(job.send_at).format('YYYY-MM-DD HH:mm')}
+                                            </TableCell>
+                                            <TableCell>
+                                                {job.worker_id}
+                                            </TableCell>
+                                            <TableCell align='center'>
+                                                <IconButton onClick={() => handleOpenErrorDialog(job.error)}>
+                                                    <ErrorIcon color='error' />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            {emptyRows > 0 && (
+                                <TableRow style={{ height: 53 * emptyRows }}>
+                                    <TableCell colSpan={8} />
+                                </TableRow>
+                            )}
+                        </TableBody>
                     </Table>
                 </TableContainer >
                 <TablePagination
@@ -285,6 +304,7 @@ const FailedJobsPage = () => {
                 }}
                 failedJobs={failedJobs}
             />
+            <ErrorDialog open={openErrorDialog} handleClose={handleCloseErrorDialog} error={error} />
         </BasicPageLayout >
     );
 }
