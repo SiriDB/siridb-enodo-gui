@@ -28,7 +28,7 @@ import UpdateIcon from '@material-ui/icons/Update';
 import WorkOffIcon from '@material-ui/icons/WorkOff';
 import LabelIcon from '@material-ui/icons/Label';
 import { Chart } from "react-google-charts";
-import { makeStyles, fade } from '@material-ui/core/styles';
+import { makeStyles, alpha } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 
 import * as ROUTES from '../../constants/routes';
@@ -60,9 +60,9 @@ const useStyles = makeStyles((theme) => ({
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
-        backgroundColor: fade(theme.palette.common.white, 0.15),
+        backgroundColor: alpha(theme.palette.common.white, 0.15),
         '&:hover': {
-            backgroundColor: fade(theme.palette.common.white, 0.25),
+            backgroundColor: alpha(theme.palette.common.white, 0.25),
         },
         marginRight: theme.spacing(2),
         marginLeft: 0,
@@ -387,8 +387,8 @@ const TimeSeriesPage = () => {
                     count={series.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                 />
                 <Popper open={Boolean(referenceObject)} anchorEl={referenceObject} className={classes.popper} placement="left">
                     <Paper>

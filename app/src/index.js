@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     type: 'light',
     contrastThreshold: 3,

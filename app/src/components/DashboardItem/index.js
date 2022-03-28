@@ -51,7 +51,7 @@ function DashboardItem({ title, icon, value, extraInfo, action, status }) {
         <Card className={classes.root}>
             <div className={classes.card}>
                 <CardContent>
-                    <Grid container justify='space-between'>
+                    <Grid container justifyContent='space-between'>
                         <Grid item >
                             <Grid container direction='column' >
                                 <Typography variant='subtitle1' gutterBottom>
@@ -72,7 +72,7 @@ function DashboardItem({ title, icon, value, extraInfo, action, status }) {
                         </Grid>
                     </Grid>
                     <Divider className={classes.divider} />
-                    <Grid container justify="space-between" alignItems="center" className={classes.row}>
+                    <Grid container justifyContent="space-between" alignItems="center" className={classes.row}>
                         <Typography variant="caption" gutterBottom color='textSecondary'>{extraInfo}</Typography>
                         {action ?
                             <IconButton onClick={action} size="small">

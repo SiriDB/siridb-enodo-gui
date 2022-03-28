@@ -65,7 +65,7 @@ const Info = (props) => {
             onClose={closeCb}
         >
             <DialogTitle>
-                <Grid container justify='space-between' spacing={2} style={{ height: 55 }}>
+                <Grid container justifyContent='space-between' spacing={2} style={{ height: 55 }}>
                     <Grid item>
                         {'Series info'}
                     </Grid>

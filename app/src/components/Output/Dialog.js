@@ -137,7 +137,7 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
                     <DialogContentText id="alert-dialog-description">
                         {'Select the output type you want to add.'}
                     </DialogContentText>
-                    <Grid container spacing={4} justify='flex-start'>
+                    <Grid container spacing={4} justifyContent='flex-start'>
                         <Grid item xs={4}>
                             <OutputTypeCard name={outputTypeProperties[VendorNames.SLACK].name} image={outputTypeProperties[VendorNames.SLACK].image} onClick={() => setVendorName(VendorNames.SLACK)} />
                         </Grid>

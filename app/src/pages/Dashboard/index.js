@@ -63,7 +63,7 @@ const DashboardPage = () => {
         <BasicPageLayout title='Dashboard' hideJobDrawer>
             {stats ?
                 <div className={classes.root}>
-                    <Grid container spacing={6} justify='center' alignItems="center">
+                    <Grid container spacing={6} justifyContent='center' alignItems="center">
                         <Grid item xs={12} md={6} lg={4} xl={3}>
                             <DashboardItem
                                 title="Series"
@@ -138,7 +138,7 @@ const DashboardPage = () => {
                         </Grid>
                     </Grid>
                 </ div> :
-                <Grid container justify='center'>
+                <Grid container justifyContent='center'>
                     <CircularProgress />
                 </Grid>}
         </BasicPageLayout>

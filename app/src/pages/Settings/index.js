@@ -172,7 +172,7 @@ const OutputStreamsPage = () => {
                                     </Grid>
                                 </Grid>
                                 <Grid item xs={6} style={{ display: 'flex' }}>
-                                    <Grid container justify='center' alignItems='center' direction='column'>
+                                    <Grid container justifyContent='center' alignItems='center' direction='column'>
                                         <Grid item>
                                             {siridb_status.data_conn ?
                                                 <CloudDoneIcon color='primary' style={{ fontSize: 80 }} /> :
@@ -193,7 +193,7 @@ const OutputStreamsPage = () => {
                         <Grid item>
                             <Grid container direction='row' spacing={3}>
                                 <Grid item xs={12}>
-                                    <Grid container direction='row' justify='space-between' alignItems='center'>
+                                    <Grid container direction='row' justifyContent='space-between' alignItems='center'>
                                         <Grid item>
                                             <Typography variant='subtitle2'>
                                                 {'Forecast database'}
@@ -288,7 +288,7 @@ const OutputStreamsPage = () => {
                                             </Grid>
                                         </Grid>
                                         <Grid item xs={6} style={{ display: 'flex' }}>
-                                            <Grid container justify='center' alignItems='center' direction='column'>
+                                            <Grid container justifyContent='center' alignItems='center' direction='column'>
                                                 <Grid item>
                                                     {siridb_status.analysis_conn ?
                                                         <CloudDoneIcon color='primary' style={{ fontSize: 80 }} /> :

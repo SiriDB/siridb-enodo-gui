@@ -33,7 +33,7 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
     return (
         <Fragment>
             <Grid item xs={12}>
-                <Grid container direction='row' justify='space-between' alignItems='center'>
+                <Grid container direction='row' justifyContent='space-between' alignItems='center'>
                     <Grid item >
                         <Typography>
                             {title}
@@ -65,7 +65,7 @@ function JobConfigurator({ title, jobType, config, setConfig, toggleCheckbox, ch
                                 <MenuItem value="">
                                     <em>{'None'}</em>
                                 </MenuItem>
-                                {models.map((model) => {
+                                {models.forEach((model) => {
                                     if (model.supported_jobs.includes(jobType)) {
                                     return <MenuItem value={model.name} key={model.name}>
                                             {model.name}

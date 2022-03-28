@@ -59,7 +59,7 @@ const BasicPageLayout = ({ title, buttonAction, buttonText, hideJobDrawer, title
             <Grid item style={{ flex: 1 }}>
                 <Grid container direction='column' spacing={2} >
                     <Grid item>
-                        <Grid container justify='space-between'>
+                        <Grid container justifyContent='space-between'>
                             <Grid item>
                                 <Grid container spacing={1} alignItems='center'>
                                     <Grid item>

@@ -21,7 +21,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
-import { makeStyles, fade } from '@material-ui/core/styles';
+import { makeStyles, alpha } from '@material-ui/core/styles';
 
 import AddLabelDialog from "../../components/Labels/AddLabelDialog";
 import BasicPageLayout from '../../components/BasicPageLayout';
@@ -50,9 +50,9 @@ const useStyles = makeStyles((theme) => ({
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
-        backgroundColor: fade(theme.palette.common.white, 0.15),
+        backgroundColor: alpha(theme.palette.common.white, 0.15),
         '&:hover': {
-            backgroundColor: fade(theme.palette.common.white, 0.25),
+            backgroundColor: alpha(theme.palette.common.white, 0.25),
         },
         marginRight: theme.spacing(2),
         marginLeft: 0,
@@ -187,7 +187,7 @@ const LabelsPage = () => {
         >
             <Paper className={classes.paper}>
                 <Toolbar>
-                    <Grid container justify='space-between'>
+                    <Grid container justifyContent='space-between'>
                         <Grid item>
                             <Typography>
                                 {'Last update: ' + (lastUpdate ? moment.unix(lastUpdate).format('YYYY-MM-DD HH:mm') : 'unknown')}
@@ -298,8 +298,8 @@ const LabelsPage = () => {
                     count={labels.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                 />
                 <Popper open={Boolean(referenceObject)} anchorEl={referenceObject} className={classes.popper} placement="left">
                     <Paper>
