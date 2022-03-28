@@ -1,15 +1,15 @@
-import Button from "@material-ui/core/Button";
-import Checkbox from '@material-ui/core/Checkbox';
-import CloudDoneIcon from '@material-ui/icons/CloudDone';
-import CloudOffIcon from '@material-ui/icons/CloudOff';
-import Divider from "@material-ui/core/Divider";
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Button from "@mui/material/Button";
+import Checkbox from '@mui/material/Checkbox';
+import CloudDoneIcon from '@mui/icons-material/CloudDone';
+import CloudOffIcon from '@mui/icons-material/CloudOff';
+import Divider from "@mui/material/Divider";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import React, { useState, useEffect } from 'react';
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from '@material-ui/core/styles';
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import makeStyles from '@mui/styles/makeStyles';
 
 import BasicPageLayout from '../../components/BasicPageLayout';
 import { socket, useGlobal } from '../../store';

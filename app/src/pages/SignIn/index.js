@@ -1,14 +1,14 @@
-import Alert from "@material-ui/lab/Alert";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Hidden from "@material-ui/core/Hidden";
-import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Alert from '@mui/material/Alert';
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Hidden from "@mui/material/Hidden";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { Fragment, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from '@mui/styles/makeStyles';
 
 import { socket, useGlobal } from "../../store";
 
@@ -90,7 +90,7 @@ function SignInPage() {
     <Fragment>
       <Box className={classes.styledBox}>
         <img src="assets/icon.png" alt="logo" className={classes.logo} />
-        <Hidden lgDown>
+        <Hidden xlDown>
           <Typography variant="h3" gutterBottom>
             {"Welcome to Enodo"}
           </Typography>

@@ -1,26 +1,28 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { ThemeProvider, createTheme } from "@material-ui/core/styles";
+import { ThemeProvider, StyledEngineProvider, createTheme, adaptV4Theme } from "@mui/material/styles";
 
 import "./index.css";
 import App from "./App";
 
-const theme = createTheme({
+const theme = createTheme(adaptV4Theme({
   palette: {
-    type: "light",
+    mode: "light",
     contrastThreshold: 3,
     primary: {
       main: "#09bbad",
       contrastText: "#fff",
     },
   },
-});
+}));
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </StyledEngineProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

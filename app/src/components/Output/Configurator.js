@@ -1,15 +1,17 @@
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
-import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
-import Link from "@material-ui/core/Link";
-import MobileStepper from "@material-ui/core/MobileStepper";
-import Paper from "@material-ui/core/Paper";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import Link from "@mui/material/Link";
+import MobileStepper from "@mui/material/MobileStepper";
+import Paper from "@mui/material/Paper";
 import React, { useState } from "react";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
+
+import makeStyles from '@mui/styles/makeStyles';
 
 import EnterCustomName from "./EnterCustomName";
 import EnterDutyCallsChannels from "./EnterDutyCallsChannels";
@@ -98,7 +100,7 @@ export default function Configurator({
         <Grid container>
           {variant === "add" ? (
             <Grid item xs={2}>
-              <IconButton onClick={onGoBack}>
+              <IconButton onClick={onGoBack} size="large">
                 <ArrowBackIcon size="small" />
               </IconButton>
             </Grid>

@@ -1,15 +1,15 @@
-import Badge from '@material-ui/core/Badge';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
+import Badge from '@mui/material/Badge';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import Grid from '@mui/material/Grid';
+import Hidden from '@mui/material/Hidden';
 import React, { useState, useEffect } from 'react';
-import Typography from '@material-ui/core/Typography';
-import WorkIcon from '@material-ui/icons/Work';
-import WorkOffIcon from '@material-ui/icons/WorkOff';
-import WorkOutlineIcon from '@material-ui/icons/WorkOutline';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import WorkIcon from '@mui/icons-material/Work';
+import WorkOffIcon from '@mui/icons-material/WorkOff';
+import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+import makeStyles from '@mui/styles/makeStyles';
 
 import { socket } from '../../store';
 
@@ -85,7 +85,7 @@ const BasicPageLayout = ({ title, buttonAction, buttonText, hideJobDrawer, title
                 </Grid>
             </Grid>
             {!hideJobDrawer &&
-                <Hidden mdDown>
+                <Hidden lgDown>
                     <Grid item>
                         <Drawer
                             variant="permanent"

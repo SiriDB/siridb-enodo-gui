@@ -1,14 +1,14 @@
-import AssessmentIcon from '@material-ui/icons/Assessment';
-import EventBusyIcon from '@material-ui/icons/EventBusy';
-import Grid from '@material-ui/core/Grid';
-import HearingIcon from '@material-ui/icons/Hearing';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
+import Grid from '@mui/material/Grid';
+import HearingIcon from '@mui/icons-material/Hearing';
 import React, { useState, useEffect } from 'react';
-import ViewStreamIcon from '@material-ui/icons/ViewStream';
-import WorkIcon from '@material-ui/icons/Work';
-import WorkOffIcon from '@material-ui/icons/WorkOff';
-import { makeStyles } from '@material-ui/core/styles';
+import ViewStreamIcon from '@mui/icons-material/ViewStream';
+import WorkIcon from '@mui/icons-material/Work';
+import WorkOffIcon from '@mui/icons-material/WorkOff';
+import makeStyles from '@mui/styles/makeStyles';
 import { useHistory } from 'react-router-dom';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import * as ROUTES from '../../constants/routes';
 import BasicPageLayout from '../../components/BasicPageLayout';

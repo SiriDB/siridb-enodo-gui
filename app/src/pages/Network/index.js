@@ -1,14 +1,14 @@
 import React from 'react';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableContainer from '@material-ui/core/TableContainer';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableContainer from '@mui/material/TableContainer';
 
 import BasicPageLayout from '../../components/BasicPageLayout';
 import Moment from 'moment';
-import Paper from "@material-ui/core/Paper/Paper";
+import Paper from "@mui/material/Paper/Paper";
 import { useGlobal } from '../../store';
 
 const styles = theme => ({

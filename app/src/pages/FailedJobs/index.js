@@ -1,21 +1,22 @@
-import Button from '@material-ui/core/Button';
-import ErrorIcon from '@material-ui/icons/Error';
-import IconButton from '@material-ui/core/IconButton';
-import InputBase from '@material-ui/core/InputBase';
+import Button from '@mui/material/Button';
+import ErrorIcon from '@mui/icons-material/Error';
+import IconButton from '@mui/material/IconButton';
+import InputBase from '@mui/material/InputBase';
 import Moment from 'moment';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import React, { useEffect, useState } from 'react';
-import SearchIcon from '@material-ui/icons/Search';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles, alpha } from '@material-ui/core/styles';
+import SearchIcon from '@mui/icons-material/Search';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Toolbar from '@mui/material/Toolbar';
+import { alpha } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useHistory } from "react-router-dom";
 
 import BasicPageLayout from '../../components/BasicPageLayout';
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('md')]: {
@@ -271,7 +272,7 @@ const FailedJobsPage = () => {
                                                 {job.worker_id}
                                             </TableCell>
                                             <TableCell align='center'>
-                                                <IconButton onClick={() => handleOpenErrorDialog(job.error)}>
+                                                <IconButton onClick={() => handleOpenErrorDialog(job.error)} size="large">
                                                     <ErrorIcon color='error' />
                                                 </IconButton>
                                             </TableCell>
