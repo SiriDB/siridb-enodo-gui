@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
+import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 
 import "./index.css";
 import App from "./App";
@@ -18,9 +18,9 @@ const theme = createTheme({
 
 ReactDOM.render(
   <React.StrictMode>
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <App />
-    </MuiThemeProvider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
