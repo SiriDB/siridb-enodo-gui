@@ -30,7 +30,7 @@ import LabelIcon from '@mui/icons-material/Label';
 import { Chart } from "react-google-charts";
 import { alpha } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import * as ROUTES from '../../constants/routes';
 import AddSerie from "../../components/Serie/Add";
@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TimeSeriesPage = () => {
     const classes = useStyles();
-    let history = useHistory();
+    let navigate = useNavigate();
 
     const [addSerieModalState, setAddSerieModalState] = useState(false);
     const [editSerieModalState, setEditSerieModalState] = useState(false);
@@ -230,7 +230,7 @@ const TimeSeriesPage = () => {
     };
 
     const navigateToFailedJobs = (seriesName) => {
-        history.push({ pathname: ROUTES.FAILED_JOBS, search: `?series=${seriesName}` });
+        navigate({ pathname: ROUTES.FAILED_JOBS, search: `?series=${seriesName}` });
     }
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, series.length - page * rowsPerPage);

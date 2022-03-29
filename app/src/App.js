@@ -14,8 +14,8 @@ import React, { useEffect } from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ViewStreamIcon from "@mui/icons-material/ViewStream";
 import WorkOffIcon from "@mui/icons-material/WorkOff";
-import { HashRouter, NavLink, Route, Switch } from "react-router-dom";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
+import { HashRouter, NavLink, Route, Routes } from "react-router-dom";
 
 import "./App.css";
 import * as ROUTES from "./constants/routes";
@@ -62,6 +62,9 @@ const styles = (theme) => ({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
   },
+  menuLinkSelected: {
+    backgroundColor: "rgba(0, 0, 0, 0.08)",
+  },
 });
 
 const App = (props) => {
@@ -77,13 +80,13 @@ const App = (props) => {
   }, [globalActions, globalState]);
 
   useEffect(() => {
-      // Get the saved credentials from sessionStorage.
-      const username = window.sessionStorage.getItem("username");
-      const password = window.sessionStorage.getItem("password");
-      globalActions.__updateStoreValue(
-        "authenticated",
-        username && password ? true : false
-      );
+    // Get the saved credentials from sessionStorage.
+    const username = window.sessionStorage.getItem("username");
+    const password = window.sessionStorage.getItem("password");
+    globalActions.__updateStoreValue(
+      "authenticated",
+      username && password ? true : false
+    );
   }, [globalActions]);
 
   const onSignOut = () => {
@@ -101,7 +104,13 @@ const App = (props) => {
       </div>
       <Divider />
       <List>
-        <NavLink to={ROUTES.LANDING} exact activeClassName="menu-link-selected">
+        <NavLink
+          to={ROUTES.LANDING}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
           <ListItem button className={classes.leftmenubtn}>
             <ListItemIcon>
               <DashboardIcon />
@@ -111,8 +120,10 @@ const App = (props) => {
         </NavLink>
         <NavLink
           to={ROUTES.TIME_SERIES}
-          exact
-          activeClassName="menu-link-selected"
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
         >
           <ListItem button className={classes.leftmenubtn}>
             <ListItemIcon>
@@ -121,7 +132,13 @@ const App = (props) => {
             <ListItemText primary="" />
           </ListItem>
         </NavLink>
-        <NavLink to={ROUTES.LABELS} exact activeClassName="menu-link-selected">
+        <NavLink
+          to={ROUTES.LABELS}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
           <ListItem button className={classes.leftmenubtn}>
             <ListItemIcon>
               <LabelIcon />
@@ -129,7 +146,13 @@ const App = (props) => {
             <ListItemText primary="" />
           </ListItem>
         </NavLink>
-        <NavLink to={ROUTES.NETWORK} exact activeClassName="menu-link-selected">
+        <NavLink
+          to={ROUTES.NETWORK}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
           <ListItem button className={classes.leftmenubtn}>
             <ListItemIcon>
               <DnsIcon />
@@ -139,8 +162,10 @@ const App = (props) => {
         </NavLink>
         <NavLink
           to={ROUTES.OUTPUT_STREAMS}
-          exact
-          activeClassName="menu-link-selected"
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
         >
           <ListItem button className={classes.leftmenubtn}>
             <ListItemIcon>
@@ -151,8 +176,10 @@ const App = (props) => {
         </NavLink>
         <NavLink
           to={ROUTES.FAILED_JOBS}
-          exact
-          activeClassName="menu-link-selected"
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
         >
           <ListItem button className={classes.leftmenubtn}>
             <ListItemIcon>
@@ -163,8 +190,10 @@ const App = (props) => {
         </NavLink>
         <NavLink
           to={ROUTES.SETTINGS}
-          exact
-          activeClassName="menu-link-selected"
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
         >
           <ListItem button className={classes.leftmenubtn}>
             <ListItemIcon>
@@ -203,22 +232,18 @@ const App = (props) => {
             <main className={classes.content}>
               <div className={classes.toolbar} />
 
-              <Switch>
-                <Route exact path={ROUTES.LANDING} component={DashboardPage} />
-                <Route
-                  exact
-                  path={ROUTES.TIME_SERIES}
-                  component={TimeSeriesPage}
-                />
-                <Route exact path={ROUTES.LABELS} component={LabelsPage} />
-                <Route path={ROUTES.NETWORK} component={NetworkPage} />
+              <Routes>
+                <Route path={ROUTES.LANDING} element={<DashboardPage />} />
+                <Route path={ROUTES.TIME_SERIES} element={<TimeSeriesPage />} />
+                <Route path={ROUTES.LABELS} element={<LabelsPage />} />
+                <Route path={ROUTES.NETWORK} element={<NetworkPage />} />
                 <Route
                   path={ROUTES.OUTPUT_STREAMS}
-                  component={OutputStreamsPage}
+                  element={<OutputStreamsPage />}
                 />
-                <Route path={ROUTES.SETTINGS} component={SettingsPage} />
-                <Route path={ROUTES.FAILED_JOBS} component={FailedJobsPage} />
-              </Switch>
+                <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+                <Route path={ROUTES.FAILED_JOBS} element={<FailedJobsPage />} />
+              </Routes>
             </main>
           </React.Fragment>
         ) : (

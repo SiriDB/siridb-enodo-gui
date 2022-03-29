@@ -7,7 +7,7 @@ import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import WorkIcon from '@mui/icons-material/Work';
 import WorkOffIcon from '@mui/icons-material/WorkOff';
 import makeStyles from '@mui/styles/makeStyles';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import * as ROUTES from '../../constants/routes';
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 const DashboardPage = () => {
     const classes = useStyles();
-    let history = useHistory();
+    let navigate = useNavigate();
 
     const [stats, setStats] = useState(null);
 
@@ -69,7 +69,7 @@ const DashboardPage = () => {
                                 title="Series"
                                 value={stats.no_series}
                                 icon={<AssessmentIcon className={classes.icon} />}
-                                action={() => history.push({ pathname: ROUTES.TIME_SERIES })}
+                                action={() => navigate({ pathname: ROUTES.TIME_SERIES })}
                                 status={"info"}
                             />
                         </Grid>
@@ -78,7 +78,7 @@ const DashboardPage = () => {
                                 title="Ignored series"
                                 value={stats.no_ignored_series}
                                 icon={<AssessmentIcon className={classes.icon} />}
-                                action={() => history.push({ pathname: ROUTES.NETWORK })}
+                                action={() => navigate({ pathname: ROUTES.NETWORK })}
                                 status={stats.no_ignored_series > 0 ? "warning" : "success"}
                             />
                         </Grid>
@@ -87,7 +87,7 @@ const DashboardPage = () => {
                                 title="Open jobs"
                                 value={stats.no_open_jobs}
                                 icon={<WorkIcon className={classes.icon} />}
-                                action={() => history.push({ pathname: ROUTES.TIME_SERIES })}
+                                action={() => navigate({ pathname: ROUTES.TIME_SERIES })}
                                 status={"info"}
                             />
                         </Grid>
@@ -96,7 +96,7 @@ const DashboardPage = () => {
                                 title="Active jobs"
                                 value={stats.no_active_jobs}
                                 icon={<WorkIcon className={classes.icon} />}
-                                action={() => history.push({ pathname: ROUTES.TIME_SERIES })}
+                                action={() => navigate({ pathname: ROUTES.TIME_SERIES })}
                                 status='info'
                             />
                         </Grid>
@@ -105,7 +105,7 @@ const DashboardPage = () => {
                                 title="Failed jobs"
                                 value={stats.no_failed_jobs}
                                 icon={<WorkOffIcon className={classes.icon} />}
-                                action={() => history.push({ pathname: ROUTES.TIME_SERIES })}
+                                action={() => navigate({ pathname: ROUTES.TIME_SERIES })}
                                 status={stats.no_failed_jobs > 0 ? "error" : "success"}
                             />
                         </Grid>
@@ -114,7 +114,7 @@ const DashboardPage = () => {
                                 title="Listeners"
                                 value={stats.no_listeners}
                                 icon={<HearingIcon className={classes.icon} />}
-                                action={() => history.push({ pathname: ROUTES.NETWORK })}
+                                action={() => navigate({ pathname: ROUTES.NETWORK })}
                                 status={"info"}
                             />
                         </Grid>
@@ -123,7 +123,7 @@ const DashboardPage = () => {
                                 title="Busy workers"
                                 value={stats.no_busy_workers + ' / ' + stats.no_workers}
                                 icon={<EventBusyIcon className={classes.icon} />}
-                                action={() => history.push({ pathname: ROUTES.NETWORK })}
+                                action={() => navigate({ pathname: ROUTES.NETWORK })}
                                 status={stats.no_busy_workers === stats.no_workers ? 'warning' : "success"}
                             />
                         </Grid>
@@ -132,7 +132,7 @@ const DashboardPage = () => {
                                 title="Output streams"
                                 value={stats.no_output_streams}
                                 icon={<ViewStreamIcon className={classes.icon} />}
-                                action={() => history.push({ pathname: ROUTES.OUTPUT_STREAMS })}
+                                action={() => navigate({ pathname: ROUTES.OUTPUT_STREAMS })}
                                 status={"info"}
                             />
                         </Grid>
