@@ -27,12 +27,6 @@ export function stableSort(array, comparator) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-export function historyGetQueryParam(history, name) {
-    const params = new URLSearchParams(history.location.search);
-    const result = params.get(name);
-    return result;
-}
-
 export function healthToText(severity) {
     const sevs = ["low", "medium", "high"];
     const x = Math.floor((1 / (3 + 1)) * (((3 - 1) * severity) + 1) * sevs.length);

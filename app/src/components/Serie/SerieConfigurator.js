@@ -8,6 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
@@ -36,7 +37,7 @@ const DialogTypes = {
 };
 
 const defaulConfig = {
-  link_name: "",
+  config_name: "",
   activated: true,
   job_type: null,
   model: null,
@@ -137,9 +138,12 @@ function SerieConfigurator({
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth>
+                <FormControl fullWidth required error={name === ""}>
+                  <FormLabel>
+                    {aboutSeries ? "Series name" : "Label name (SiriDB Group)"}
+                  </FormLabel>
                   <TextField
-                    label={
+                    placeholder={
                       aboutSeries ? "Series name" : "Label name (SiriDB Group)"
                     }
                     variant="outlined"
@@ -147,40 +151,42 @@ function SerieConfigurator({
                     onChange={(e) => {
                       setName(e.target.value);
                     }}
-                    required
-                    error={!name}
                     disabled={existingConfig}
+                    margin="normal"
+                    error={name === ""}
                   />
                 </FormControl>
               </Grid>
               {aboutLabels ? (
                 <Grid item xs={12}>
                   <FormControl fullWidth>
+                    <FormLabel>{"Description"}</FormLabel>
                     <TextField
-                      label="Description"
+                      placeholder="Description"
                       variant="outlined"
                       defaultValue={labelDescription}
                       onChange={(e) => {
                         setLabelDescription(e.target.value);
                       }}
                       disabled={infoVariant}
+                      margin="normal"
                     />
                   </FormControl>
                 </Grid>
               ) : null}
               <Grid item xs={12}>
-                <FormControl fullWidth>
+                <FormControl fullWidth required error={!minDataPoints}>
+                  <FormLabel>{"Min. Data points"}</FormLabel>
                   <TextField
-                    label="Min. Data points"
+                    placeholder="Min. Data points"
                     variant="outlined"
                     defaultValue={minDataPoints}
                     onChange={(e) => {
                       setMinDataPoints(Number(e.target.value));
                     }}
                     type="number"
-                    required
-                    error={!minDataPoints}
                     disabled={infoVariant}
+                    margin="normal"
                   />
                 </FormControl>
               </Grid>
@@ -215,8 +221,8 @@ function SerieConfigurator({
                 <Typography variant="h6" color="primary">
                   {"Jobs"}
                 </Typography>
-                <IconButton onClick={addConfig}>
-                  <AddCircleIcon color="primary" />
+                <IconButton onClick={addConfig} disabled={infoVariant}>
+                  <AddCircleIcon color={!infoVariant ? "primary" : "disabled"} />
                 </IconButton>
               </Grid>
               {jobConfigs.map((jobConfig, i) => (
@@ -230,7 +236,9 @@ function SerieConfigurator({
                     disabled={infoVariant}
                     removeConfig={() => removeConfig(i)}
                     title={
-                      jobConfig.link_name ? jobConfig.link_name : `Job ${i + 1}`
+                      jobConfig.config_name
+                        ? jobConfig.config_name
+                        : `Job ${i + 1}`
                     }
                   />
                 </React.Fragment>
@@ -325,7 +333,7 @@ function SerieConfigurator({
       </DialogContent>
       {socketError && <Alert severity="error">{socketError}</Alert>}
       <DialogActions>
-        <Button onClick={onClose}>{"Close"}</Button>
+        <Button onClick={onClose} color="inherit">{"Close"}</Button>
       </DialogActions>
     </Dialog>
   );
