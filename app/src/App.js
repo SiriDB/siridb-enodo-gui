@@ -10,7 +10,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import PropTypes from "prop-types";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ViewStreamIcon from "@mui/icons-material/ViewStream";
 import WorkOffIcon from "@mui/icons-material/WorkOff";
@@ -27,7 +27,7 @@ import OutputStreamsPage from "./pages/OutputStreams";
 import SettingsPage from "./pages/Settings";
 import SignInPage from "./pages/SignIn";
 import TimeSeriesPage from "./pages/TimeSeries";
-import { useGlobal, setup_subscriptions } from "./store";
+import { useGlobal, socket, setup_store, setup_subscriptions } from "./store";
 
 const drawerWidth = 90;
 
@@ -68,25 +68,34 @@ const styles = (theme) => ({
 });
 
 const App = (props) => {
-  const [globalState, globalActions] = useGlobal(
-    (state) => state,
+  const [authenticated, globalActions] = useGlobal(
+    (state) => state.authenticated,
     (actions) => actions
   );
 
+  const [triedToAuthenticate, setTriedToAuthenticate] = useState(false);
+
   useEffect(() => {
-    if (globalState && globalState.authenticated) {
-      setup_subscriptions(globalActions);
-    }
-  }, [globalActions, globalState]);
+    setup_store(globalActions);
+  }, [globalActions]);
 
   useEffect(() => {
     // Get the saved credentials from sessionStorage.
     const username = window.sessionStorage.getItem("username");
     const password = window.sessionStorage.getItem("password");
-    globalActions.__updateStoreValue(
-      "authenticated",
-      username && password ? true : false
-    );
+    if (username && password) {
+      socket.emit("authorize", { username: username, password: password }, (data) => {
+        if (data === true) {
+          setup_subscriptions(globalActions);
+          globalActions.__updateStoreValue("authenticated", true);
+          setTriedToAuthenticate(!triedToAuthenticate);
+        }
+      });
+    } else {
+      globalActions.__updateStoreValue("authenticated", false);
+      setTriedToAuthenticate(!triedToAuthenticate);
+    }
+
   }, [globalActions]);
 
   const onSignOut = () => {
@@ -212,43 +221,48 @@ const App = (props) => {
     </div>
   );
 
+  console.log(authenticated);
+  if (authenticated === null) {
+    return "";
+  } else if (authenticated === false) {
+    return (
+      <div className={classes.root}>
+        <SignInPage />
+      </div>
+    )
+  }
+
   return (
     <HashRouter>
       <div className={classes.root}>
-        {globalState && globalState.authenticated ? (
-          <React.Fragment>
-            <nav className={classes.drawer}>
-              {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-              <Drawer
-                classes={{
-                  paper: classes.drawerPaper,
-                }}
-                variant="permanent"
-                open
-              >
-                {drawer}
-              </Drawer>
-            </nav>
-            <main className={classes.content}>
-              <div className={classes.toolbar} />
+        <nav className={classes.drawer}>
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </nav>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
 
-              <Routes>
-                <Route path={ROUTES.LANDING} element={<DashboardPage />} />
-                <Route path={ROUTES.TIME_SERIES} element={<TimeSeriesPage />} />
-                <Route path={ROUTES.LABELS} element={<LabelsPage />} />
-                <Route path={ROUTES.NETWORK} element={<NetworkPage />} />
-                <Route
-                  path={ROUTES.OUTPUT_STREAMS}
-                  element={<OutputStreamsPage />}
-                />
-                <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
-                <Route path={ROUTES.FAILED_JOBS} element={<FailedJobsPage />} />
-              </Routes>
-            </main>
-          </React.Fragment>
-        ) : (
-          <SignInPage />
-        )}
+          <Routes>
+            <Route path={ROUTES.LANDING} element={<DashboardPage />} />
+            <Route path={ROUTES.TIME_SERIES} element={<TimeSeriesPage />} />
+            <Route path={ROUTES.LABELS} element={<LabelsPage />} />
+            <Route path={ROUTES.NETWORK} element={<NetworkPage />} />
+            <Route
+              path={ROUTES.OUTPUT_STREAMS}
+              element={<OutputStreamsPage />}
+            />
+            <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+            <Route path={ROUTES.FAILED_JOBS} element={<FailedJobsPage />} />
+          </Routes>
+        </main>
       </div>
     </HashRouter>
   );

@@ -49,31 +49,31 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SignInPage() {
+  const classes = useStyles();
+  const bigScreen = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+
   const [, globalActions] = useGlobal(
     (state) => state,
     (actions) => actions
   );
-
-  const classes = useStyles();
-  const bigScreen = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const [alertText, setAlertText] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const onSubmit = () => {
-    let showError = true;
-    socket.emit("authorize", { username: username, password: password }, () => {
-      setAlertText(null);
-      showError = false;
-      // Save credentials to sessionStorage
-      sessionStorage.setItem("username", username);
-      sessionStorage.setItem("password", password);
-      globalActions.__updateStoreValue("authenticated", true);
+    socket.emit("authorize", { username: username, password: password }, (data) => {
+      if (data === true) {
+        setAlertText(null);
+        // Save credentials to sessionStorage
+        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("password", password);
+        globalActions.__updateStoreValue("authenticated", true);
+      } else {
+        setAlertText("Invalid credentials provided");
+      }
     });
-    if (showError) {
-      setAlertText("Invalid credentials provided");
-    }
+    
   };
 
   const onChange = ({ target }) => {
