@@ -15,7 +15,7 @@ const initialState = {
   series: [],
   job: [],
   event_output: [],
-  authenticated: false,
+  authenticated: null,
 };
 
 const useGlobal = globalHook(React, initialState, actions);
@@ -61,8 +61,11 @@ const fetchValueFromREST = (path, cb, resourceName) => {
   });
 };
 
-const setup_subscriptions = (globalActions) => {
+const setup_store = (globalActions) => {
   socketGlobalActions = globalActions;
+}
+
+const setup_subscriptions = () => {
   socket.emit("/subscribe/series", {}, (data) => {
     data = JSON.parse(data);
     socketGlobalActions.__updateStoreValue("series", data.data);
@@ -94,4 +97,4 @@ const setup_subscriptions = (globalActions) => {
   }, 3000);
 };
 
-export { useGlobal, socket, setup_subscriptions };
+export { useGlobal, socket, setup_store, setup_subscriptions };
