@@ -1,171 +1,279 @@
-import AssessmentIcon from '@material-ui/icons/Assessment';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import Divider from '@material-ui/core/Divider';
-import DnsIcon from '@material-ui/icons/Dns';
-import Drawer from '@material-ui/core/Drawer';
-import LabelIcon from '@material-ui/icons/Label';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
-import SettingsIcon from '@material-ui/icons/Settings';
-import ViewStreamIcon from '@material-ui/icons/ViewStream';
-import WorkOffIcon from '@material-ui/icons/WorkOff';
-import { HashRouter, NavLink, Route, Switch } from "react-router-dom";
-import { withStyles } from '@material-ui/core/styles';
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import Divider from "@mui/material/Divider";
+import DnsIcon from "@mui/icons-material/Dns";
+import Drawer from "@mui/material/Drawer";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import LabelIcon from "@mui/icons-material/Label";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ViewStreamIcon from "@mui/icons-material/ViewStream";
+import WorkOffIcon from "@mui/icons-material/WorkOff";
+import withStyles from "@mui/styles/withStyles";
+import { HashRouter, NavLink, Route, Routes } from "react-router-dom";
 
-import './App.css';
-import * as ROUTES from './constants/routes';
-import DashboardPage from './pages/Dashboard';
+import "./App.css";
+import * as ROUTES from "./constants/routes";
+import DashboardPage from "./pages/Dashboard";
 import FailedJobsPage from "./pages/FailedJobs";
-import LabelsPage from './pages/Labels';
+import LabelsPage from "./pages/Labels";
 import NetworkPage from "./pages/Network";
 import OutputStreamsPage from "./pages/OutputStreams";
 import SettingsPage from "./pages/Settings";
+import SignInPage from "./pages/SignIn";
 import TimeSeriesPage from "./pages/TimeSeries";
-import { useGlobal, setup_subscriptions } from './store';
+import { useGlobal, socket, setup_store, setup_subscriptions } from "./store";
 
 const drawerWidth = 90;
 
-const styles = theme => ({
-    root: {
-        display: 'flex'
-    },
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0
-    },
-    leftmenubtn: {
-        marginLeft: theme.spacing(2)
-    },
-    toolbar: theme.mixins.toolbar,
-    drawerPaper: {
-        width: drawerWidth,
-        overflow: "hidden"
-    },
-    content: {
-        flexGrow: 1,
-        padding: theme.spacing(3)
-    },
-    logoContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    logo: {
-        width: 64,
-        height: '100%',
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(2)
-    }
+const styles = (theme) => ({
+  root: {
+    display: "flex",
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  leftmenubtn: {
+    marginLeft: theme.spacing(2),
+  },
+  toolbar: theme.mixins.toolbar,
+  drawerPaper: {
+    width: drawerWidth,
+    overflow: "hidden",
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  logoContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logo: {
+    width: 64,
+    height: "100%",
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+  },
+  menuLinkSelected: {
+    backgroundColor: "rgba(0, 0, 0, 0.08)",
+  },
 });
 
 const App = (props) => {
-    const [, globalActions] = useGlobal(
-        state => null,
-        actions => actions
-    );
-    useEffect(() => {
-        setup_subscriptions(globalActions);
-    }, [globalActions]);
+  const [authenticated, globalActions] = useGlobal(
+    (state) => state.authenticated,
+    (actions) => actions
+  );
 
-    const { classes } = props;
+  const [triedToAuthenticate, setTriedToAuthenticate] = useState(false);
 
-    const drawer = (
-        <div>
-            <div className={`${classes.toolbar} ${classes.logoContainer}`}>
-                <img src='assets/icon.png' alt='logo' className={classes.logo} />
-            </div>
-            <Divider />
-            <List>
-                <NavLink to={ROUTES.LANDING} exact activeClassName="menu-link-selected">
-                    <ListItem button className={classes.leftmenubtn}>
-                        <ListItemIcon><DashboardIcon /></ListItemIcon>
-                        <ListItemText primary="" />
-                    </ListItem>
-                </NavLink>
-                <NavLink to={ROUTES.TIME_SERIES} exact activeClassName="menu-link-selected">
-                    <ListItem button className={classes.leftmenubtn}>
-                        <ListItemIcon><AssessmentIcon /></ListItemIcon>
-                        <ListItemText primary="" />
-                    </ListItem>
-                </NavLink>
-                <NavLink to={ROUTES.LABELS} exact activeClassName="menu-link-selected">
-                    <ListItem button className={classes.leftmenubtn}>
-                        <ListItemIcon><LabelIcon /></ListItemIcon>
-                        <ListItemText primary="" />
-                    </ListItem>
-                </NavLink>
-                <NavLink to={ROUTES.NETWORK} exact activeClassName="menu-link-selected">
-                    <ListItem button className={classes.leftmenubtn}>
-                        <ListItemIcon><DnsIcon /></ListItemIcon>
-                        <ListItemText primary="" />
-                    </ListItem>
-                </NavLink>
-                <NavLink to={ROUTES.OUTPUT_STREAMS} exact activeClassName="menu-link-selected">
-                    <ListItem button className={classes.leftmenubtn}>
-                        <ListItemIcon><ViewStreamIcon /></ListItemIcon>
-                        <ListItemText primary="" />
-                    </ListItem>
-                </NavLink>
-                <NavLink to={ROUTES.FAILED_JOBS} exact activeClassName="menu-link-selected">
-                    <ListItem button className={classes.leftmenubtn}>
-                        <ListItemIcon><WorkOffIcon /></ListItemIcon>
-                        <ListItemText primary="" />
-                    </ListItem>
-                </NavLink>
-                <NavLink to={ROUTES.SETTINGS} exact activeClassName="menu-link-selected">
-                    <ListItem button className={classes.leftmenubtn}>
-                        <ListItemIcon><SettingsIcon /></ListItemIcon>
-                        <ListItemText primary="" />
-                    </ListItem>
-                </NavLink>
-            </List>
-        </div>
-    );
+  useEffect(() => {
+    setup_store(globalActions);
+  }, [globalActions]);
 
+  useEffect(() => {
+    // Get the saved credentials from sessionStorage.
+    const username = window.sessionStorage.getItem("username");
+    const password = window.sessionStorage.getItem("password");
+    if (username && password) {
+      socket.emit("authorize", { username: username, password: password }, (data) => {
+        if (data === true) {
+          setup_subscriptions(globalActions);
+          globalActions.__updateStoreValue("authenticated", true);
+          setTriedToAuthenticate(!triedToAuthenticate);
+        }
+      });
+    } else {
+      globalActions.__updateStoreValue("authenticated", false);
+      setTriedToAuthenticate(!triedToAuthenticate);
+    }
+
+  }, [globalActions]);
+
+  const onSignOut = () => {
+    // Remove all saved data from sessionStorage
+    window.sessionStorage.clear();
+    globalActions.__updateStoreValue("authenticated", false);
+  };
+
+  const { classes } = props;
+
+  const drawer = (
+    <div>
+      <div className={`${classes.toolbar} ${classes.logoContainer}`}>
+        <img src="assets/icon.png" alt="logo" className={classes.logo} />
+      </div>
+      <Divider />
+      <List>
+        <NavLink
+          to={ROUTES.LANDING}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
+          <ListItem button className={classes.leftmenubtn}>
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="" />
+          </ListItem>
+        </NavLink>
+        <NavLink
+          to={ROUTES.TIME_SERIES}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
+          <ListItem button className={classes.leftmenubtn}>
+            <ListItemIcon>
+              <AssessmentIcon />
+            </ListItemIcon>
+            <ListItemText primary="" />
+          </ListItem>
+        </NavLink>
+        <NavLink
+          to={ROUTES.LABELS}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
+          <ListItem button className={classes.leftmenubtn}>
+            <ListItemIcon>
+              <LabelIcon />
+            </ListItemIcon>
+            <ListItemText primary="" />
+          </ListItem>
+        </NavLink>
+        <NavLink
+          to={ROUTES.NETWORK}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
+          <ListItem button className={classes.leftmenubtn}>
+            <ListItemIcon>
+              <DnsIcon />
+            </ListItemIcon>
+            <ListItemText primary="" />
+          </ListItem>
+        </NavLink>
+        <NavLink
+          to={ROUTES.OUTPUT_STREAMS}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
+          <ListItem button className={classes.leftmenubtn}>
+            <ListItemIcon>
+              <ViewStreamIcon />
+            </ListItemIcon>
+            <ListItemText primary="" />
+          </ListItem>
+        </NavLink>
+        <NavLink
+          to={ROUTES.FAILED_JOBS}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
+          <ListItem button className={classes.leftmenubtn}>
+            <ListItemIcon>
+              <WorkOffIcon />
+            </ListItemIcon>
+            <ListItemText primary="" />
+          </ListItem>
+        </NavLink>
+        <NavLink
+          to={ROUTES.SETTINGS}
+          end
+          className={({ isActive }) =>
+            isActive ? classes.menuLinkSelected : null
+          }
+        >
+          <ListItem button className={classes.leftmenubtn}>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="" />
+          </ListItem>
+        </NavLink>
+        <ListItem button className={classes.leftmenubtn} onClick={onSignOut}>
+          <ListItemIcon>
+            <ExitToAppIcon color="error" />
+          </ListItemIcon>
+          <ListItemText primary="" />
+        </ListItem>
+      </List>
+    </div>
+  );
+
+  console.log(authenticated);
+  if (authenticated === null) {
+    return "";
+  } else if (authenticated === false) {
     return (
-        <HashRouter>
-            <div className={classes.root}>
-                <nav className={classes.drawer}>
-                    {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-                    <Drawer
-                        classes={{
-                            paper: classes.drawerPaper,
-                        }}
-                        variant="permanent"
-                        open
-                    >
-                        {drawer}
-                    </Drawer>
-                </nav>
-                <main className={classes.content}>
-                    <div className={classes.toolbar} />
-
-                    <Switch>
-                        <Route exact path={ROUTES.LANDING} component={DashboardPage} />
-                        <Route exact path={ROUTES.TIME_SERIES} component={TimeSeriesPage} />
-                        <Route exact path={ROUTES.LABELS} component={LabelsPage} />
-                        <Route path={ROUTES.NETWORK} component={NetworkPage} />
-                        <Route path={ROUTES.OUTPUT_STREAMS} component={OutputStreamsPage} />
-                        <Route path={ROUTES.SETTINGS} component={SettingsPage} />
-                        <Route path={ROUTES.FAILED_JOBS} component={FailedJobsPage} />
-                    </Switch>
-
-                </main>
-            </div>
-        </HashRouter>
+      <div className={classes.root}>
+        <SignInPage />
+      </div>
     )
-}
+  }
+
+  return (
+    <HashRouter>
+      <div className={classes.root}>
+        <nav className={classes.drawer}>
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </nav>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+
+          <Routes>
+            <Route path={ROUTES.LANDING} element={<DashboardPage />} />
+            <Route path={ROUTES.TIME_SERIES} element={<TimeSeriesPage />} />
+            <Route path={ROUTES.LABELS} element={<LabelsPage />} />
+            <Route path={ROUTES.NETWORK} element={<NetworkPage />} />
+            <Route
+              path={ROUTES.OUTPUT_STREAMS}
+              element={<OutputStreamsPage />}
+            />
+            <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+            <Route path={ROUTES.FAILED_JOBS} element={<FailedJobsPage />} />
+          </Routes>
+        </main>
+      </div>
+    </HashRouter>
+  );
+};
 
 App.propTypes = {
-    classes: PropTypes.object.isRequired,
-    // Injected by the documentation to work in an iframe.
-    // You won't need it on your project.
-    container: PropTypes.object,
-    theme: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
+  // Injected by the documentation to work in an iframe.
+  // You won't need it on your project.
+  container: PropTypes.object,
+  theme: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles, { withTheme: true })(App);

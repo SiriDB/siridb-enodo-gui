@@ -1,18 +1,18 @@
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from "@material-ui/icons/Delete"
-import Grid from '@material-ui/core/Grid';
-import IconButton from "@material-ui/core/IconButton/IconButton";
-import Paper from '@material-ui/core/Paper';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from "@mui/icons-material/Delete"
+import Grid from '@mui/material/Grid';
+import IconButton from "@mui/material/IconButton/IconButton";
+import Paper from '@mui/material/Paper';
 import React, { useState } from 'react';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -79,7 +79,7 @@ export default function EnterHeaders({ headers, setHeaders }) {
                             onClick={handleAddHeader}
                             color='primary'
                             disabled={key === '' || value === ''}
-                        >
+                            size="large">
                             <AddIcon fontSize='inherit' />
                         </IconButton>
                     </Grid>
@@ -105,7 +105,7 @@ export default function EnterHeaders({ headers, setHeaders }) {
                                         {headers[key]}
                                     </TableCell>
                                     <TableCell align="right">
-                                        <IconButton aria-label="Delete" onClick={() => handleDeleteHeader(key)}>
+                                        <IconButton aria-label="Delete" onClick={() => handleDeleteHeader(key)} size="large">
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>

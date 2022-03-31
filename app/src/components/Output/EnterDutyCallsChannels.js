@@ -1,11 +1,11 @@
-import AddIcon from '@material-ui/icons/Add';
-import Avatar from '@material-ui/core/Avatar';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@mui/icons-material/Add';
+import Avatar from '@mui/material/Avatar';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import React, { useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@mui/material/TextField';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(theme => ({
     textFieldContainer: {
@@ -79,7 +79,7 @@ export default function EnterDutyCallsChannels({ setUrl }) {
                             onClick={onAddChannel}
                             color='primary'
                             disabled={channelInvalid}
-                        >
+                            size="large">
                             <AddIcon fontSize='inherit' />
                         </IconButton>
                     </Grid>

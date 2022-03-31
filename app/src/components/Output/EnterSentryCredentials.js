@@ -1,9 +1,9 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
-import { version } from "../../../package.json";
+import packageInfo from "../../../package.json";
 
 export default function EnterDutyCallsChannels({ setUrl }) {
     const [projectId, setProjectId] = useState('');
@@ -11,7 +11,7 @@ export default function EnterDutyCallsChannels({ setUrl }) {
 
     const updateUrl = (pi, sk) => {
         const baseUrl = `https://sentry.io/api/${pi}/store/`;
-        const queryParams = `?sentry_version=${7}&sentry_key=${sk}&sentry_client=enodo/${version}`;
+        const queryParams = `?sentry_version=${7}&sentry_key=${sk}&sentry_client=enodo/${packageInfo.version}`;
         setUrl(baseUrl + queryParams);
     };
 

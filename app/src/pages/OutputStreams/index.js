@@ -1,16 +1,16 @@
-import DeleteIcon from "@material-ui/icons/Delete"
-import EditIcon from "@material-ui/icons/Edit"
-import Grid from '@material-ui/core/Grid';
-import IconButton from "@material-ui/core/IconButton/IconButton";
-import InfoIcon from "@material-ui/icons/Info"
-import List from "@material-ui/core/List/List";
-import ListItem from "@material-ui/core/ListItem/ListItem";
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText/ListItemText";
-import Paper from '@material-ui/core/Paper';
+import DeleteIcon from "@mui/icons-material/Delete"
+import EditIcon from "@mui/icons-material/Edit"
+import Grid from '@mui/material/Grid';
+import IconButton from "@mui/material/IconButton/IconButton";
+import InfoIcon from "@mui/icons-material/Info"
+import List from "@mui/material/List/List";
+import ListItem from "@mui/material/ListItem/ListItem";
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText/ListItemText";
+import Paper from '@mui/material/Paper';
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 import BasicPageLayout from '../../components/BasicPageLayout';
 import EditDialog from '../../components/Output/EditDialog';
@@ -128,22 +128,30 @@ const OutputStreamsPage = () => {
                                                     secondary={'Vendor: ' + (output.data.vendor_name === VendorNames.SLACK ? 'Slack' : output.data.vendor_name === VendorNames.MS_TEAMS ? 'Microsoft Teams' : output.data.vendor_name === VendorNames.DUTYCALLS ? 'DutyCalls' : output.data.vendor_name === VendorNames.SENTRY ? 'Sentry' : 'Webhook')}
                                                 />
                                                 <ListItemSecondaryAction>
-                                                    <IconButton aria-label="Show info"
+                                                    <IconButton
+                                                        aria-label="Show info"
                                                         onClick={() => handleClickOpenInfoDialog(output)}
-                                                    >
+                                                        size="large">
                                                         <InfoIcon />
                                                     </IconButton>
-                                                    <IconButton aria-label="Edit" onClick={() => handleClickOpenEditDialog(output)}>
+                                                    <IconButton
+                                                        aria-label="Edit"
+                                                        onClick={() => handleClickOpenEditDialog(output)}
+                                                        size="large">
                                                         <EditIcon />
                                                     </IconButton>
-                                                    <IconButton aria-label="Delete" onClick={() => deleteOutput(output.data.rid)}>
+                                                    <IconButton
+                                                        aria-label="Delete"
+                                                        onClick={() => deleteOutput(output.data.rid)}
+                                                        size="large">
                                                         <DeleteIcon />
                                                     </IconButton>
                                                 </ListItemSecondaryAction>
                                             </ListItem>
                                         </div>
                                     </Paper>
-                                </Grid>);
+                                </Grid>
+                            );
                         })}
                     </Grid>}
             </List>

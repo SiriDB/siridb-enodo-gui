@@ -1,35 +1,36 @@
-import Badge from '@material-ui/core/Badge';
-import CancelIcon from '@material-ui/icons/Cancel';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import Grid from '@material-ui/core/Grid';
-import IconButton from "@material-ui/core/IconButton/IconButton";
-import InputBase from '@material-ui/core/InputBase';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
+import Badge from '@mui/material/Badge';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import Grid from '@mui/material/Grid';
+import IconButton from "@mui/material/IconButton/IconButton";
+import InputBase from '@mui/material/InputBase';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import MoreIcon from '@mui/icons-material/MoreVert';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
 import React, { useState, useEffect } from 'react';
-import SearchIcon from '@material-ui/icons/Search';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import UpdateIcon from '@material-ui/icons/Update';
-import WorkOffIcon from '@material-ui/icons/WorkOff';
-import LabelIcon from '@material-ui/icons/Label';
+import SearchIcon from '@mui/icons-material/Search';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import UpdateIcon from '@mui/icons-material/Update';
+import WorkOffIcon from '@mui/icons-material/WorkOff';
+import LabelIcon from '@mui/icons-material/Label';
 import { Chart } from "react-google-charts";
-import { makeStyles, fade } from '@material-ui/core/styles';
-import { useHistory } from "react-router-dom";
+import { alpha } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useNavigate } from "react-router-dom";
 
 import * as ROUTES from '../../constants/routes';
 import AddSerie from "../../components/Serie/Add";
@@ -60,9 +61,9 @@ const useStyles = makeStyles((theme) => ({
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
-        backgroundColor: fade(theme.palette.common.white, 0.15),
+        backgroundColor: alpha(theme.palette.common.white, 0.15),
         '&:hover': {
-            backgroundColor: fade(theme.palette.common.white, 0.25),
+            backgroundColor: alpha(theme.palette.common.white, 0.25),
         },
         marginRight: theme.spacing(2),
         marginLeft: 0,
@@ -87,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('md')]: {
@@ -104,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TimeSeriesPage = () => {
     const classes = useStyles();
-    let history = useHistory();
+    let navigate = useNavigate();
 
     const [addSerieModalState, setAddSerieModalState] = useState(false);
     const [editSerieModalState, setEditSerieModalState] = useState(false);
@@ -229,7 +230,7 @@ const TimeSeriesPage = () => {
     };
 
     const navigateToFailedJobs = (seriesName) => {
-        history.push({ pathname: ROUTES.FAILED_JOBS, search: `?series=${seriesName}` });
+        navigate({ pathname: ROUTES.FAILED_JOBS, search: `?series=${seriesName}` });
     }
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, series.length - page * rowsPerPage);
@@ -356,17 +357,14 @@ const TimeSeriesPage = () => {
                                             </TableCell>
                                             <TableCell >
                                                 {getNoFailedJobs(series.name) > 0 ?
-                                                    <IconButton onClick={() => navigateToFailedJobs(series.name)}>
+                                                    <IconButton onClick={() => navigateToFailedJobs(series.name)} size="large">
                                                         <Badge badgeContent={getNoFailedJobs(series.name)} color="error">
                                                             <WorkOffIcon />
                                                         </Badge>
                                                     </IconButton> : null}
                                             </TableCell>
                                             <TableCell align='right'>
-                                                <IconButton
-                                                    edge="end"
-                                                    onClick={(e) => openMenu(e, series)}
-                                                >
+                                                <IconButton edge="end" onClick={(e) => openMenu(e, series)} size="large">
                                                     <MoreIcon />
                                                 </IconButton>
                                             </TableCell>
@@ -387,8 +385,8 @@ const TimeSeriesPage = () => {
                     count={series.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                 />
                 <Popper open={Boolean(referenceObject)} anchorEl={referenceObject} className={classes.popper} placement="left">
                     <Paper>

@@ -1,18 +1,18 @@
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 
 import Configurator from './Configurator';
 import { VendorNames, EventOutputTypes } from '../../constants/enums';
@@ -137,7 +137,7 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
                     <DialogContentText id="alert-dialog-description">
                         {'Select the output type you want to add.'}
                     </DialogContentText>
-                    <Grid container spacing={4} justify='flex-start'>
+                    <Grid container spacing={4} justifyContent='flex-start'>
                         <Grid item xs={4}>
                             <OutputTypeCard name={outputTypeProperties[VendorNames.SLACK].name} image={outputTypeProperties[VendorNames.SLACK].image} onClick={() => setVendorName(VendorNames.SLACK)} />
                         </Grid>

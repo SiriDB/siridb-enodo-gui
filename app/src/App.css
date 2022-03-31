@@ -10,10 +10,6 @@ span[class^='MuiBadge-badge-'] {
     background-color: #09BBAD;
 }
 
-.menu-link-selected > div {
-    background-color: rgba(0, 0, 0, 0.08);
-}
-
 .job-item span {
     white-space: nowrap;
     overflow: hidden;

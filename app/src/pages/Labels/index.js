@@ -1,27 +1,29 @@
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grid from '@material-ui/core/Grid';
-import IconButton from "@material-ui/core/IconButton/IconButton";
-import InputBase from '@material-ui/core/InputBase';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Grid from '@mui/material/Grid';
+import IconButton from "@mui/material/IconButton/IconButton";
+import InputBase from '@mui/material/InputBase';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import MoreIcon from '@mui/icons-material/MoreVert';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
 import React, { useState, useEffect } from 'react';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import SearchIcon from '@material-ui/icons/Search';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import SearchIcon from '@mui/icons-material/Search';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import moment from 'moment';
-import { makeStyles, fade } from '@material-ui/core/styles';
+import { alpha } from '@mui/material/styles';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 import AddLabelDialog from "../../components/Labels/AddLabelDialog";
 import BasicPageLayout from '../../components/BasicPageLayout';
@@ -50,9 +52,9 @@ const useStyles = makeStyles((theme) => ({
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
-        backgroundColor: fade(theme.palette.common.white, 0.15),
+        backgroundColor: alpha(theme.palette.common.white, 0.15),
         '&:hover': {
-            backgroundColor: fade(theme.palette.common.white, 0.25),
+            backgroundColor: alpha(theme.palette.common.white, 0.25),
         },
         marginRight: theme.spacing(2),
         marginLeft: 0,
@@ -77,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('md')]: {
@@ -187,7 +189,7 @@ const LabelsPage = () => {
         >
             <Paper className={classes.paper}>
                 <Toolbar>
-                    <Grid container justify='space-between'>
+                    <Grid container justifyContent='space-between'>
                         <Grid item>
                             <Typography>
                                 {'Last update: ' + (lastUpdate ? moment.unix(lastUpdate).format('YYYY-MM-DD HH:mm') : 'unknown')}
@@ -274,10 +276,7 @@ const LabelsPage = () => {
                                                 {label.selector}
                                             </TableCell>
                                             <TableCell align='right'>
-                                                <IconButton
-                                                    edge="end"
-                                                    onClick={(e) => openMenu(e, label)}
-                                                >
+                                                <IconButton edge="end" onClick={(e) => openMenu(e, label)} size="large">
                                                     <MoreIcon />
                                                 </IconButton>
                                             </TableCell>
@@ -298,8 +297,8 @@ const LabelsPage = () => {
                     count={labels.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                 />
                 <Popper open={Boolean(referenceObject)} anchorEl={referenceObject} className={classes.popper} placement="left">
                     <Paper>
