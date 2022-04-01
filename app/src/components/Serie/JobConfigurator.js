@@ -12,12 +12,12 @@ import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { withVlow } from "vlow";
 
+import GlobalStore from "../../stores/GlobalStore";
 import { JobTypes, JobScheduleTypes } from "../../constants/enums";
-import { useGlobal } from "../../store";
 
-function JobConfigurator({ config, setConfig, disabled, removeConfig, title }) {
-  const [models] = useGlobal((state) => state.enodo_model);
+function JobConfigurator({ models, config, setConfig, disabled, removeConfig, title }) {
 
   const jobType = config.job_type;
 
@@ -252,4 +252,7 @@ function JobConfigurator({ config, setConfig, disabled, removeConfig, title }) {
   );
 }
 
-export default JobConfigurator;
+export default withVlow({
+  store: GlobalStore,
+  keys: ["models"],
+})(JobConfigurator);

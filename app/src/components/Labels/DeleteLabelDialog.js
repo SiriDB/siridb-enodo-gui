@@ -5,14 +5,11 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { withVlow } from "vlow";
 
-import { socket } from "../../store";
+import GlobalStore from "../../stores/GlobalStore";
 
-export default function DeleteLabelDialog({
-  open,
-  handleClose,
-  selectedLabel,
-}) {
+function DeleteLabelDialog({ socket, open, handleClose, selectedLabel }) {
   const onDelete = () => {
     const data = { selector: selectedLabel.name };
     socket.emit("/api/enodo/labels/delete", data, () => {
@@ -41,3 +38,8 @@ export default function DeleteLabelDialog({
     </Dialog>
   );
 }
+
+export default withVlow({
+  store: GlobalStore,
+  keys: ["socket"],
+})(DeleteLabelDialog);

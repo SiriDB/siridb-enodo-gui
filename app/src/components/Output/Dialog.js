@@ -13,10 +13,11 @@ import Grid from "@mui/material/Grid";
 import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import makeStyles from "@mui/styles/makeStyles";
+import { withVlow } from "vlow";
 
 import Configurator from "./Configurator";
+import GlobalStore from "../../stores/GlobalStore";
 import { VendorNames, EventOutputTypes } from "../../constants/enums";
-import { socket } from "../../store";
 
 const outputTypeProperties = {
   webhook: {
@@ -100,7 +101,7 @@ const useStyles2 = makeStyles((theme) => ({
   },
 }));
 
-export default function OutputDialog({ open, handleClose, onSubmit }) {
+function OutputDialog({ socket, open, handleClose, onSubmit }) {
   const classes = useStyles2();
 
   const [vendorName, setVendorName] = useState(null);
@@ -197,3 +198,8 @@ export default function OutputDialog({ open, handleClose, onSubmit }) {
     </Dialog>
   );
 }
+
+export default withVlow({
+  store: GlobalStore,
+  keys: ["socket"],
+})(OutputDialog);

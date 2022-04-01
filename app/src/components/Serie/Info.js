@@ -13,9 +13,10 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import { withVlow } from "vlow";
 
-import { useGlobal } from "../../store";
 import { healthToColor } from "../../util/GlobalMethods";
+import GlobalStore from "../../stores/GlobalStore";
 
 function CircularProgressWithLabel(props) {
   return (
@@ -39,10 +40,7 @@ function CircularProgressWithLabel(props) {
   );
 }
 
-const Info = (props) => {
-  const [globalState] = useGlobal();
-
-  const series = globalState.series;
+const Info = ({ series, ...props }) => {
 
   let serie = null;
   for (let s in series) {
@@ -130,4 +128,7 @@ const Info = (props) => {
   );
 };
 
-export default Info;
+export default withVlow({
+  store: GlobalStore,
+  keys: ["series"],
+})(Info);

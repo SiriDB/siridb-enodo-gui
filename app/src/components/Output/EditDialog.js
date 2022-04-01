@@ -5,9 +5,10 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import React, { useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
+import { withVlow } from "vlow";
 
 import Configurator from "./Configurator";
-import { socket } from "../../store";
+import GlobalStore from "../../stores/GlobalStore";
 
 const outputTypeProperties = {
   webhook: {
@@ -58,7 +59,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditDialog({
+function EditDialog({
+  socket,
   open,
   handleClose,
   onSubmit,
@@ -110,3 +112,8 @@ export default function EditDialog({
     </Dialog>
   );
 }
+
+export default withVlow({
+  store: GlobalStore,
+  keys: ["socket"],
+})(EditDialog);

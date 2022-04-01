@@ -1,9 +1,10 @@
 import React from "react";
+import { withVlow } from "vlow";
 
+import GlobalStore from "../../stores/GlobalStore";
 import SerieConfigurator from '../Serie/SerieConfigurator';
-import { socket } from '../../store';
 
-export default function AddLabelDialog({ handleClose }) {
+function AddLabelDialog({ socket, handleClose }) {
 
     const onSubmit = (config) => {
         socket.emit('/api/enodo/labels/create', config, () => {
@@ -20,3 +21,9 @@ export default function AddLabelDialog({ handleClose }) {
         />
     );
 }
+
+export default withVlow({
+    store: GlobalStore,
+    keys: ["socket"],
+  })(AddLabelDialog);
+  

@@ -4,12 +4,13 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton/IconButton";
 import InputBase from "@mui/material/InputBase";
+import LabelIcon from "@mui/icons-material/Label";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -24,11 +25,11 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import UpdateIcon from "@mui/icons-material/Update";
 import WorkOffIcon from "@mui/icons-material/WorkOff";
-import LabelIcon from "@mui/icons-material/Label";
+import makeStyles from "@mui/styles/makeStyles";
 import { Chart } from "react-google-charts";
 import { alpha } from "@mui/material/styles";
-import makeStyles from "@mui/styles/makeStyles";
 import { useNavigate } from "react-router-dom";
+import { withVlow } from "vlow";
 
 import * as ROUTES from "../../constants/routes";
 import AddSerie from "../../components/Serie/Add";
@@ -42,7 +43,7 @@ import {
   healthToColor,
   healthToText,
 } from "../../util/GlobalMethods";
-import { useGlobal, socket } from "../../store";
+import GlobalStore from "../../stores/GlobalStore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -106,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TimeSeriesPage = () => {
+const TimeSeriesPage = ({ series, socket }) => {
   const classes = useStyles();
   let navigate = useNavigate();
 
@@ -130,15 +131,15 @@ const TimeSeriesPage = () => {
 
   const [failedJobs, setFailedJobs] = useState([]);
 
-  const retrieveFailedJobs = () => {
+  const retrieveFailedJobs = useCallback(() => {
     socket.emit("/api/job/failed", {}, (data) => {
       setFailedJobs(data.data);
     });
-  };
+  }, [socket]);
 
   useEffect(() => {
     retrieveFailedJobs();
-  }, []);
+  }, [retrieveFailedJobs]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -148,9 +149,7 @@ const TimeSeriesPage = () => {
     return () => {
       clearInterval(interval);
     };
-  }, []);
-
-  const [series] = useGlobal((state) => state.series);
+  }, [retrieveFailedJobs]);
 
   const _pointWithConditionalAnomaly = (point, anomalies) => {
     if (anomalies !== undefined && anomalies.length) {
@@ -323,9 +322,7 @@ const TimeSeriesPage = () => {
                     {"No. datapoints"}
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>
-                    {"No. jobs"}
-                </TableCell>
+                <TableCell>{"No. jobs"}</TableCell>
                 <TableCell />
                 <TableCell align="right">{"Actions"}</TableCell>
               </TableRow>
@@ -544,4 +541,7 @@ const TimeSeriesPage = () => {
   );
 };
 
-export default TimeSeriesPage;
+export default withVlow({
+  store: GlobalStore,
+  keys: ["series", "socket"],
+})(TimeSeriesPage);

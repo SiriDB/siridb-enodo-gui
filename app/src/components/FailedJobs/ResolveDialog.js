@@ -14,11 +14,11 @@ import MobileStepper from "@mui/material/MobileStepper";
 import React, { useState, Fragment, useEffect } from "react";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material/styles";
-
 import makeStyles from "@mui/styles/makeStyles";
+import { useTheme } from "@mui/material/styles";
+import { withVlow } from "vlow";
 
-import { socket } from "../../store";
+import GlobalStore from "../../stores/GlobalStore";
 
 const useStyles = makeStyles(() => ({
   stepper: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function ResolveDialog({ open, onClose, failedJobs }) {
+function ResolveDialog({ socket, open, onClose, failedJobs }) {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -176,4 +176,7 @@ function ResolveDialog({ open, onClose, failedJobs }) {
   );
 }
 
-export default ResolveDialog;
+export default withVlow({
+  store: GlobalStore,
+  keys: ["socket"],
+})(ResolveDialog);
