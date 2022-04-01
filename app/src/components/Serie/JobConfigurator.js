@@ -17,8 +17,14 @@ import { withVlow } from "vlow";
 import GlobalStore from "../../stores/GlobalStore";
 import { JobTypes, JobScheduleTypes } from "../../constants/enums";
 
-function JobConfigurator({ models, config, setConfig, disabled, removeConfig, title }) {
-
+function JobConfigurator({
+  models,
+  config,
+  setConfig,
+  disabled,
+  removeConfig,
+  title,
+}) {
   const jobType = config.job_type;
 
   const changeJobName = (event) => {
@@ -27,15 +33,21 @@ function JobConfigurator({ models, config, setConfig, disabled, removeConfig, ti
 
   const toggleJobType = (event) => {
     const cleanConfig = {
-      config_name: config.config_name,
       activated: true,
+      config_name: config.config_name,
+      job_schedule: 200,
+      job_schedule_type: null,
       job_type: event.target.value,
       model: null,
-      job_schedule_type: null,
-      job_schedule: 200,
       model_params: {},
+      requires_job: config.requires_job,
     };
     setConfig(cleanConfig);
+  };
+
+  const changeRequiresJob = (event) => {
+    const value = event.target.value === "" ? null : event.target.value;
+    setConfig({ ...config, requires_job: value });
   };
 
   const changeActivitated = (event) => {
@@ -80,8 +92,8 @@ function JobConfigurator({ models, config, setConfig, disabled, removeConfig, ti
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <FormControl required error={config.config_name === ""}>
+      <Grid item xs={6}>
+        <FormControl required error={config.config_name === ""} fullWidth>
           <FormLabel>{"Name"}</FormLabel>
           <TextField
             placeholder="Some logical name"
@@ -95,13 +107,24 @@ function JobConfigurator({ models, config, setConfig, disabled, removeConfig, ti
           />
         </FormControl>
       </Grid>
+      <Grid item xs={6}>
+        <FormControl fullWidth>
+          <FormLabel>{"Requires job"}</FormLabel>
+          <TextField
+            placeholder="Name of the required job (optional)"
+            variant="outlined"
+            defaultValue={config.requires_job}
+            onChange={changeRequiresJob}
+            margin="normal"
+            type="text"
+            disabled={disabled}
+          />
+        </FormControl>
+      </Grid>
       <Grid item xs={12}>
         <FormControl required error={!config.job_type} disabled={disabled}>
           <FormLabel>{"Type"}</FormLabel>
-          <RadioGroup
-            value={config.job_type}
-            onChange={toggleJobType}
-          >
+          <RadioGroup value={config.job_type} onChange={toggleJobType}>
             <FormControlLabel
               value={JobTypes.JOB_BASE_ANALYSIS}
               control={<Radio />}
@@ -139,7 +162,6 @@ function JobConfigurator({ models, config, setConfig, disabled, removeConfig, ti
                 value={config.model ? config.model : ""}
                 onChange={changeModel}
                 label={"Model"}
-                name={jobType}
                 disabled={disabled}
               >
                 <MenuItem value="">
@@ -224,7 +246,8 @@ function JobConfigurator({ models, config, setConfig, disabled, removeConfig, ti
                         disabled={disabled}
                         margin="normal"
                         error={
-                          argument.required && !config.model_params[argument.name]
+                          argument.required &&
+                          !config.model_params[argument.name]
                         }
                       />
                     </FormControl>

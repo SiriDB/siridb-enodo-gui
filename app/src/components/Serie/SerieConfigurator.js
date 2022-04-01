@@ -37,13 +37,14 @@ const DialogTypes = {
 };
 
 const defaulConfig = {
-  config_name: "",
   activated: true,
+  config_name: "",
+  job_schedule: 200,
+  job_schedule_type: null,
   job_type: null,
   model: null,
-  job_schedule_type: null,
-  job_schedule: 200,
   model_params: {},
+  requires_job: null
 };
 
 function SerieConfigurator({
