@@ -111,7 +111,7 @@ const App = ({ authenticated, socket }) => {
       GlobalActions.updateStoreValue("series", data.data);
     });
     socket.emit("/subscribe/enodo/model", {}, (data) => {
-      GlobalActions.updateStoreValue("enodo_model", data.data.models);
+      GlobalActions.updateStoreValue("models", data.data.models);
     });
     socket.emit("/subscribe/queue", {}, (data) => {
       data = JSON.parse(data);

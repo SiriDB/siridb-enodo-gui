@@ -8,7 +8,7 @@ const INITIAL_STATE = {
   authenticated: null,
   enodo_clients: {},
   enodo_log: [],
-  enodo_model: [],
+  models: [],
   enodo_status: {},
   event_output: [],
   job: [],
