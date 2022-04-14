@@ -33,5 +33,5 @@ export const JobTypes = Object.freeze({
 
 export const JobScheduleTypes = Object.freeze({
     "POINTS": "N",
-    "SECONDS": "TS"
+    "TIME": "TS"
 });

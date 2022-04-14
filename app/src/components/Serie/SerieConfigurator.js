@@ -42,8 +42,8 @@ const defaulConfig = {
   job_schedule: 200,
   job_schedule_type: null,
   job_type: null,
-  model: null,
-  model_params: {},
+  module: null,
+  module_params: {},
   requires_job: null
 };
 

@@ -110,8 +110,8 @@ const App = ({ authenticated, socket }) => {
       data = JSON.parse(data);
       GlobalActions.updateStoreValue("series", data.data);
     });
-    socket.emit("/subscribe/enodo/model", {}, (data) => {
-      GlobalActions.updateStoreValue("models", data.data.models);
+    socket.emit("/subscribe/enodo/module", {}, (data) => {
+      GlobalActions.updateStoreValue("modules", data.data.modules);
     });
     socket.emit("/subscribe/queue", {}, (data) => {
       data = JSON.parse(data);

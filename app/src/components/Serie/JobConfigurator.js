@@ -18,7 +18,7 @@ import GlobalStore from "../../stores/GlobalStore";
 import { JobTypes, JobScheduleTypes } from "../../constants/enums";
 
 function JobConfigurator({
-  models,
+  modules,
   config,
   setConfig,
   disabled,
@@ -38,8 +38,8 @@ function JobConfigurator({
       job_schedule: 200,
       job_schedule_type: null,
       job_type: event.target.value,
-      model: null,
-      model_params: {},
+      module: null,
+      module_params: {},
       requires_job: config.requires_job,
     };
     setConfig(cleanConfig);
@@ -55,9 +55,9 @@ function JobConfigurator({
     setConfig({ ...config, activated: value });
   };
 
-  const changeModel = (event) => {
+  const changeModule = (event) => {
     const value = event.target.value ? event.target.value : null;
-    setConfig({ ...config, model: value });
+    setConfig({ ...config, module: value });
   };
 
   const changeScheduleType = (event) => {
@@ -69,7 +69,7 @@ function JobConfigurator({
     setConfig({ ...config, job_schedule: value });
   };
 
-  const filteredModels = models.filter((m) =>
+  const filteredModules = modules.filter((m) =>
     m.supported_jobs.includes(jobType)
   );
 
@@ -154,22 +154,22 @@ function JobConfigurator({
             <FormControl
               variant="outlined"
               required
-              error={!config.model}
+              error={!config.module}
               fullWidth
             >
-              <FormLabel>{"Model"}</FormLabel>
+              <FormLabel>{"Module"}</FormLabel>
               <Select
-                value={config.model ? config.model : ""}
-                onChange={changeModel}
-                label={"Model"}
+                value={config.module ? config.module : ""}
+                onChange={changeModule}
+                label={"Module"}
                 disabled={disabled}
               >
                 <MenuItem value="">
                   <em>{"None"}</em>
                 </MenuItem>
-                {filteredModels.map((model, i) => (
-                  <MenuItem value={model.name} key={i}>
-                    {model.name}
+                {filteredModules.map((module, i) => (
+                  <MenuItem value={module.name} key={i}>
+                    {module.name}
                   </MenuItem>
                 ))}
               </Select>
@@ -192,9 +192,9 @@ function JobConfigurator({
                   label="Points"
                 />
                 <FormControlLabel
-                  value={JobScheduleTypes.SECONDS}
+                  value={JobScheduleTypes.TIME}
                   control={<Radio />}
-                  label="Seconds"
+                  label="Seconds/milliseconds"
                 />
               </RadioGroup>
             </FormControl>
@@ -215,29 +215,29 @@ function JobConfigurator({
               />
             </FormControl>
           </Grid>
-          {config.model && (
+          {config.module && (
             <Fragment>
-              {models
-                .find((m) => m.name === config.model)
-                .model_arguments.map((argument) => (
+              {modules
+                .find((m) => m.name === config.module)
+                .module_arguments.map((argument) => (
                   <Grid item xs={12} sm={6} key={argument.name}>
                     <FormControl
                       fullWidth
                       required={argument.required}
                       error={
-                        argument.required && !config.model_params[argument.name]
+                        argument.required && !config.module_params[argument.name]
                       }
                     >
                       <FormLabel>{argument.name}</FormLabel>
                       <TextField
                         placeholder={argument.name}
                         variant="outlined"
-                        defaultValue={config.model_params[argument.name]}
+                        defaultValue={config.module_params[argument.name]}
                         onChange={(e) => {
                           setConfig({
                             ...config,
-                            model_params: {
-                              ...config.model_params,
+                            module_params: {
+                              ...config.module_params,
                               [argument.name]: Number(e.target.value),
                             },
                           });
@@ -247,7 +247,7 @@ function JobConfigurator({
                         margin="normal"
                         error={
                           argument.required &&
-                          !config.model_params[argument.name]
+                          !config.module_params[argument.name]
                         }
                       />
                     </FormControl>
@@ -277,5 +277,5 @@ function JobConfigurator({
 
 export default withVlow({
   store: GlobalStore,
-  keys: ["models"],
+  keys: ["modules"],
 })(JobConfigurator);
