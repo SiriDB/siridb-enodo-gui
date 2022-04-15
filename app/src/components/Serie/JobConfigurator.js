@@ -238,11 +238,11 @@ function JobConfigurator({
                             ...config,
                             module_params: {
                               ...config.module_params,
-                              [argument.name]: Number(e.target.value),
+                              [argument.name]: argument.name === "forecast_name" ? e.target.value : Number(e.target.value),
                             },
                           });
                         }}
-                        type="number"
+                        type={argument.name === "forecast_name" ? "text" : "number"} // TODO: Required till module_params contain data type
                         disabled={disabled}
                         margin="normal"
                         error={

@@ -28,17 +28,17 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
   const classes = useStyles();
   const [settings, setSettings] = useState(null);
   const [siridb, setSiridb] = useState(null);
-  const [siridbForecast, setSiridbForecast] = useState(null);
+  const [siridbOutput, setSiridbOutput] = useState(null);
   const [sameDatabaseChecked, setSameDatabaseChecked] = useState(false);
 
   const retrieveSettings = useCallback(() => {
     socket.emit("/api/enodo/settings", {}, (data) => {
       setSettings(data.data);
       setSiridb(data.data.siridb);
-      setSiridbForecast(data.data.siridb_forecast);
+      setSiridbOutput(data.data.siridb_output);
       setSameDatabaseChecked(
         JSON.stringify(data.data.siridb) ===
-          JSON.stringify(data.data.siridb_forecast)
+          JSON.stringify(data.data.siridb_output)
       );
     });
   }, [socket]);
@@ -51,9 +51,9 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
     const newValue = !sameDatabaseChecked;
     setSameDatabaseChecked(newValue);
     if (newValue) {
-      setSiridbForecast(siridb);
+      setSiridbOutput(siridb);
       saveSettings({
-        section: "siridb_forecast",
+        section: "siridb_output",
         entries: siridb,
       });
     }
@@ -69,13 +69,13 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
     if (databaseType === "siridb") {
       setSiridb((s) => ({ ...s, [target.name]: target.value }));
     } else {
-      setSiridbForecast((s) => ({ ...s, [target.name]: target.value }));
+      setSiridbOutput((s) => ({ ...s, [target.name]: target.value }));
     }
   };
 
   return (
     <BasicPageLayout title="Settings">
-      {settings && siridb && siridbForecast ? (
+      {settings && siridb && siridbOutput ? (
         <Paper className={classes.paper}>
           <Grid container direction="column" spacing={3}>
             <Grid item>
@@ -156,7 +156,7 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
                           });
                           if (sameDatabaseChecked) {
                             saveSettings({
-                              section: "siridb_forecast",
+                              section: "siridb_output",
                               entries: siridb,
                             });
                           }
@@ -218,7 +218,7 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
                   >
                     <Grid item>
                       <Typography variant="subtitle2">
-                        {"Forecast database"}
+                        {"Output database"}
                       </Typography>
                     </Grid>
                     <Grid item>
@@ -244,12 +244,12 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
                             placeholder="Host"
                             name="host"
                             onChange={(e) =>
-                              handleChange(e.target, "siridb_forecast")
+                              handleChange(e.target, "siridb_output")
                             }
                             variant="outlined"
                             className={classes.textField}
                             type="text"
-                            value={siridbForecast.host}
+                            value={siridbOutput.host}
                           />
                         </Grid>
                         <Grid item>
@@ -257,12 +257,12 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
                             placeholder="Port"
                             name="port"
                             onChange={(e) =>
-                              handleChange(e.target, "siridb_forecast")
+                              handleChange(e.target, "siridb_output")
                             }
                             variant="outlined"
                             className={classes.textField}
                             type="number"
-                            value={siridbForecast.port}
+                            value={siridbOutput.port}
                           />
                         </Grid>
                         <Grid item>
@@ -270,12 +270,12 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
                             placeholder="Username"
                             name="user"
                             onChange={(e) =>
-                              handleChange(e.target, "siridb_forecast")
+                              handleChange(e.target, "siridb_output")
                             }
                             variant="outlined"
                             className={classes.textField}
                             type="text"
-                            value={siridbForecast.user}
+                            value={siridbOutput.user}
                           />
                         </Grid>
                         <Grid item>
@@ -283,12 +283,12 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
                             placeholder="Password"
                             name="password"
                             onChange={(e) =>
-                              handleChange(e.target, "siridb_forecast")
+                              handleChange(e.target, "siridb_output")
                             }
                             variant="outlined"
                             className={classes.textField}
                             type="text"
-                            value={siridbForecast.password}
+                            value={siridbOutput.password}
                           />
                         </Grid>
                         <Grid item>
@@ -296,12 +296,12 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
                             placeholder="Database name"
                             name="database"
                             onChange={(e) =>
-                              handleChange(e.target, "siridb_forecast")
+                              handleChange(e.target, "siridb_output")
                             }
                             variant="outlined"
                             className={classes.textField}
                             type="text"
-                            value={siridbForecast.database}
+                            value={siridbOutput.database}
                           />
                         </Grid>
                         <Grid item>
@@ -310,12 +310,12 @@ const OutputStreamsPage = ({ siridb_status, socket }) => {
                             color="primary"
                             onClick={() =>
                               saveSettings({
-                                section: "siridb_forecast",
-                                entries: siridbForecast,
+                                section: "siridb_output",
+                                entries: siridbOutput,
                               })
                             }
                             disabled={
-                              siridbForecast === settings["siridb_forecast"]
+                              siridbOutput === settings["siridb_output"]
                             }
                           >
                             {"Save"}
