@@ -26,7 +26,6 @@ import Typography from "@mui/material/Typography";
 import UpdateIcon from "@mui/icons-material/Update";
 import WorkOffIcon from "@mui/icons-material/WorkOff";
 import makeStyles from "@mui/styles/makeStyles";
-import { Chart } from "react-google-charts";
 import { alpha } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { withVlow } from "vlow";
@@ -36,7 +35,7 @@ import AddSerie from "../../components/Serie/Add";
 import BasicPageLayout from "../../components/BasicPageLayout";
 import EditSerie from "../../components/Serie/Edit";
 import InfoDialog from "../../components/Serie/Info";
-import SerieDetails from "../../components/Serie/Dialog";
+import SerieDetails from "../../components/Serie/ChartsDialog";
 import {
   getComparator,
   stableSort,
@@ -114,7 +113,6 @@ const TimeSeriesPage = ({ series, socket }) => {
   const [addSerieModalState, setAddSerieModalState] = useState(false);
   const [editSerieModalState, setEditSerieModalState] = useState(false);
 
-  const [chartData, setChartData] = useState([]);
   const [selectedSeriesName, setSelectedSeriesName] = useState("");
   const [viewType, setViewType] = useState("");
 
@@ -159,65 +157,8 @@ const TimeSeriesPage = ({ series, socket }) => {
   };
 
   const showChart = (series) => {
-    socket.emit("/api/series/details", { series_name: series.name }, (data) => {
-      const parsed_data = JSON.parse(data).data;
-
-      let points = [];
-      if (hasForecast(series)) {
-        let history = parsed_data.points;
-        for (
-          let i = 0;
-          i < history.length + parsed_data.forecast_points.length;
-          i++
-        ) {
-          if (i < history.length) {
-            points.push(
-              _pointWithConditionalAnomaly(
-                [new Date(history[i][0] * 1000), history[i][1], null],
-                parsed_data.anomalies
-              )
-            );
-          } else {
-            points.push(
-              _pointWithConditionalAnomaly(
-                [
-                  new Date(
-                    parsed_data.forecast_points[i - history.length][0] * 1000
-                  ),
-                  null,
-                  parsed_data.forecast_points[i - history.length][1],
-                ],
-                parsed_data.anomalies
-              )
-            );
-          }
-        }
-        for (let i = 0; i < parsed_data.anomalies.length; i++) {
-          points.push([
-            new Date(parsed_data.anomalies[i][0] * 1000),
-            null,
-            null,
-            parsed_data.anomalies[i][1],
-          ]);
-        }
-      } else {
-        let history = parsed_data.points;
-        for (let i = 0; i < history.length; i++) {
-          points.push([new Date(history[i][0] * 1000), history[i][1]]);
-        }
-      }
-      let cData = [
-        hasAnomaliesDetected(series)
-          ? ["x", "data", "forecast", "annomaly"]
-          : hasForecast(series)
-          ? ["x", "data", "forecast"]
-          : ["x", "data"],
-      ];
-      cData = cData.concat(points);
-      setChartData(cData);
-      setSelectedSeriesName(series.name);
-      setViewType("graph");
-    });
+    setSelectedSeriesName(series.name);
+    setViewType("graph");
   };
 
   const hasForecast = (series) => {
@@ -270,6 +211,11 @@ const TimeSeriesPage = ({ series, socket }) => {
 
   const navigateToFailedJobs = (seriesName) => {
     navigate({ pathname: ROUTES.FAILED_JOBS, search: `?series=${seriesName}` });
+  };
+
+  const closeChartsDialog = () => {
+    setViewType("");
+    setSelectedSeriesName(null);
   };
 
   const emptyRows =
@@ -487,30 +433,9 @@ const TimeSeriesPage = ({ series, socket }) => {
       </Paper>
       {viewType === "graph" && (
         <SerieDetails
-          close={() => {
-            setViewType("");
-            setSelectedSeriesName(null);
-          }}
-        >
-          <Chart
-            chartType="LineChart"
-            data={chartData}
-            options={{
-              explorer: {
-                actions: ["dragToZoom", "rightClickToReset"],
-                axis: "horizontal",
-                keepInBounds: true,
-                maxZoomIn: 4.0,
-              },
-              series: {
-                2: { pointShape: "circle", pointSize: 10, lineWidth: 0 },
-              },
-            }}
-            width="100%"
-            height="400px"
-            legendToggle
-          />
-        </SerieDetails>
+          close={closeChartsDialog}
+          seriesName={selectedSeriesName}
+        />
       )}
       {viewType === "info" && (
         <InfoDialog
