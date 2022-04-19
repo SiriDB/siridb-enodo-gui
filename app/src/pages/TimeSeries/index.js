@@ -149,34 +149,9 @@ const TimeSeriesPage = ({ series, socket }) => {
     };
   }, [retrieveFailedJobs]);
 
-  const _pointWithConditionalAnomaly = (point, anomalies) => {
-    if (anomalies !== undefined && anomalies.length) {
-      point[3] = null;
-    }
-    return point;
-  };
-
   const showChart = (series) => {
     setSelectedSeriesName(series.name);
     setViewType("graph");
-  };
-
-  const hasForecast = (series) => {
-    return (
-      series.job_statuses.job_forecast !== undefined &&
-      series.job_statuses.job_forecast === 3
-    );
-    // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
-  };
-
-  const hasAnomaliesDetected = (series) => {
-    return (
-      (series.job_statuses.job_anomaly_detect !== undefined &&
-        series.job_statuses.job_anomaly_detect === 3) ||
-      (series.job_statuses.job_realtime_anomaly_detect !== undefined &&
-        series.job_statuses.job_realtime_anomaly_detect === 3)
-    );
-    // && serie.job_statuses.job_forecast === 3 && serie.job_statuses.job_anomaly_detect === 3)
   };
 
   const handleRequestSort = (event, property) => {
@@ -406,7 +381,7 @@ const TimeSeriesPage = ({ series, socket }) => {
                     closeMenu();
                   }}
                 >
-                  <Typography>{"Show graph"}</Typography>
+                  <Typography>{"Show graphs"}</Typography>
                 </MenuItem>
                 <MenuItem
                   onClick={() => {

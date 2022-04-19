@@ -6,11 +6,13 @@ import SerieConfigurator from "./SerieConfigurator";
 
 function EditSerie({ socket, close, currentSerie }) {
   const [socketError, setSocketError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   return (
     <SerieConfigurator
       title={"Edit serie"}
       onSubmit={(data) => {
+        setLoading(true);
         socket.emit("/api/series/update", data, (data) => {
           const value = JSON.parse(data);
           if (value.error) {
@@ -18,12 +20,14 @@ function EditSerie({ socket, close, currentSerie }) {
           } else {
             close();
           }
+          setLoading(false);
         });
       }}
       onClose={close}
       dialog="edit"
       currentConfig={currentSerie}
       socketError={socketError}
+      loading={loading}
     />
   );
 }

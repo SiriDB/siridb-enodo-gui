@@ -1,6 +1,9 @@
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import AddIcon from "@mui/icons-material/Add";
 import Alert from "@mui/material/Alert";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -13,21 +16,13 @@ import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import MobileStepper from "@mui/material/MobileStepper";
 import React, { useState, Fragment } from "react";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import makeStyles from "@mui/styles/makeStyles";
 import { useTheme } from "@mui/material/styles";
 
 import JobConfigurator from "./JobConfigurator";
-
-const useStyles = makeStyles(() => ({
-  stepper: {
-    backgroundColor: "#fff",
-  },
-}));
 
 const DialogTypes = {
   ADD: "add",
@@ -44,7 +39,7 @@ const defaulConfig = {
   job_type: null,
   module: null,
   module_params: {},
-  requires_job: null
+  requires_job: null,
 };
 
 function SerieConfigurator({
@@ -54,8 +49,8 @@ function SerieConfigurator({
   onClose,
   currentConfig,
   socketError,
+  loading
 }) {
-  const classes = useStyles();
   const theme = useTheme();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -128,146 +123,113 @@ function SerieConfigurator({
     <Dialog open={true} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>{title}</DialogTitle>
       <DialogContent dividers>
-        <Grid container spacing={2}>
-          {activeStep === 0 ? (
-            <Fragment>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <Typography variant="h6" color="primary">
-                    {"General"}
-                  </Typography>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth required error={name === ""}>
-                  <FormLabel>
-                    {aboutSeries ? "Series name" : "Label name (SiriDB Group)"}
-                  </FormLabel>
-                  <TextField
-                    placeholder={
-                      aboutSeries ? "Series name" : "Label name (SiriDB Group)"
-                    }
-                    variant="outlined"
-                    defaultValue={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                    }}
-                    disabled={existingConfig}
-                    margin="normal"
-                    error={name === ""}
-                  />
-                </FormControl>
-              </Grid>
-              {aboutLabels ? (
+        {loading ? (
+          <Box sx={{ display: "flex", p: 5, justifyContent: "center" }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Grid container spacing={2}>
+            {activeStep === 0 ? (
+              <Fragment>
                 <Grid item xs={12}>
                   <FormControl fullWidth>
-                    <FormLabel>{"Description"}</FormLabel>
+                    <Typography variant="h6" color="primary">
+                      {"General"}
+                    </Typography>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl fullWidth required error={name === ""}>
+                    <FormLabel>
+                      {aboutSeries
+                        ? "Series name"
+                        : "Label name (SiriDB Group)"}
+                    </FormLabel>
                     <TextField
-                      placeholder="Description"
+                      placeholder={
+                        aboutSeries
+                          ? "Series name"
+                          : "Label name (SiriDB Group)"
+                      }
                       variant="outlined"
-                      defaultValue={labelDescription}
+                      defaultValue={name}
                       onChange={(e) => {
-                        setLabelDescription(e.target.value);
+                        setName(e.target.value);
                       }}
+                      disabled={existingConfig}
+                      margin="normal"
+                      error={name === ""}
+                    />
+                  </FormControl>
+                </Grid>
+                {aboutLabels ? (
+                  <Grid item xs={12}>
+                    <FormControl fullWidth>
+                      <FormLabel>{"Description"}</FormLabel>
+                      <TextField
+                        placeholder="Description"
+                        variant="outlined"
+                        defaultValue={labelDescription}
+                        onChange={(e) => {
+                          setLabelDescription(e.target.value);
+                        }}
+                        disabled={infoVariant}
+                        margin="normal"
+                      />
+                    </FormControl>
+                  </Grid>
+                ) : null}
+                <Grid item xs={12}>
+                  <FormControl fullWidth required error={!minDataPoints}>
+                    <FormLabel>{"Min. Data points"}</FormLabel>
+                    <TextField
+                      placeholder="Min. Data points"
+                      variant="outlined"
+                      defaultValue={minDataPoints}
+                      onChange={(e) => {
+                        setMinDataPoints(Number(e.target.value));
+                      }}
+                      type="number"
                       disabled={infoVariant}
                       margin="normal"
                     />
                   </FormControl>
                 </Grid>
-              ) : null}
-              <Grid item xs={12}>
-                <FormControl fullWidth required error={!minDataPoints}>
-                  <FormLabel>{"Min. Data points"}</FormLabel>
-                  <TextField
-                    placeholder="Min. Data points"
-                    variant="outlined"
-                    defaultValue={minDataPoints}
-                    onChange={(e) => {
-                      setMinDataPoints(Number(e.target.value));
-                    }}
-                    type="number"
-                    disabled={infoVariant}
-                    margin="normal"
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={realtime}
-                      onChange={(e) => {
-                        setRealtime(e.target.checked);
-                      }}
-                      color="primary"
-                      disabled={infoVariant}
-                    />
-                  }
-                  label="Real-time analysis"
-                />
-              </Grid>
-              {realtime && (
                 <Grid item xs={12}>
-                  <Alert severity="warning">
-                    {
-                      "Enabling real-time analysis can have a negative impact on the performance of the system."
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={realtime}
+                        onChange={(e) => {
+                          setRealtime(e.target.checked);
+                        }}
+                        color="primary"
+                        disabled={infoVariant}
+                      />
                     }
-                  </Alert>
+                    label="Real-time analysis"
+                  />
                 </Grid>
-              )}
-            </Fragment>
-          ) : (
-            <Fragment>
-              <Grid container item xs={12} justifyContent="space-between">
-                <Typography variant="h6" color="primary">
-                  {"Jobs"}
-                </Typography>
-                <IconButton onClick={addConfig} disabled={infoVariant}>
-                  <AddCircleIcon color={!infoVariant ? "primary" : "disabled"} />
-                </IconButton>
-              </Grid>
-              {jobConfigs.map((jobConfig, i) => (
-                <React.Fragment key={i}>
+                {realtime && (
                   <Grid item xs={12}>
-                    <Divider />
+                    <Alert severity="warning">
+                      {
+                        "Enabling real-time analysis can have a negative impact on the performance of the system."
+                      }
+                    </Alert>
                   </Grid>
-                  <JobConfigurator
-                    config={jobConfig}
-                    setConfig={(c) => updateConfig(c, i)}
-                    disabled={infoVariant}
-                    removeConfig={() => removeConfig(i)}
-                    title={
-                      jobConfig.config_name
-                        ? jobConfig.config_name
-                        : `Job ${i + 1}`
-                    }
-                  />
-                </React.Fragment>
-              ))}
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-              {infoVariant && (
+                )}
                 <Grid item xs={12}>
-                  <Alert severity="info">
-                    {
-                      "When series are added by making use of labels, it is not possible to adjust the configuration of these series afterwards."
-                    }
-                  </Alert>
-                </Grid>
-              )}
-            </Fragment>
-          )}
-          <Grid item xs={12}>
-            <MobileStepper
-              steps={2}
-              position="static"
-              variant="dots"
-              activeStep={activeStep}
-              className={classes.stepper}
-              nextButton={
-                activeStep === 0 ? (
-                  <Button size="small" onClick={handleNext}>
+                  <Button
+                    variant="contained"
+                    disableElevation
+                    onClick={handleNext}
+                    disabled={activeStep === 1}
+                    style={{
+                      visibility: activeStep === 1 ? "hidden" : null,
+                      float: "right",
+                    }}
+                  >
                     {"Next"}
                     {theme.direction === "rtl" ? (
                       <KeyboardArrowLeft />
@@ -275,66 +237,104 @@ function SerieConfigurator({
                       <KeyboardArrowRight />
                     )}
                   </Button>
-                ) : (
+                </Grid>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <Grid container item xs={12} alignItems="center">
+                  <IconButton onClick={handleBack} sx={{ marginRight: 3 }}>
+                    <ArrowBackIcon color="primary" />
+                  </IconButton>
+                  <Typography variant="h6" color="primary">
+                    {"Jobs"}
+                  </Typography>
+                </Grid>
+                {jobConfigs.map((jobConfig, i) => (
+                  <React.Fragment key={i}>
+                    <Grid item xs={12}>
+                      <Divider />
+                    </Grid>
+                    <JobConfigurator
+                      config={jobConfig}
+                      setConfig={(c) => updateConfig(c, i)}
+                      disabled={infoVariant}
+                      removeConfig={() => removeConfig(i)}
+                      title={
+                        jobConfig.config_name
+                          ? jobConfig.config_name
+                          : `Job ${i + 1}`
+                      }
+                    />
+                  </React.Fragment>
+                ))}
+                <Grid item xs={12}>
+                  <Divider />
+                </Grid>
+                {infoVariant && (
+                  <Grid item xs={12}>
+                    <Alert severity="info">
+                      {
+                        "When series are added by making use of labels, it is not possible to adjust the configuration of these series afterwards."
+                      }
+                    </Alert>
+                  </Grid>
+                )}
+                <Grid item xs={12}>
                   <Button
-                    color="primary"
                     variant="contained"
+                    size="small"
                     disableElevation
-                    style={{ visibility: infoVariant ? "hidden" : null }}
-                    onClick={() => {
-                      let config = {
-                        min_data_points: minDataPoints,
-                        realtime: realtime,
-                        job_config: jobConfigs,
-                      };
-
-                      onSubmit(
-                        dialog === DialogTypes.ADD
-                          ? {
-                              name: name,
-                              config: config,
-                            }
-                          : dialog === DialogTypes.EDIT
-                          ? {
-                              name: name,
-                              data: {
-                                config: config,
-                              },
-                            }
-                          : {
-                              name: name,
-                              description: labelDescription,
-                              series_config: config,
-                            }
-                      );
-                    }}
+                    onClick={addConfig}
+                    disabled={infoVariant}
                   >
-                    {addVariant ? "Add" : "Edit"}
+                    {"Add job"}
+                    <AddIcon />
                   </Button>
-                )
-              }
-              backButton={
-                <Button
-                  size="small"
-                  onClick={handleBack}
-                  disabled={activeStep === 0}
-                  style={{ visibility: activeStep === 0 ? "hidden" : null }}
-                >
-                  {theme.direction === "rtl" ? (
-                    <KeyboardArrowRight />
-                  ) : (
-                    <KeyboardArrowLeft />
-                  )}
-                  {"Back"}
-                </Button>
-              }
-            />
+                </Grid>
+              </Fragment>
+            )}
           </Grid>
-        </Grid>
+        )}
       </DialogContent>
       {socketError && <Alert severity="error">{socketError}</Alert>}
       <DialogActions>
-        <Button onClick={onClose} color="inherit">{"Close"}</Button>
+        <Button onClick={onClose} color="inherit">
+          {"Close"}
+        </Button>
+        {!infoVariant && (
+          <Button
+            disabled={activeStep !== 1}
+            onClick={() => {
+              let config = {
+                min_data_points: minDataPoints,
+                realtime: realtime,
+                job_config: jobConfigs,
+              };
+
+              onSubmit(
+                dialog === DialogTypes.ADD
+                  ? {
+                      name: name,
+                      config: config,
+                    }
+                  : dialog === DialogTypes.EDIT
+                  ? {
+                      name: name,
+                      data: {
+                        config: config,
+                      },
+                    }
+                  : {
+                      name: name,
+                      description: labelDescription,
+                      series_config: config,
+                    }
+              );
+            }}
+          >
+            {addVariant ? "Add" : "Edit"}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

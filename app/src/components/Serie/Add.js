@@ -6,11 +6,13 @@ import SerieConfigurator from "./SerieConfigurator";
 
 function AddSerie({ socket, close }) {
   const [socketError, setSocketError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   return (
     <SerieConfigurator
       title="Add serie"
       onSubmit={(data) => {
+        setLoading(true);
         socket.emit("/api/series/create", data, (data) => {
           const value = JSON.parse(data);
           if (value.error) {
@@ -18,11 +20,13 @@ function AddSerie({ socket, close }) {
           } else {
             close();
           }
+          setLoading(false);
         });
       }}
       onClose={close}
       dialog="add"
       socketError={socketError}
+      loading={loading}
     />
   );
 }
