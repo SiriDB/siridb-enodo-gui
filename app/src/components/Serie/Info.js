@@ -71,8 +71,8 @@ const Info = ({ series, ...props }) => {
               </Grid>
               <Grid item>
                 <CircularProgressWithLabel
-                  value={serie.health}
-                  style={{ color: healthToColor([0, 1], serie.health / 100) }}
+                  value={serie.state.health}
+                  style={{ color: healthToColor([0, 1], serie.state.health / 100) }}
                 />
               </Grid>
             </Grid>
@@ -96,7 +96,7 @@ const Info = ({ series, ...props }) => {
                 Datapoints
               </TableCell>
               <TableCell align="right">
-                {serie.datapoint_count ? serie.datapoint_count : "?"}
+                {serie.state.datapoint_count ? serie.state.datapoint_count : "?"}
               </TableCell>
             </TableRow>
             <TableRow>

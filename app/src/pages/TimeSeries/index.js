@@ -266,11 +266,11 @@ const TimeSeriesPage = ({ series, socket }) => {
                           <Grid item>
                             <Tooltip
                               title={
-                                series.health === null
+                                series.state.health === null
                                   ? "unknown"
-                                  : healthToText(series.health / 100) +
+                                  : healthToText(series.state.health / 100) +
                                     " health - " +
-                                    series.health +
+                                    series.state.health +
                                     "%"
                               }
                             >
@@ -278,11 +278,11 @@ const TimeSeriesPage = ({ series, socket }) => {
                                 fontSize="small"
                                 style={{
                                   color:
-                                    series.health === null
+                                    series.state.health === null
                                       ? "#D1D1D1"
                                       : healthToColor(
                                           [0, 1],
-                                          series.health / 100
+                                          series.state.health / 100
                                         ),
                                 }}
                               />
@@ -310,7 +310,7 @@ const TimeSeriesPage = ({ series, socket }) => {
                         <div className={classes.name}>{series.name}</div>
                       </TableCell>
                       <TableCell>
-                        {series.datapoint_count ? series.datapoint_count : "?"}
+                        {series.state.datapoint_count ? series.state.datapoint_count : "?"}
                       </TableCell>
                       <TableCell>{series.config.job_config.length}</TableCell>
                       <TableCell>
