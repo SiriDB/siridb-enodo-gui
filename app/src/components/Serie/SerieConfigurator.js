@@ -303,7 +303,7 @@ function SerieConfigurator({
         </Button>
         {!infoVariant && (
           <Button
-            disabled={activeStep !== 1}
+            disabled={activeStep !== 1 || loading}
             onClick={() => {
               let config = {
                 min_data_points: minDataPoints,

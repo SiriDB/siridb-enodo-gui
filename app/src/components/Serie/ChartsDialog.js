@@ -12,6 +12,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import React, { useState, useEffect, Fragment } from "react";
 import Select from "@mui/material/Select";
+import Typography from "@mui/material/Typography";
 import { withVlow } from "vlow";
 
 import GlobalStore from "../../stores/GlobalStore";
@@ -40,8 +41,11 @@ const ChartsDialog = ({ socket, close, seriesName }) => {
     });
   }, [seriesName, socket]);
 
+  const jobReady =
+    seriesDetails && job && seriesDetails.job_statuses[job.config_name] === 3;
+
   useEffect(() => {
-    if (job) {
+    if (jobReady) {
       if (!job.module_params.forecast_name) {
         socket.emit(
           "/api/siridb/query",
@@ -105,7 +109,7 @@ const ChartsDialog = ({ socket, close, seriesName }) => {
         });
       }
     }
-  }, [job, seriesName, socket]);
+  }, [job, seriesName, socket, jobReady]);
 
   useEffect(() => {
     if (job && (data || forecasts)) {
@@ -197,7 +201,7 @@ const ChartsDialog = ({ socket, close, seriesName }) => {
             </Select>
           </FormControl>
         )}
-        {job && (
+        {jobReady && (
           <Fragment>
             <DialogContentText sx={{ mb: 1.5 }}>
               {"Select the desired unit of time:"}
@@ -218,7 +222,7 @@ const ChartsDialog = ({ socket, close, seriesName }) => {
             </FormControl>
           </Fragment>
         )}
-        {chartReady ? (
+        {jobReady && chartReady ? (
           <LineChart
             datasets={chartData}
             labels={chartLabels}
@@ -227,7 +231,13 @@ const ChartsDialog = ({ socket, close, seriesName }) => {
           />
         ) : job ? (
           <Box sx={{ display: "flex", padding: 5, justifyContent: "center" }}>
-            <CircularProgress />
+            {jobReady ? (
+              <CircularProgress />
+            ) : (
+              <Typography>
+                {"No data can be shown yet for this job."}
+              </Typography>
+            )}
           </Box>
         ) : null}
       </DialogContent>
