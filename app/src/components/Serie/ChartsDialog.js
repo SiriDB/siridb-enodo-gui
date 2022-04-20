@@ -18,7 +18,7 @@ import GlobalStore from "../../stores/GlobalStore";
 import LineChart from "./LineChart";
 import { JobTypes } from "../../constants/enums";
 
-const SerieDetails = ({ socket, close, seriesName }) => {
+const ChartsDialog = ({ socket, close, seriesName }) => {
   const [seriesDetails, setSeriesDetails] = useState(null);
   const [output, setOutput] = useState([]);
   const [job, setJob] = useState("");
@@ -70,7 +70,14 @@ const SerieDetails = ({ socket, close, seriesName }) => {
             if (value.error) {
               setSocketError(value.error);
             } else {
-              const res = value.data[Object.keys(value.data)[0]];
+              const job_name =
+                job.job_type === JobTypes.JOB_STATIC_RULES
+                  ? job.module_params.forecast_name
+                  : job.config_name;
+              const name = Object.keys(value.data).find((k) =>
+                k.endsWith(job_name)
+              );
+              const res = value.data[name];
               setForecasts(res);
             }
           }
@@ -89,7 +96,10 @@ const SerieDetails = ({ socket, close, seriesName }) => {
           if (value.error) {
             setSocketError(value.error);
           } else {
-            const res = value.data[Object.keys(value.data)[0]];
+            const name = Object.keys(value.data).find((k) =>
+              k.endsWith(job.config_name)
+            );
+            const res = value.data[name];
             setOutput(res);
           }
         });
@@ -232,4 +242,4 @@ const SerieDetails = ({ socket, close, seriesName }) => {
 export default withVlow({
   store: GlobalStore,
   keys: ["socket"],
-})(SerieDetails);
+})(ChartsDialog);
