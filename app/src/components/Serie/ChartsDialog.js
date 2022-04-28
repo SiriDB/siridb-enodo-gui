@@ -42,7 +42,7 @@ const ChartsDialog = ({ socket, close, seriesName }) => {
   }, [seriesName, socket]);
 
   const jobReady =
-    seriesDetails && job && seriesDetails.job_statuses[job.config_name] === 3;
+    seriesDetails && job && seriesDetails.state.job_statuses[job.config_name] === 3;
 
   useEffect(() => {
     if (jobReady) {
