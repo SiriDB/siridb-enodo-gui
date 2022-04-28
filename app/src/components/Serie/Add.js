@@ -1,31 +1,37 @@
 import React, { useState } from "react";
+import { withVlow } from "vlow";
 
-import SerieConfigurator from './SerieConfigurator';
-import { socket } from '../../store';
+import GlobalStore from "../../stores/GlobalStore";
+import SerieConfigurator from "./SerieConfigurator";
 
-function AddSerie({ close }) {
+function AddSerie({ socket, close }) {
+  const [socketError, setSocketError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    const [socketError, setSocketError] = useState(null);
+  return (
+    <SerieConfigurator
+      title="Add serie"
+      onSubmit={(data) => {
+        setLoading(true);
+        socket.emit("/api/series/create", data, (data) => {
+          const value = JSON.parse(data);
+          if (value.error) {
+            setSocketError(value.error);
+          } else {
+            close();
+          }
+          setLoading(false);
+        });
+      }}
+      onClose={close}
+      dialog="add"
+      socketError={socketError}
+      loading={loading}
+    />
+  );
+}
 
-    return (
-        <SerieConfigurator
-            title='Add serie'
-            onSubmit={(data) => {
-                socket.emit('/api/series/create', data, (data) => {
-                    const value = JSON.parse(data);
-                    if (value.error) {
-                        setSocketError(value.error);
-                    }
-                    else {
-                        close();
-                    }
-                });
-            }}
-            onClose={close}
-            dialog='add'
-            socketError={socketError}
-        />
-    )
-};
-
-export default AddSerie;
+export default withVlow({
+  store: GlobalStore,
+  keys: ["socket"],
+})(AddSerie);

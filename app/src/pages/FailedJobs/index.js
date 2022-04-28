@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
 import Moment from "moment";
 import Paper from "@mui/material/Paper";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -18,12 +18,13 @@ import Toolbar from "@mui/material/Toolbar";
 import makeStyles from "@mui/styles/makeStyles";
 import { alpha } from "@mui/material/styles";
 import { useSearchParams } from "react-router-dom";
+import { withVlow } from "vlow";
 
 import BasicPageLayout from "../../components/BasicPageLayout";
 import ErrorDialog from "../../components/FailedJobs/ErrorDialog";
+import GlobalStore from "../../stores/GlobalStore";
 import ResolveDialog from "../../components/FailedJobs/ResolveDialog";
 import { getComparator, stableSort } from "../../util/GlobalMethods";
-import { socket } from "../../store";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FailedJobsPage = () => {
+const FailedJobsPage = ({ socket }) => {
   const classes = useStyles();
   let [searchParams] = useSearchParams();
 
@@ -94,15 +95,15 @@ const FailedJobsPage = () => {
 
   const [failedJobs, setFailedJobs] = useState([]);
 
-  const retrieveFailedJobs = () => {
+  const retrieveFailedJobs = useCallback(() => {
     socket.emit("/api/job/failed", {}, (data) => {
       setFailedJobs(data.data);
     });
-  };
+  }, [socket]);
 
   useEffect(() => {
     retrieveFailedJobs();
-  }, []);
+  }, [retrieveFailedJobs]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -112,7 +113,7 @@ const FailedJobsPage = () => {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [retrieveFailedJobs]);
 
   useEffect(() => {
     const param = searchParams.get("series");
@@ -304,4 +305,7 @@ const FailedJobsPage = () => {
   );
 };
 
-export default FailedJobsPage;
+export default withVlow({
+  store: GlobalStore,
+  keys: ["socket"],
+})(FailedJobsPage);

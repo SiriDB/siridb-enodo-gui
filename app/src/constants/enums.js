@@ -30,3 +30,8 @@ export const JobTypes = Object.freeze({
     "JOB_ANOMALY_DETECT": "job_anomaly_detect",
     "JOB_STATIC_RULES": "job_static_rules"
 });
+
+export const JobScheduleTypes = Object.freeze({
+    "POINTS": "N",
+    "TIME": "TS"
+});

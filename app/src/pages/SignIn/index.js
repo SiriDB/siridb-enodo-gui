@@ -1,4 +1,4 @@
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -6,11 +6,14 @@ import Hidden from "@mui/material/Hidden";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Fragment, useState } from "react";
-import makeStyles from '@mui/styles/makeStyles';
+import { withVlow } from "vlow";
 
-import { socket, useGlobal } from "../../store";
+
+import GlobalActions from "../../actions/GlobalActions";
+import GlobalStore from "../../stores/GlobalStore";
 
 const useStyles = makeStyles((theme) => ({
   styledMain: {
@@ -48,32 +51,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SignInPage() {
+function SignInPage({ socket }) {
   const classes = useStyles();
   const bigScreen = useMediaQuery((theme) => theme.breakpoints.up("sm"));
-
-  const [, globalActions] = useGlobal(
-    (state) => state,
-    (actions) => actions
-  );
 
   const [alertText, setAlertText] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const onSubmit = () => {
-    socket.emit("authorize", { username: username, password: password }, (data) => {
-      if (data === true) {
-        setAlertText(null);
-        // Save credentials to sessionStorage
-        sessionStorage.setItem("username", username);
-        sessionStorage.setItem("password", password);
-        globalActions.__updateStoreValue("authenticated", true);
-      } else {
-        setAlertText("Invalid credentials provided");
+    socket.emit(
+      "authorize",
+      { username: username, password: password },
+      (data) => {
+        if (data === true) {
+          setAlertText(null);
+          // Save credentials to sessionStorage
+          sessionStorage.setItem("username", username);
+          sessionStorage.setItem("password", password);
+          GlobalActions.updateStoreValue("authenticated", true);
+        } else {
+          setAlertText("Invalid credentials provided");
+        }
       }
-    });
-    
+    );
   };
 
   const onChange = ({ target }) => {
@@ -181,4 +182,7 @@ function SignInPage() {
   }
 }
 
-export default SignInPage;
+export default withVlow({
+  store: GlobalStore,
+  keys: ["socket"],
+})(SignInPage);

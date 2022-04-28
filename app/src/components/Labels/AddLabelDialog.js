@@ -1,22 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
+import { withVlow } from "vlow";
 
-import SerieConfigurator from '../Serie/SerieConfigurator';
-import { socket } from '../../store';
+import GlobalStore from "../../stores/GlobalStore";
+import SerieConfigurator from "../Serie/SerieConfigurator";
 
-export default function AddLabelDialog({ handleClose }) {
+function AddLabelDialog({ socket, handleClose }) {
+  const [loading, setLoading] = useState(false);
 
-    const onSubmit = (config) => {
-        socket.emit('/api/enodo/labels/create', config, () => {
-            handleClose();
-        });
-    };
+  const onSubmit = (config) => {
+    setLoading(true);
+    socket.emit("/api/enodo/labels/create", config, () => {
+      handleClose();
+      setLoading(false);
+    });
+  };
 
-    return (
-        <SerieConfigurator
-            title='Add label'
-            onSubmit={onSubmit}
-            onClose={handleClose}
-            dialog='addLabel'
-        />
-    );
+  return (
+    <SerieConfigurator
+      title="Add label"
+      onSubmit={onSubmit}
+      onClose={handleClose}
+      dialog="addLabel"
+      loading={loading}
+    />
+  );
 }
+
+export default withVlow({
+  store: GlobalStore,
+  keys: ["socket"],
+})(AddLabelDialog);

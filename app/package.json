@@ -9,6 +9,8 @@
     "@mui/lab": "*",
     "@mui/material": "~5.5.3",
     "@mui/styles": "~5.5.3",
+    "chart.js": "^3.7.1",
+    "chartjs-adapter-moment": "^1.0.0",
     "chroma-js": "~2.4.2",
     "moment": "~2.29.1",
     "react": "~17.0.2",
@@ -18,8 +20,8 @@
     "react-router-dom": "~6.2.2",
     "react-scripts": "5.0.0",
     "socket.io-client": "~4.4.1",
-    "use-global-hook": "~0.2.5",
-    "validator": "~13.7.0"
+    "validator": "~13.7.0",
+    "vlow": "^1.1.14"
   },
   "scripts": {
     "start": "react-scripts start",
