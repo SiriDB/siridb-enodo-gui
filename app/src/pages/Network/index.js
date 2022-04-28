@@ -40,6 +40,7 @@ const NetworkPage = ({ enodo_clients }) => {
               <TableCell>{"IP"}</TableCell>
               <TableCell>{"Is busy"}</TableCell>
               <TableCell>{"Last seen"}</TableCell>
+              <TableCell>{"Is online"}</TableCell>
               <TableCell>{"Version"}</TableCell>
             </TableRow>
           </TableHead>
@@ -54,6 +55,7 @@ const NetworkPage = ({ enodo_clients }) => {
                   <TableCell>
                     {Moment.unix(client.last_seen).fromNow()}
                   </TableCell>
+                  <TableCell>{client.online ? "yes" : "no"}</TableCell>
                   <TableCell>{client.version}</TableCell>
                 </TableRow>
               );
@@ -68,6 +70,7 @@ const NetworkPage = ({ enodo_clients }) => {
                   <TableCell>
                     {Moment.unix(client.last_seen).fromNow()}
                   </TableCell>
+                  <TableCell>{client.online ? "yes" : "no"}</TableCell>
                   <TableCell>{client.version}</TableCell>
                 </TableRow>
               );
