@@ -33,8 +33,10 @@ const DialogTypes = {
 
 const defaulConfig = {
   activated: true,
+  silenced: false,
   config_name: "",
   job_schedule: 200,
+  max_n_points: null,
   job_schedule_type: null,
   job_type: null,
   module: null,

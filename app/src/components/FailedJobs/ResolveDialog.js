@@ -46,7 +46,7 @@ function ResolveDialog({ socket, open, onClose, failedJobs }) {
       ...new Set(
         failedJobs
           .filter((j) => j.series_name === seriesName)
-          .map((j) => j.job_type)
+          .map((j) => j.job_config.job_type)
       ),
     ];
     setJobTypes(jts);

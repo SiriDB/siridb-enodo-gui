@@ -269,9 +269,9 @@ const TimeSeriesPage = ({ series, socket }) => {
                                 series.state.health === null
                                   ? "unknown"
                                   : healthToText(series.state.health / 100) +
-                                    " health - " +
-                                    series.state.health +
-                                    "%"
+                                  " health - " +
+                                  series.state.health +
+                                  "%"
                               }
                             >
                               <FiberManualRecordIcon
@@ -281,9 +281,9 @@ const TimeSeriesPage = ({ series, socket }) => {
                                     series.state.health === null
                                       ? "#D1D1D1"
                                       : healthToColor(
-                                          [0, 1],
-                                          series.state.health / 100
-                                        ),
+                                        [0, 1],
+                                        series.state.health / 100
+                                      ),
                                 }}
                               />
                             </Tooltip>
@@ -395,8 +395,9 @@ const TimeSeriesPage = ({ series, socket }) => {
                 <MenuItem
                   onClick={() => {
                     const data = { name: selectedSerie.name };
-                    socket.emit(`/api/series/delete`, data);
-                    closeMenu();
+                    socket.emit(`/api/series/delete`, data, () => {
+                      closeMenu();
+                    });
                   }}
                 >
                   <Typography color="error">{"Delete series"}</Typography>

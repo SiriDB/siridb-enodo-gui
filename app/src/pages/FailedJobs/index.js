@@ -192,16 +192,8 @@ const FailedJobsPage = ({ socket }) => {
                     {"Id"}
                   </TableSortLabel>
                 </TableCell>
-                <TableCell
-                  sortDirection={orderBy === "job_type" ? order : false}
-                >
-                  <TableSortLabel
-                    active={orderBy === "job_type"}
-                    direction={orderBy === "job_type" ? order : "asc"}
-                    onClick={(e) => handleRequestSort(e, "job_type")}
-                  >
+                <TableCell>
                     {"Job type"}
-                  </TableSortLabel>
                 </TableCell>
                 <TableCell
                   sortDirection={orderBy === "series_name" ? order : false}
@@ -253,7 +245,7 @@ const FailedJobsPage = ({ socket }) => {
                   return (
                     <TableRow hover tabIndex={-1} key={job.rid}>
                       <TableCell>{job.rid}</TableCell>
-                      <TableCell>{job.job_type}</TableCell>
+                      <TableCell>{job.job_config.job_type}</TableCell>
                       <TableCell>{job.series_name}</TableCell>
                       <TableCell>
                         {Moment.unix(job.send_at).format("YYYY-MM-DD HH:mm")}
