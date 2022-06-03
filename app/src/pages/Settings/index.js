@@ -1,9 +1,6 @@
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import CloudDoneIcon from "@mui/icons-material/CloudDone";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
-import Divider from "@mui/material/Divider";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import React, { useState, useEffect, useCallback } from "react";

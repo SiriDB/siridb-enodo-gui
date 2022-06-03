@@ -85,6 +85,8 @@ function JobConfigurator({
     m.supported_jobs.includes(jobType)
   );
 
+  console.log(config);
+
   return (
     <Grid container item spacing={3}>
       <Grid item xs={12}>
@@ -250,31 +252,58 @@ function JobConfigurator({
                       fullWidth
                       required={argument.required}
                       error={
-                        argument.required && !config.module_params[argument.name]
+                        argument.required &&
+                        (config.module_params[argument.name] == null || !config.module_params.hasOwnProperty(argument.name))
                       }
                     >
                       <FormLabel>{argument.name}</FormLabel>
-                      <TextField
-                        placeholder={argument.name}
-                        variant="outlined"
-                        defaultValue={config.module_params[argument.name]}
-                        onChange={(e) => {
-                          setConfig({
-                            ...config,
-                            module_params: {
-                              ...config.module_params,
-                              [argument.name]: argument.name === "forecast_name" ? e.target.value : Number(e.target.value),
-                            },
-                          });
-                        }}
-                        type={argument.name === "forecast_name" ? "text" : "number"} // TODO: Required till module_params contain data type
-                        disabled={disabled}
-                        margin="normal"
-                        error={
-                          argument.required &&
-                          !config.module_params[argument.name]
-                        }
-                      />
+                      {argument.value_type === "bool" ?
+                        <Select
+                          displayEmpty
+                          defaultValue={config.module_params[argument.name]}
+                          label={argument.name}
+                          disabled={disabled}
+                          margin="dense"
+                          error={
+                            argument.required &&
+                            (config.module_params[argument.name] == null || !config.module_params.hasOwnProperty(argument.name))
+                          }
+                          onChange={(e) => {
+                            setConfig({
+                              ...config,
+                              module_params: {
+                                ...config.module_params,
+                                [argument.name]: e.target.value
+                              },
+                            });
+                          }}
+                          sx={{ marginTop: 2, marginBottom: 1 }}
+                        >
+                          <MenuItem value={null}><em>{"None"}</em></MenuItem>
+                          <MenuItem value={true}>{"true"}</MenuItem>
+                          <MenuItem value={false}>{"false"}</MenuItem>
+                        </Select>
+                        : <TextField
+                          placeholder={argument.name}
+                          variant="outlined"
+                          defaultValue={config.module_params[argument.name]}
+                          onChange={(e) => {
+                            setConfig({
+                              ...config,
+                              module_params: {
+                                ...config.module_params,
+                                [argument.name]: argument.name === "forecast_name" ? e.target.value : Number(e.target.value),
+                              },
+                            });
+                          }}
+                          type={argument.name === "forecast_name" ? "text" : "number"} // TODO: Required till module_params contain data type
+                          disabled={disabled}
+                          margin="normal"
+                          error={
+                            argument.required &&
+                            (config.module_params[argument.name] == null || !config.module_params.hasOwnProperty(argument.name))
+                          }
+                        />}
                     </FormControl>
                   </Grid>
                 ))}

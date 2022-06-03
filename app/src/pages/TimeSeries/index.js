@@ -34,15 +34,16 @@ import * as ROUTES from "../../constants/routes";
 import AddSerie from "../../components/Serie/Add";
 import BasicPageLayout from "../../components/BasicPageLayout";
 import EditSerie from "../../components/Serie/Edit";
+import GlobalStore from "../../stores/GlobalStore";
 import InfoDialog from "../../components/Serie/Info";
 import SerieDetails from "../../components/Serie/ChartsDialog";
+import { JobTypes } from "../../constants/enums";
 import {
   getComparator,
   stableSort,
   healthToColor,
   healthToText,
 } from "../../util/GlobalMethods";
-import GlobalStore from "../../stores/GlobalStore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -380,6 +381,7 @@ const TimeSeriesPage = ({ series, socket }) => {
                     showChart(selectedSerie);
                     closeMenu();
                   }}
+                  disabled={selectedSerie && selectedSerie.config.job_config.every(jc => jc.job_type === JobTypes.JOB_BASE_ANALYSIS)}
                 >
                   <Typography>{"Show graphs"}</Typography>
                 </MenuItem>

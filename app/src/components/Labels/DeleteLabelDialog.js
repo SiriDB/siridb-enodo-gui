@@ -11,7 +11,7 @@ import GlobalStore from "../../stores/GlobalStore";
 
 function DeleteLabelDialog({ socket, open, handleClose, selectedLabel }) {
   const onDelete = () => {
-    const data = { selector: selectedLabel.name };
+    const data = { name: selectedLabel.name };
     socket.emit("/api/enodo/labels/delete", data, () => {
       handleClose();
     });

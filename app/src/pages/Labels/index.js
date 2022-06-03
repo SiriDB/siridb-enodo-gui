@@ -264,7 +264,7 @@ const LabelsPage = ({ socket }) => {
                     <TableRow hover tabIndex={-1} key={index}>
                       <TableCell>{label.name}</TableCell>
                       <TableCell>{label.description}</TableCell>
-                      <TableCell>{label.selector}</TableCell>
+                      <TableCell>{label.selector ? label.selector : "-"}</TableCell>
                       <TableCell align="right">
                         <IconButton
                           edge="end"
