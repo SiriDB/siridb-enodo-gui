@@ -13,6 +13,7 @@ function AddSerie({ socket, close }) {
       title="Add serie"
       onSubmit={(data) => {
         setLoading(true);
+        setSocketError(null);
         socket.emit("/api/series/create", data, (data) => {
           const value = JSON.parse(data);
           if (value.error) {

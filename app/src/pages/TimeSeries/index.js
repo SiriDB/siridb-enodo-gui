@@ -34,15 +34,16 @@ import * as ROUTES from "../../constants/routes";
 import AddSerie from "../../components/Serie/Add";
 import BasicPageLayout from "../../components/BasicPageLayout";
 import EditSerie from "../../components/Serie/Edit";
+import GlobalStore from "../../stores/GlobalStore";
 import InfoDialog from "../../components/Serie/Info";
 import SerieDetails from "../../components/Serie/ChartsDialog";
+import { JobTypes } from "../../constants/enums";
 import {
   getComparator,
   stableSort,
   healthToColor,
   healthToText,
 } from "../../util/GlobalMethods";
-import GlobalStore from "../../stores/GlobalStore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -269,9 +270,9 @@ const TimeSeriesPage = ({ series, socket }) => {
                                 series.state.health === null
                                   ? "unknown"
                                   : healthToText(series.state.health / 100) +
-                                    " health - " +
-                                    series.state.health +
-                                    "%"
+                                  " health - " +
+                                  series.state.health +
+                                  "%"
                               }
                             >
                               <FiberManualRecordIcon
@@ -281,9 +282,9 @@ const TimeSeriesPage = ({ series, socket }) => {
                                     series.state.health === null
                                       ? "#D1D1D1"
                                       : healthToColor(
-                                          [0, 1],
-                                          series.state.health / 100
-                                        ),
+                                        [0, 1],
+                                        series.state.health / 100
+                                      ),
                                 }}
                               />
                             </Tooltip>
@@ -380,6 +381,7 @@ const TimeSeriesPage = ({ series, socket }) => {
                     showChart(selectedSerie);
                     closeMenu();
                   }}
+                  disabled={selectedSerie && selectedSerie.config.job_config.every(jc => jc.job_type === JobTypes.JOB_BASE_ANALYSIS)}
                 >
                   <Typography>{"Show graphs"}</Typography>
                 </MenuItem>
@@ -395,8 +397,9 @@ const TimeSeriesPage = ({ series, socket }) => {
                 <MenuItem
                   onClick={() => {
                     const data = { name: selectedSerie.name };
-                    socket.emit(`/api/series/delete`, data);
-                    closeMenu();
+                    socket.emit(`/api/series/delete`, data, () => {
+                      closeMenu();
+                    });
                   }}
                 >
                   <Typography color="error">{"Delete series"}</Typography>

@@ -65,39 +65,38 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-  },
-  menuLinkSelected: {
-    backgroundColor: "rgba(0, 0, 0, 0.08)",
-  },
+  }
 }));
 
 const App = ({ authenticated, socket }) => {
   const classes = useStyles();
 
-  socket.on("update", (data) => {
-    const resource = data.resource;
-    const resourceData = data.resourceData;
-    switch (data.updateType) {
-      case "initial":
-        GlobalActions.updateStoreValue(resource, resourceData);
-        break;
-      case "add":
-        GlobalActions.updateStoreValue(resource, resourceData, true);
-        break;
-      case "update":
-        GlobalActions.updateStoreResourceItem(
-          resource,
-          resourceData.rid,
-          resourceData
-        );
-        break;
-      case "delete":
-        GlobalActions.deleteStoreResourceItem(resource, resourceData);
-        break;
-      default:
-        break;
-    }
-  });
+  useEffect(() => {
+    socket.on("update", (data) => {
+      const resource = data.resource;
+      const resourceData = data.resourceData;
+      switch (data.updateType) {
+        case "initial":
+          GlobalActions.updateStoreValue(resource, resourceData);
+          break;
+        case "add":
+          GlobalActions.updateStoreValue(resource, resourceData, true);
+          break;
+        case "update":
+          GlobalActions.updateStoreResourceItem(
+            resource,
+            resourceData.rid,
+            resourceData
+          );
+          break;
+        case "delete":
+          GlobalActions.deleteStoreResourceItem(resource, resourceData);
+          break;
+        default:
+          break;
+      }
+    });
+  }, [socket]);
 
   const fetchValueFromREST = (path, cb, resourceName) => {
     Fetcher.fetchResource(path, (data) => {
@@ -165,6 +164,8 @@ const App = ({ authenticated, socket }) => {
     GlobalActions.updateStoreValue("authenticated", false);
   };
 
+  const activeStyle = { backgroundColor: "rgba(0, 0, 0, 0.08)" };
+
   const drawer = (
     <div>
       <div className={`${classes.toolbar} ${classes.logoContainer}`}>
@@ -175,100 +176,107 @@ const App = ({ authenticated, socket }) => {
         <NavLink
           to={ROUTES.LANDING}
           end
-          className={({ isActive }) =>
-            isActive ? classes.menuLinkSelected : null
-          }
         >
-          <ListItem button className={classes.leftmenubtn}>
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="" />
-          </ListItem>
+          {({ isActive }) => (
+            <ListItem button className={classes.leftmenubtn} style={
+              isActive ? activeStyle : undefined
+            }>
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText primary="" />
+            </ListItem>
+          )}
         </NavLink>
         <NavLink
           to={ROUTES.TIME_SERIES}
           end
-          className={({ isActive }) =>
-            isActive ? classes.menuLinkSelected : null
-          }
         >
-          <ListItem button className={classes.leftmenubtn}>
-            <ListItemIcon>
-              <AssessmentIcon />
-            </ListItemIcon>
-            <ListItemText primary="" />
-          </ListItem>
+          {({ isActive }) => (
+            <ListItem button className={classes.leftmenubtn} style={
+              isActive ? activeStyle : undefined
+            }>
+              <ListItemIcon>
+                <AssessmentIcon />
+              </ListItemIcon>
+              <ListItemText primary="" />
+            </ListItem>
+          )}
         </NavLink>
         <NavLink
           to={ROUTES.LABELS}
           end
-          className={({ isActive }) =>
-            isActive ? classes.menuLinkSelected : null
-          }
         >
-          <ListItem button className={classes.leftmenubtn}>
-            <ListItemIcon>
-              <LabelIcon />
-            </ListItemIcon>
-            <ListItemText primary="" />
-          </ListItem>
+          {({ isActive }) => (
+            <ListItem button className={classes.leftmenubtn} style={
+              isActive ? activeStyle : undefined
+            }>
+              <ListItemIcon>
+                <LabelIcon />
+              </ListItemIcon>
+              <ListItemText primary="" />
+            </ListItem>
+          )}
         </NavLink>
         <NavLink
           to={ROUTES.NETWORK}
           end
-          className={({ isActive }) =>
-            isActive ? classes.menuLinkSelected : null
-          }
         >
-          <ListItem button className={classes.leftmenubtn}>
-            <ListItemIcon>
-              <DnsIcon />
-            </ListItemIcon>
-            <ListItemText primary="" />
-          </ListItem>
+          {({ isActive }) => (
+            <ListItem button className={classes.leftmenubtn} style={
+              isActive ? activeStyle : undefined
+            }>
+              <ListItemIcon>
+                <DnsIcon />
+              </ListItemIcon>
+              <ListItemText primary="" />
+            </ListItem>
+          )}
         </NavLink>
         <NavLink
           to={ROUTES.OUTPUT_STREAMS}
           end
-          className={({ isActive }) =>
-            isActive ? classes.menuLinkSelected : null
-          }
         >
-          <ListItem button className={classes.leftmenubtn}>
-            <ListItemIcon>
-              <ViewStreamIcon />
-            </ListItemIcon>
-            <ListItemText primary="" />
-          </ListItem>
+          {({ isActive }) => (
+            <ListItem button className={classes.leftmenubtn} style={
+              isActive ? activeStyle : undefined
+            }>
+              <ListItemIcon>
+                <ViewStreamIcon />
+              </ListItemIcon>
+              <ListItemText primary="" />
+            </ListItem>
+          )}
         </NavLink>
         <NavLink
           to={ROUTES.FAILED_JOBS}
           end
-          className={({ isActive }) =>
-            isActive ? classes.menuLinkSelected : null
-          }
         >
-          <ListItem button className={classes.leftmenubtn}>
-            <ListItemIcon>
-              <WorkOffIcon />
-            </ListItemIcon>
-            <ListItemText primary="" />
-          </ListItem>
+          {({ isActive }) => (
+            <ListItem button className={classes.leftmenubtn} style={
+              isActive ? activeStyle : undefined
+            }>
+              <ListItemIcon>
+                <WorkOffIcon />
+              </ListItemIcon>
+              <ListItemText primary="" />
+            </ListItem>
+          )}
         </NavLink>
         <NavLink
           to={ROUTES.SETTINGS}
           end
-          className={({ isActive }) =>
-            isActive ? classes.menuLinkSelected : null
-          }
         >
-          <ListItem button className={classes.leftmenubtn}>
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText primary="" />
-          </ListItem>
+          {({ isActive }) => (
+            <ListItem button className={classes.leftmenubtn} style={
+              isActive ? activeStyle : undefined
+            }>
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="" />
+            </ListItem>
+          )}
         </NavLink>
         <ListItem button className={classes.leftmenubtn} onClick={onSignOut}>
           <ListItemIcon>
@@ -282,9 +290,9 @@ const App = ({ authenticated, socket }) => {
 
   if (authenticated === null) {
     return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", backgroundColor: "#fff" }}>
-          <CircularProgress size={80}/>
-        </Box>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", backgroundColor: "#fff" }}>
+        <CircularProgress size={80} />
+      </Box>
     );
   } else if (authenticated === false) {
     return (

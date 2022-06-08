@@ -71,7 +71,7 @@ const NetworkPage = ({ enodo_clients }) => {
                     {Moment.unix(client.last_seen).fromNow()}
                   </TableCell>
                   <TableCell>{client.online ? "yes" : "no"}</TableCell>
-                  <TableCell>{client.version}</TableCell>
+                  <TableCell>{client.lib_version}</TableCell>
                 </TableRow>
               );
             })}

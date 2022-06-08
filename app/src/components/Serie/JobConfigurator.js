@@ -34,8 +34,10 @@ function JobConfigurator({
   const toggleJobType = (event) => {
     const cleanConfig = {
       activated: true,
+      silenced: false,
       config_name: config.config_name,
       job_schedule: 200,
+      max_n_points: null,
       job_schedule_type: null,
       job_type: event.target.value,
       module: null,
@@ -55,6 +57,11 @@ function JobConfigurator({
     setConfig({ ...config, activated: value });
   };
 
+  const changeSilenced = (event) => {
+    const value = event.target.checked;
+    setConfig({ ...config, silenced: value });
+  };
+
   const changeModule = (event) => {
     const value = event.target.value ? event.target.value : null;
     setConfig({ ...config, module: value });
@@ -69,9 +76,16 @@ function JobConfigurator({
     setConfig({ ...config, job_schedule: value });
   };
 
+  const changeMaximumNumberOfPoints = (event) => {
+    const value = event.target.value ? Number(event.target.value) : null;
+    setConfig({ ...config, max_n_points: value });
+  };
+
   const filteredModules = modules.filter((m) =>
     m.supported_jobs.includes(jobType)
   );
+
+  console.log(config);
 
   return (
     <Grid container item spacing={3}>
@@ -168,7 +182,7 @@ function JobConfigurator({
                   <em>{"None"}</em>
                 </MenuItem>
                 {filteredModules.map((module, i) => (
-                  <MenuItem value={module.name} key={i}>
+                  <MenuItem value={module.name + "@" + module.version} key={i}>
                     {module.name}
                   </MenuItem>
                 ))}
@@ -208,48 +222,88 @@ function JobConfigurator({
                 defaultValue={config.job_schedule}
                 onChange={changeSchedule}
                 type="number"
-                name={jobType}
                 margin="normal"
                 disabled={disabled}
                 error={!config.job_schedule}
               />
             </FormControl>
           </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl>
+              <FormLabel>{"Max no. points"}</FormLabel>
+              <TextField
+                placeholder="No. points/seconds"
+                variant="outlined"
+                defaultValue={config.max_n_points}
+                onChange={changeMaximumNumberOfPoints}
+                type="number"
+                margin="normal"
+                disabled={disabled}
+              />
+            </FormControl>
+          </Grid>
           {config.module && (
             <Fragment>
               {modules
-                .find((m) => m.name === config.module)
+                .find((m) => config.module.startsWith(m.name))
                 .module_arguments.map((argument) => (
                   <Grid item xs={12} sm={6} key={argument.name}>
                     <FormControl
                       fullWidth
                       required={argument.required}
                       error={
-                        argument.required && !config.module_params[argument.name]
+                        argument.required &&
+                        (config.module_params[argument.name] == null || !config.module_params.hasOwnProperty(argument.name))
                       }
                     >
                       <FormLabel>{argument.name}</FormLabel>
-                      <TextField
-                        placeholder={argument.name}
-                        variant="outlined"
-                        defaultValue={config.module_params[argument.name]}
-                        onChange={(e) => {
-                          setConfig({
-                            ...config,
-                            module_params: {
-                              ...config.module_params,
-                              [argument.name]: argument.name === "forecast_name" ? e.target.value : Number(e.target.value),
-                            },
-                          });
-                        }}
-                        type={argument.name === "forecast_name" ? "text" : "number"} // TODO: Required till module_params contain data type
-                        disabled={disabled}
-                        margin="normal"
-                        error={
-                          argument.required &&
-                          !config.module_params[argument.name]
-                        }
-                      />
+                      {argument.value_type === "bool" ?
+                        <Select
+                          displayEmpty
+                          defaultValue={config.module_params[argument.name]}
+                          label={argument.name}
+                          disabled={disabled}
+                          margin="dense"
+                          error={
+                            argument.required &&
+                            (config.module_params[argument.name] == null || !config.module_params.hasOwnProperty(argument.name))
+                          }
+                          onChange={(e) => {
+                            setConfig({
+                              ...config,
+                              module_params: {
+                                ...config.module_params,
+                                [argument.name]: e.target.value
+                              },
+                            });
+                          }}
+                          sx={{ marginTop: 2, marginBottom: 1 }}
+                        >
+                          <MenuItem value={null}><em>{"None"}</em></MenuItem>
+                          <MenuItem value={true}>{"true"}</MenuItem>
+                          <MenuItem value={false}>{"false"}</MenuItem>
+                        </Select>
+                        : <TextField
+                          placeholder={argument.name}
+                          variant="outlined"
+                          defaultValue={config.module_params[argument.name]}
+                          onChange={(e) => {
+                            setConfig({
+                              ...config,
+                              module_params: {
+                                ...config.module_params,
+                                [argument.name]: argument.name === "forecast_name" ? e.target.value : Number(e.target.value),
+                              },
+                            });
+                          }}
+                          type={argument.name === "forecast_name" ? "text" : "number"} // TODO: Required till module_params contain data type
+                          disabled={disabled}
+                          margin="normal"
+                          error={
+                            argument.required &&
+                            (config.module_params[argument.name] == null || !config.module_params.hasOwnProperty(argument.name))
+                          }
+                        />}
                     </FormControl>
                   </Grid>
                 ))}
@@ -261,7 +315,6 @@ function JobConfigurator({
                 <Switch
                   checked={config.activated}
                   onChange={changeActivitated}
-                  name={jobType}
                   color="primary"
                   disabled={disabled}
                 />
@@ -269,6 +322,19 @@ function JobConfigurator({
               label="Activated"
             />
           </Grid>
+          {jobType !== JobTypes.JOB_BASE_ANALYSIS && <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={config.silenced}
+                  onChange={changeSilenced}
+                  color="primary"
+                  disabled={disabled}
+                />
+              }
+              label="Silenced"
+            />
+          </Grid>}
         </Fragment>
       )}
     </Grid>
