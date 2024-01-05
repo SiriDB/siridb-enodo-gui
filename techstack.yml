@@ -2,7 +2,7 @@ repo_name: SiriDB/siridb-enodo-gui
 report_id: 03c18a3e3f5a25c00f4c994d643a280e
 version: 0.1
 repo_type: Public
-timestamp: '2023-12-27T20:00:52+00:00'
+timestamp: '2024-01-05T08:34:58+00:00'
 requested_by: timoj
 provider: github
 branch: master
@@ -16,6 +16,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Languages
   image_url: https://img.stackshare.io/service/6727/css.png
+  detection_source_url: https://github.com/SiriDB/siridb-enodo-gui
   detection_source: Repo Metadata
 - name: JavaScript
   description: Lightweight, interpreted, object-oriented language with first-class
@@ -26,6 +27,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Languages
   image_url: https://img.stackshare.io/service/1209/javascript.jpeg
+  detection_source_url: https://github.com/SiriDB/siridb-enodo-gui
   detection_source: Repo Metadata
 - name: Chart.js
   description: Simple, clean and engaging charts for designers and developers
@@ -76,6 +78,7 @@ tools:
   category: Application Hosting
   sub_category: Realtime Backend / API
   image_url: https://img.stackshare.io/service/1161/vI0ZZlhZ_400x400.png
+  detection_source_url: https://github.com/SiriDB/siridb-enodo-gui/blob/master/app/package.json
   detection_source: app/package.json
   last_updated_by: rob
   last_updated_on: 2022-06-03 15:04:16.000000000 Z
@@ -87,6 +90,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Version Control System
   image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source_url: https://github.com/SiriDB/siridb-enodo-gui
   detection_source: Repo Metadata
 - name: npm
   description: The package manager for JavaScript.
@@ -96,6 +100,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Front End Package Manager
   image_url: https://img.stackshare.io/service/1120/lejvzrnlpb308aftn31u.png
+  detection_source_url: https://github.com/SiriDB/siridb-enodo-gui/blob/master/app/package.json
   detection_source: app/package.json
   last_updated_by: Rob
   last_updated_on: 2020-11-24 17:57:48.000000000 Z
